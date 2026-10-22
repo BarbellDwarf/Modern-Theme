@@ -39,8 +39,8 @@
             border: none;
 
             .nav-icon {
-                font-size: 20px;
-                margin-bottom: 2px;
+                font-size: 22px;
+                margin-bottom: 3px;
                 transition: transform $transition-fast, font-size $transition-fast;
                 position: relative;
                 display: flex;
@@ -59,9 +59,9 @@
             }
 
             .nav-label {
-                font-size: clamp(10px, 2.5vw, 12px);
+                font-size: clamp(11px, 2.8vw, 12px);
                 font-weight: 500;
-                line-height: 1.15;
+                line-height: 1.2;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
