@@ -124,6 +124,16 @@ class Events
             }
         }
 
+        // Dashboard is the first entry in the context switcher and the logo
+        // already links there, so the duplicate top-menu item is noise.
+        $dashboardEntry = $menu->getEntryById('dashboard');
+        if (!$dashboardEntry) {
+            $dashboardEntry = $menu->getEntryByUrl(['/dashboard/dashboard']);
+        }
+        if ($dashboardEntry) {
+            $menu->removeEntry($dashboardEntry);
+        }
+
         // Rename "People" entry if a custom label is configured
         $customLabel = ConfigController::getPeopleNavLabel();
         if ($customLabel !== 'People') {
