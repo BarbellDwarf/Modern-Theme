@@ -129,17 +129,28 @@ class Module extends \humhub\components\Module
             // Ensure the current published asset directory exists for this theme hash.
             $theme->publishResources(true);
 
-            $cssDir = $theme->publishedResourcesPath . DIRECTORY_SEPARATOR . 'css';
-            if (!is_dir($cssDir) && !mkdir($cssDir, 0775, true) && !is_dir($cssDir)) {
+            $publishedResourcesPath = (string) $theme->publishedResourcesPath;
+            if ($publishedResourcesPath === '' || $publishedResourcesPath === DIRECTORY_SEPARATOR . 'resources') {
+                Yii::error('Theme resources are not published: ' . $publishedResourcesPath, 'modern-theme-2026');
+                return false;
+            }
+
+            $cssDir = $publishedResourcesPath . DIRECTORY_SEPARATOR . 'css';
+            if (!static::ensurePublishedDirectory($cssDir)) {
                 Yii::error('Could not create CSS directory: ' . $cssDir, 'modern-theme-2026');
                 return false;
             }
 
             // ThemeHelper requires both files to be writable. On some systems old files
             // may be left read-only after manual operations or user mismatch.
+            // HumHub 1.19+ uses a mount-relative path, so native filesystem calls only
+            // apply to the absolute paths used by 1.18.
             $cssFile = $cssDir . DIRECTORY_SEPARATOR . 'theme.css';
             $mapFile = $cssDir . DIRECTORY_SEPARATOR . 'theme.map';
             foreach ([$cssFile, $mapFile] as $file) {
+                if (!static::isAbsolutePath($file)) {
+                    continue;
+                }
                 if (is_file($file) && !is_writable($file)) {
                     @chmod($file, 0664);
                 }
@@ -160,7 +171,8 @@ class Module extends \humhub\components\Module
                 }
             }
 
-            if (!is_file($cssFile) || filesize($cssFile) < 10240) {
+            $cssSize = static::publishedFileSize($cssFile);
+            if ($cssSize === null || $cssSize < 10240) {
                 Yii::error('Theme CSS output invalid at ' . $cssFile, 'modern-theme-2026');
                 return false;
             }
@@ -195,15 +207,84 @@ class Module extends \humhub\components\Module
 
         try {
             $theme->publishResources(false);
-            $cssFile = $theme->publishedResourcesPath . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css';
+
+            $publishedResourcesPath = (string) $theme->publishedResourcesPath;
+            if ($publishedResourcesPath === '' || $publishedResourcesPath === DIRECTORY_SEPARATOR . 'resources') {
+                return;
+            }
+
+            $cssFile = $publishedResourcesPath . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css';
             $minValidSize = 10240; // 10KB; valid compiled theme is usually 500KB+
 
-            if (!is_file($cssFile) || filesize($cssFile) < $minValidSize) {
+            $cssSize = static::publishedFileSize($cssFile);
+            if ($cssSize === null || $cssSize < $minValidSize) {
                 Yii::warning('Detected invalid theme.css, rebuilding: ' . $cssFile, 'modern-theme-2026');
                 static::rebuildThemeCss();
             }
         } catch (\Throwable $e) {
             Yii::error('ensureThemeCssHealthy failed: ' . $e->getMessage(), 'modern-theme-2026');
+        }
+    }
+
+    /**
+     * HumHub 1.18 exposes published theme files as absolute paths, while 1.19+
+     * returns paths relative to the assets filesystem mount.
+     */
+    private static function isAbsolutePath(string $path): bool
+    {
+        return $path !== ''
+            && ($path[0] === '/' || $path[0] === '\\'
+                || preg_match('/^[A-Za-z]:[\\\\\\/]/', $path) === 1);
+    }
+
+    /**
+     * Size of a published theme file, or null when it does not exist.
+     * Works with native paths (HumHub 1.18) and assets-mount relative paths (1.19+).
+     */
+    private static function publishedFileSize(string $file): ?int
+    {
+        if (static::isAbsolutePath($file)) {
+            return is_file($file) ? (int) filesize($file) : null;
+        }
+
+        if (!Yii::$app->has('fs')) {
+            return null;
+        }
+
+        try {
+            $fs = Yii::$app->get('fs')->getAssetsMount();
+            if (method_exists($fs, 'fileExists') && $fs->fileExists($file)) {
+                return (int) $fs->fileSize($file);
+            }
+        } catch (\Throwable $e) {
+            Yii::error('Could not read published theme CSS: ' . $e->getMessage(), 'modern-theme-2026');
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates a published directory using the filesystem that owns it.
+     */
+    private static function ensurePublishedDirectory(string $dir): bool
+    {
+        if (static::isAbsolutePath($dir)) {
+            return is_dir($dir) || mkdir($dir, 0775, true) || is_dir($dir);
+        }
+
+        if (!Yii::$app->has('fs')) {
+            return false;
+        }
+
+        try {
+            $fs = Yii::$app->get('fs')->getAssetsMount();
+            if (method_exists($fs, 'directoryExists') && !$fs->directoryExists($dir)) {
+                $fs->createDirectory($dir);
+            }
+            return !method_exists($fs, 'directoryExists') || $fs->directoryExists($dir);
+        } catch (\Throwable $e) {
+            Yii::error('Could not create published CSS directory: ' . $e->getMessage(), 'modern-theme-2026');
+            return false;
         }
     }
 

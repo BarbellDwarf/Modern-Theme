@@ -27,8 +27,42 @@ foreach ($autoloadCandidates as $p) {
 }
 
 $themeBasePath = __DIR__ . '/themes/ModernTheme2026';
-$parentThemeBasePath = dirname(__DIR__, 3) . '/themes/HumHub';
 $webroot = dirname(__DIR__, 3);
+$protectedPath = $webroot . '/protected';
+
+// HumHub 1.19 moved the core SCSS and the core HumHub theme out of the webroot:
+//   webroot/static/scss          -> protected/humhub/resources/scss
+//   webroot/themes/HumHub/scss   -> protected/humhub/themes/HumHub/scss
+// Detect whichever layout exists so the same script compiles on 1.18 and 1.19.
+$coreScssCandidates = [
+    $protectedPath . '/humhub/resources/scss',
+    $webroot . '/static/scss',
+];
+$coreScssPath = null;
+foreach ($coreScssCandidates as $candidate) {
+    if (is_file($candidate . '/variables.scss')) {
+        $coreScssPath = $candidate;
+        break;
+    }
+}
+if ($coreScssPath === null) {
+    echo "ERROR: Could not locate HumHub core SCSS (protected/humhub/resources/scss or static/scss).\n";
+    exit(1);
+}
+
+$parentThemeCandidates = [
+    $protectedPath . '/humhub/themes/HumHub',
+    $webroot . '/themes/HumHub',
+];
+$parentThemeBasePath = null;
+foreach ($parentThemeCandidates as $candidate) {
+    if (is_file($candidate . '/scss/variables.scss')) {
+        $parentThemeBasePath = $candidate;
+        break;
+    }
+}
+$parentThemeImportPath = $parentThemeBasePath ?? $webroot . '/themes/HumHub';
+
 $canonicalOutputDirs = [
     $themeBasePath . '/dist',
     $themeBasePath . '/resources/css',
@@ -76,8 +110,8 @@ if ($hasScssPhp) {
     $compiler = new \ScssPhp\ScssPhp\Compiler();
     $compiler->setOutputStyle(\ScssPhp\ScssPhp\OutputStyle::COMPRESSED);
     $compiler->setImportPaths($webroot . '/protected/vendor/twbs/bootstrap/scss');
-    $compiler->addImportPath($webroot . '/static/scss');
-    $compiler->addImportPath($parentThemeBasePath . '/scss');
+    $compiler->addImportPath($coreScssPath);
+    $compiler->addImportPath($parentThemeImportPath . '/scss');
     $compiler->addImportPath($themeBasePath . '/scss');
 } else {
     echo "NOTICE: scssphp library not available via Composer autoload. This script will write aggregated SCSS to '{$outputDir}/theme.scss' for manual compilation.\n\n";
@@ -132,12 +166,13 @@ if ($dbDsn && is_string($dbUser) && is_string($dbPassword)) {
 
 $scssContent .= '@import "functions";' . "\n";
 $scssContent .= '@import "' . $themeBasePath . '/scss/variables";' . "\n";
-$scssContent .= '@import "' . $webroot . '/static/scss/variables";' . "\n";
+$scssContent .= '@import "' . $parentThemeImportPath . '/scss/variables";' . "\n";
+$scssContent .= '@import "' . $coreScssPath . '/variables";' . "\n";
 $scssContent .= '@import "variables";' . "\n";
 $scssContent .= '@import "maps";' . "\n";
-$scssContent .= '@import "' . $webroot . '/static/scss/maps";' . "\n";
+$scssContent .= '@import "' . $coreScssPath . '/maps";' . "\n";
 $scssContent .= '@import "bootstrap";' . "\n";
-$scssContent .= '@import "' . $webroot . '/static/scss/build";' . "\n";
+$scssContent .= '@import "' . $coreScssPath . '/build";' . "\n";
 $scssContent .= '@import "' . $themeBasePath . '/scss/build";' . "\n";
 
 if ($hasScssPhp) {

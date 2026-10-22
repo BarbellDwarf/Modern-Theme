@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 The format follows Keep a Changelog and this project uses Semantic Versioning.
 
+## [Unreleased]
+
+### Fixed
+- HumHub 1.19: `humhub\libs\Html` was replaced with `humhub\helpers\Html` (still valid on 1.18) so the theme layout no longer fatals with `Class "humhub\libs\Html" not found`.
+- HumHub 1.19: published theme paths are now relative to the assets filesystem mount, so the theme CSS health check and rebuild use the asset filesystem instead of native file calls. This stops the `Detected invalid theme.css, rebuilding` loop.
+- HumHub 1.19: `compile-css.php` detects core SCSS in `protected/humhub/resources/scss` (1.19) or `static/scss` (1.18), and the parent theme in `protected/humhub/themes/HumHub` (1.19) or `themes/HumHub` (1.18).
+
 ## [1.1.1] - 2026-07-30
 
 ### Added
