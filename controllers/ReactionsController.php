@@ -98,7 +98,7 @@ class ReactionsController extends Controller
 
         $rows = (new \yii\db\Query())
             ->select(['created_by AS user_id', 'reaction_type', 'created_at'])
-            ->from(Like::tableName())
+            ->from('{{%like}}')
             ->where($this->scope)
             ->orderBy(['created_at' => SORT_DESC])
             ->all();
