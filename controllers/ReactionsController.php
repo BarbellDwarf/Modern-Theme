@@ -3,22 +3,40 @@
 namespace humhub\modules\modernTheme2026\controllers;
 
 use humhub\components\behaviors\AccessControl;
+use humhub\components\Controller;
+use humhub\modules\content\components\ContentAddonActiveRecord;
+use humhub\modules\content\interfaces\ContentProvider;
 use humhub\modules\like\models\Like;
-use humhub\modules\content\components\ContentAddonController;
 use humhub\modules\user\models\User;
 use Yii;
+use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * ReactionsController
  *
  * Handles emoji reaction save/toggle for content items.
  * Requires the `reaction_type` column (added by module migration) on the `like` table.
+ *
+ * Supports both target addressing schemes:
+ * - HumHub 1.18: contentModel/contentId (object_model/object_id columns)
+ * - HumHub 1.19: recordId (content_id/content_addon_record_id columns + RecordMap)
  */
-class ReactionsController extends ContentAddonController
+class ReactionsController extends Controller
 {
     /** Allowed reaction types */
     private const VALID_TYPES = ['like', 'love', 'laugh', 'wow', 'sad', 'pray'];
+
+    private const RECORD_MAP = 'humhub\models\RecordMap';
+
+    private ContentProvider $target;
+
+    /** Column/value pairs identifying the like row for this target. */
+    private array $scope = [];
+
+    /** Whether the like table uses the 1.19 RecordMap columns. */
+    private bool $recordMapMode = false;
 
     public function behaviors(): array
     {
@@ -29,9 +47,19 @@ class ReactionsController extends ContentAddonController
         ];
     }
 
+    public function beforeAction($action): bool
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->resolveTarget();
+
+        return true;
+    }
+
     /**
      * GET /modern-theme-2026/reactions/my-reaction
-     * Params: contentModel, contentId
      *
      * Returns the current user's reaction type for a given content item.
      * Used by JS on page load to restore the active trigger emoji.
@@ -41,22 +69,18 @@ class ReactionsController extends ContentAddonController
         Yii::$app->response->format = 'json';
 
         $existing = Like::find()
-            ->where([
-                'object_model' => $this->contentModel,
-                'object_id'    => $this->contentId,
-                'created_by'   => Yii::$app->user->id,
-            ])
+            ->where($this->scope)
+            ->andWhere(['created_by' => Yii::$app->user->id])
             ->one();
 
         return [
-            'reactionType'   => $existing ? ($existing->reaction_type ?? 'like') : null,
+            'reactionType' => $existing ? ($existing->reaction_type ?? 'like') : null,
             'reactionCounts' => $this->getReactionCounts(),
         ];
     }
 
     /**
      * GET /modern-theme-2026/reactions/list
-     * Params: contentModel, contentId
      *
      * Renders a modal listing all users who reacted, with their actual emoji.
      */
@@ -64,23 +88,19 @@ class ReactionsController extends ContentAddonController
     {
         /** Reaction type → emoji map (must match reactionPicker.js REACTIONS array) */
         $emojiMap = [
-            'like'  => '👍',
-            'love'  => '❤️',
+            'like' => '👍',
+            'love' => '❤️',
             'laugh' => '😂',
-            'wow'   => '😮',
-            'sad'   => '😢',
-            'pray'  => '🙏',
+            'wow' => '😮',
+            'sad' => '😢',
+            'pray' => '🙏',
         ];
 
-        // Query reaction rows (user id + reaction type), newest first
         $rows = (new \yii\db\Query())
-            ->select(['l.created_by AS user_id', 'l.reaction_type', 'l.created_at'])
-            ->from('{{%like}} l')
-            ->where([
-                'l.object_model' => $this->contentModel,
-                'l.object_id'    => $this->contentId,
-            ])
-            ->orderBy(['l.created_at' => SORT_DESC])
+            ->select(['created_by AS user_id', 'reaction_type', 'created_at'])
+            ->from(Like::tableName())
+            ->where($this->scope)
+            ->orderBy(['created_at' => SORT_DESC])
             ->all();
 
         // Batch-load all users in a single query to avoid N+1
@@ -94,7 +114,7 @@ class ReactionsController extends ContentAddonController
             $user = $usersById[$row['user_id']] ?? null;
             if ($user !== null) {
                 $reactions[] = [
-                    'user'          => $user,
+                    'user' => $user,
                     'reaction_type' => $row['reaction_type'] ?? 'like',
                 ];
             }
@@ -108,7 +128,6 @@ class ReactionsController extends ContentAddonController
 
     /**
      * POST /modern-theme-2026/reactions/react
-     * Params: contentModel, contentId, reaction_type
      *
      * Toggle behavior:
      *   - Same reaction already set  → remove it (unlike)
@@ -122,13 +141,7 @@ class ReactionsController extends ContentAddonController
         $this->forcePostRequest();
         Yii::$app->response->format = 'json';
 
-        /** @var \humhub\modules\like\Module $likeModule */
-        $likeModule = Yii::$app->getModule('like');
-        if (!$likeModule || !$likeModule->isEnabled) {
-            throw new ForbiddenHttpException('Like module is not enabled.');
-        }
-
-        if (!$likeModule->canLike($this->parentContent)) {
+        if (!$this->canReact()) {
             throw new ForbiddenHttpException('You are not allowed to react to this content.');
         }
 
@@ -141,11 +154,8 @@ class ReactionsController extends ContentAddonController
 
         // Find any existing like/reaction by this user for this content
         $existing = Like::find()
-            ->where([
-                'object_model' => $this->contentModel,
-                'object_id'    => $this->contentId,
-                'created_by'   => $userId,
-            ])
+            ->where($this->scope)
+            ->andWhere(['created_by' => $userId])
             ->one();
 
         $currentUserReaction = null;
@@ -154,14 +164,14 @@ class ReactionsController extends ContentAddonController
             if ($existing->reaction_type === $reactionType) {
                 // Same reaction → toggle off (delete)
                 if ($existing->delete() === false) {
-                    Yii::error('ReactionsController: failed to delete reaction for content ' . $this->contentId, 'modernTheme2026');
+                    Yii::error('ReactionsController: failed to delete reaction for content ' . $this->identity(), 'modernTheme2026');
                     return ['error' => 'Failed to remove reaction.'];
                 }
             } else {
                 // Different reaction → switch
                 $existing->reaction_type = $reactionType;
                 if (!$existing->save(false)) {
-                    Yii::error('ReactionsController: failed to update reaction for content ' . $this->contentId, 'modernTheme2026');
+                    Yii::error('ReactionsController: failed to update reaction for content ' . $this->identity(), 'modernTheme2026');
                     return ['error' => 'Failed to update reaction.'];
                 }
                 $currentUserReaction = $reactionType;
@@ -169,11 +179,14 @@ class ReactionsController extends ContentAddonController
         } else {
             // No reaction yet → create
             $like = new Like();
-            $like->object_model  = $this->contentModel;
-            $like->object_id     = (int) $this->contentId;
+            foreach ($this->scope as $column => $value) {
+                if ($value !== null) {
+                    $like->$column = $value;
+                }
+            }
             $like->reaction_type = $reactionType;
             if (!$like->save(false)) {
-                Yii::error('ReactionsController: failed to save reaction for content ' . $this->contentId, 'modernTheme2026');
+                Yii::error('ReactionsController: failed to save reaction for content ' . $this->identity(), 'modernTheme2026');
                 return ['error' => 'Failed to save reaction.'];
             }
             $currentUserReaction = $reactionType;
@@ -181,29 +194,104 @@ class ReactionsController extends ContentAddonController
 
         return [
             'currentUserReaction' => $currentUserReaction,
-            'reactionCounts'      => $this->getReactionCounts(),
+            'reactionCounts' => $this->getReactionCounts(),
         ];
     }
 
     /**
-     * Returns reaction counts grouped by type for the current content.
+     * Resolves the reaction target from either 1.19 (recordId) or 1.18 (contentModel/contentId)
+     * parameters and builds the like-table scope for it.
+     */
+    private function resolveTarget(): void
+    {
+        $schema = Like::getDb()->getTableSchema(Like::tableName());
+        $this->recordMapMode = $schema !== null && $schema->getColumn('content_addon_record_id') !== null;
+
+        $recordId = (int)Yii::$app->request->get('recordId');
+        $target = null;
+
+        if ($recordId > 0 && $this->recordMapMode) {
+            $mapClass = self::RECORD_MAP;
+            $target = $mapClass::getById($recordId, ContentProvider::class);
+        } else {
+            $modelClass = Yii::$app->request->get('contentModel') ?: Yii::$app->request->post('contentModel');
+            $pk = (int)(Yii::$app->request->get('contentId') ?: Yii::$app->request->post('contentId'));
+
+            if (!is_string($modelClass) || $modelClass === '' || $pk === 0) {
+                throw new BadRequestHttpException('Model & ID parameter required!');
+            }
+
+            if (!class_exists($modelClass) || !is_subclass_of($modelClass, ContentProvider::class)) {
+                throw new BadRequestHttpException('Invalid content model.');
+            }
+
+            $target = $modelClass::findOne(['id' => $pk]);
+        }
+
+        if (!$target instanceof ContentProvider) {
+            throw new NotFoundHttpException('Could not find underlying content record.');
+        }
+
+        if ($target->content === null || !$target->content->canView()) {
+            throw new ForbiddenHttpException('Access denied!');
+        }
+
+        $this->target = $target;
+
+        if ($this->recordMapMode) {
+            $this->scope = ['content_id' => $target->content->id];
+
+            if ($target instanceof ContentAddonActiveRecord) {
+                $mapClass = self::RECORD_MAP;
+                $this->scope['content_addon_record_id'] = $mapClass::getId($target);
+            } else {
+                $this->scope['content_addon_record_id'] = null;
+            }
+        } else {
+            $this->scope = [
+                'object_model' => get_class($target),
+                'object_id' => $target->id,
+            ];
+        }
+    }
+
+    private function canReact(): bool
+    {
+        /** @var \humhub\modules\like\Module|null $likeModule */
+        $likeModule = Yii::$app->getModule('like');
+        if (!$likeModule || !$likeModule->isEnabled) {
+            return false;
+        }
+
+        if (class_exists('humhub\modules\like\services\LikeService')) {
+            return (new \humhub\modules\like\services\LikeService($this->target))->canLike();
+        }
+
+        return $likeModule->canLike($this->target);
+    }
+
+    /**
+     * Returns reaction counts grouped by type for the current target.
      */
     private function getReactionCounts(): array
     {
         $rows = Like::find()
             ->select(['reaction_type', 'COUNT(*) as cnt'])
-            ->where([
-                'object_model' => $this->contentModel,
-                'object_id'    => $this->contentId,
-            ])
+            ->where($this->scope)
             ->groupBy('reaction_type')
             ->asArray()
             ->all();
 
         $counts = [];
         foreach ($rows as $row) {
-            $counts[$row['reaction_type']] = (int) $row['cnt'];
+            $counts[$row['reaction_type'] ?? 'like'] = (int)$row['cnt'];
         }
+
         return $counts;
+    }
+
+    private function identity(): string
+    {
+        return (string)$this->target->content->id;
     }
 }

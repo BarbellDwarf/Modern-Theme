@@ -26,20 +26,39 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
         var actionUrl = ($like.attr('data-action-url') || $like.data('action-url') || $like.attr('href') || '').toString();
         var query = (actionUrl.split('?')[1] || '').replace(/&amp;/g, '&');
         if (!query) {
-            return { contentModel: null, contentId: null };
+            return { recordId: null, contentModel: null, contentId: null };
         }
 
         if (typeof URLSearchParams !== 'undefined') {
             var p = new URLSearchParams(query);
-            return { contentModel: p.get('contentModel'), contentId: p.get('contentId') };
+            // 1.19 addresses likes by recordId, 1.18 by contentModel/contentId
+            return {
+                recordId: p.get('recordId'),
+                contentModel: p.get('contentModel'),
+                contentId: p.get('contentId')
+            };
         }
 
+        var recordMatch = query.match(/(?:^|&)recordId=([^&]+)/);
         var modelMatch = query.match(/(?:^|&)contentModel=([^&]+)/);
         var idMatch = query.match(/(?:^|&)contentId=([^&]+)/);
         return {
+            recordId: recordMatch ? decodeURIComponent(recordMatch[1]) : null,
             contentModel: modelMatch ? decodeURIComponent(modelMatch[1]) : null,
             contentId: idMatch ? decodeURIComponent(idMatch[1]) : null
         };
+    }
+
+    function hasTarget(params) {
+        return !!(params && (params.recordId || (params.contentModel && params.contentId)));
+    }
+
+    function targetQuery(params) {
+        if (params.recordId) {
+            return 'recordId=' + encodeURIComponent(params.recordId);
+        }
+        return 'contentModel=' + encodeURIComponent(params.contentModel)
+            + '&contentId=' + encodeURIComponent(params.contentId);
     }
 
     function getReactionByType(type) {
@@ -172,7 +191,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             var params = getUrlParams($c);
             $c.data('mt2026-params', params);
 
-            var cid = params.contentId || ('local-' + Math.random().toString(36).slice(2));
+            var cid = params.recordId || params.contentId || ('local-' + Math.random().toString(36).slice(2));
             $c.data('mt2026-cid', cid);
 
             // 1. Prepend trigger button
@@ -189,8 +208,8 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
 
             // 3. Build reaction summary link and place it in wall-entry-links (right-aligned)
             var $controls = $c.closest('.wall-entry-controls.wall-entry-links');
-            if ($controls.length && params.contentModel && params.contentId && !$controls.find('.mt2026-summary-link').filter(function() { return String($(this).data('mt2026-cid')) === String(cid); }).length) {
-                var listUrl = BASE_URL + '/list?contentModel=' + encodeURIComponent(params.contentModel) + '&contentId=' + encodeURIComponent(params.contentId);
+            if ($controls.length && hasTarget(params) && !$controls.find('.mt2026-summary-link').filter(function() { return String($(this).data('mt2026-cid')) === String(cid); }).length) {
+                var listUrl = BASE_URL + '/list?' + targetQuery(params);
                 $controls.append('<a class="mt2026-summary-link" href="' + listUrl
                     + '" data-bs-target="#globalModal" data-mt2026-cid="' + cid + '" style="display:none">'
                     + '<span class="mt2026-summary-inner"></span>'
@@ -198,7 +217,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             }
 
             // 4. If user has already reacted (unlike link visible), fetch and restore state
-            if (!params.contentModel || !params.contentId) {
+            if (!hasTarget(params)) {
                 return;
             }
 
@@ -311,7 +330,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             setTimeout(function() { $btn.removeClass('mt2026-pop'); }, 300);
 
             var params = $c.data('mt2026-params') || getUrlParams($c);
-            if (!params.contentModel || !params.contentId) {
+            if (!hasTarget(params)) {
                 $c.find('a.like.likeAnchor:not(.d-none)').first().trigger('click');
                 return;
             }
@@ -320,6 +339,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
                 url: BASE_URL + '/react',
                 method: 'POST',
                 data: {
+                    recordId: params.recordId,
                     contentModel: params.contentModel,
                     contentId: params.contentId,
                     reaction_type: type,
