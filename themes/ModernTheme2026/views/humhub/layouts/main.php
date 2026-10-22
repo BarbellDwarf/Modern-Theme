@@ -15,14 +15,9 @@ use humhub\widgets\TopMenuRightStack;
 
 AppAsset::register($this);
 
-// Load our overlay CSS via the asset manager using the theme's base path.
-// This works regardless of whether the theme is installed in /themes/, /modules/, or elsewhere.
-$distCssFile = $this->theme->getBasePath() . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'theme.css';
-if (is_file($distCssFile)) {
-    $distDir = $this->theme->getBasePath() . DIRECTORY_SEPARATOR . 'dist';
-    [$distPublishedPath, $distPublishedUrl] = Yii::$app->assetManager->publish($distDir, ['forceCopy' => defined('YII_DEBUG') && YII_DEBUG]);
-    $this->registerCssFile($distPublishedUrl . '/theme.css');
-}
+// Theme::register() already serves the compiled resources/css/theme.css. Registering
+// dist/theme.css here as well loaded the same stylesheet twice (and could serve a
+// stale copy, since ThemeHelper only writes the resources one).
 
 $bodyClasses = DeviceDetectorHelper::getBodyClasses();
 $bodyClasses[] = 'modern-theme-2026';
