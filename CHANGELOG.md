@@ -15,6 +15,7 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - HumHub 1.19: the context switcher no longer calls the removed `SiteIcon` widget or logs a warning; it uses its existing glyph fallback.
 - Login: long site titles wrap on a balanced scale instead of four ragged lines, short desktop viewports fit without scrolling, and the login card now uses the glass treatment the theme describes.
 - Mobile: body text stays at 16px, and comment/addon pills plus bottom-nav labels meet the 44px touch target guidance.
+- Readability: muted text now clears AA contrast on every light and dark surface it uses.
 - Navigation: removed the duplicate Dashboard entry from the top menu; the context switcher and logo still link there.
 - Performance: the compiled theme stylesheet is no longer loaded twice, dead CSS rules were removed, and static panels no longer lift on hover.
 
