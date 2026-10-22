@@ -5,7 +5,7 @@
 use humhub\assets\AppAsset;
 use humhub\components\View;
 use humhub\helpers\DeviceDetectorHelper;
-use humhub\libs\Html;
+use humhub\helpers\Html;
 use humhub\modules\modernTheme2026\widgets\ContextSwitcher;
 use humhub\modules\user\widgets\AccountTopMenu;
 use humhub\widgets\NotificationArea;
