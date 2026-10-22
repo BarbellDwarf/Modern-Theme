@@ -11,6 +11,10 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - HumHub 1.19: published theme paths are now relative to the assets filesystem mount, so the theme CSS health check and rebuild use the asset filesystem instead of native file calls. This stops the `Detected invalid theme.css, rebuilding` loop.
 - HumHub 1.19: `compile-css.php` detects core SCSS in `protected/humhub/resources/scss` (1.19) or `static/scss` (1.18), and the parent theme in `protected/humhub/themes/HumHub` (1.19) or `themes/HumHub` (1.18).
 
+### Known issues on HumHub 1.19
+- Emoji reactions are not ported. `ReactionsController` still extends `humhub\modules\content\components\ContentAddonController` (removed in 1.19) and keys the `like` table by `object_model`/`object_id` (1.19 replaced these with `content_id`/`content_addon_record_id` via `humhub\models\RecordMap`). The feature keeps working on 1.18; on 1.19 the reaction endpoints fail.
+- `widgets/ContextSwitcher.php` asks the removed `humhub\modules\web\pwa\widgets\SiteIcon` for the site icon. The call is wrapped in try/catch, so 1.19 falls back to no icon and logs a warning.
+
 ## [1.1.1] - 2026-07-30
 
 ### Added
