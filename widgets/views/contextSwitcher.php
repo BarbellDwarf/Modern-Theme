@@ -11,7 +11,6 @@ use humhub\modules\space\widgets\Image as SpaceImage;
 /* @var $dashboardUrl string */
 /* @var $profileUrl string */
 /* @var $spacesDirectoryUrl string */
-/* @var $siteIconUrl string|null */
 /* @var $currentContext string */
 /* @var $currentSpace \humhub\modules\space\models\Space|null */
 /* @var $currentRoute string */
@@ -40,11 +39,6 @@ use humhub\modules\space\widgets\Image as SpaceImage;
                 <?= Html::img($user->getProfileImage()->getUrl(), [
                     'class' => 'context-user-image',
                     'alt' => Yii::t('base', 'Profile'),
-                ]) ?>
-            <?php elseif ($currentContext === 'dashboard' && !empty($siteIconUrl)): ?>
-                <?= Html::img($siteIconUrl, [
-                    'class' => 'context-site-image',
-                    'alt' => Yii::t('base', 'Dashboard'),
                 ]) ?>
             <?php else: ?>
                 <span class="context-initial">
@@ -94,13 +88,7 @@ use humhub\modules\space\widgets\Image as SpaceImage;
                    class="context-item<?= $currentContext === 'dashboard' ? ' active' : '' ?>"
                    role="option"
                    data-search-name="dashboard home">
-                    <span class="item-icon">
-                        <?php if (!empty($siteIconUrl)): ?>
-                            <?= Html::img($siteIconUrl, ['class' => 'context-site-image', 'alt' => Yii::t('base', 'Dashboard')]) ?>
-                        <?php else: ?>
-                            <i class="fa fa-dashboard"></i>
-                        <?php endif; ?>
-                    </span>
+                    <span class="item-icon"><i class="fa fa-dashboard"></i></span>
                     <span class="item-label">
                         <span class="item-name"><?= Yii::t('base', 'Dashboard') ?></span>
                     </span>
@@ -144,7 +132,6 @@ use humhub\modules\space\widgets\Image as SpaceImage;
                                 $recentSpace = $recentSpacesByGuid[$item['spaceGuid']] ?? null;
                             }
                             $isProfileRecent = (($item['context'] ?? '') === 'profile');
-                            $isDashboardRecent = (($item['context'] ?? '') === 'dashboard');
                             ?>
                             <?php if ($recentSpace): ?>
                                 <?= SpaceImage::widget([
@@ -158,8 +145,6 @@ use humhub\modules\space\widgets\Image as SpaceImage;
                                 ]) ?>
                             <?php elseif ($isProfileRecent): ?>
                                 <?= Html::img($user->getProfileImage()->getUrl(), ['class' => 'context-user-image', 'alt' => Yii::t('base', 'Profile')]) ?>
-                            <?php elseif ($isDashboardRecent && !empty($siteIconUrl)): ?>
-                                <?= Html::img($siteIconUrl, ['class' => 'context-site-image', 'alt' => Yii::t('base', 'Dashboard')]) ?>
                             <?php else: ?>
                                 <i class="fa fa-<?= Html::encode($item['icon'] ?? 'clock-o') ?>"></i>
                             <?php endif; ?>

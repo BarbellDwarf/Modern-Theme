@@ -41,7 +41,6 @@ class ContextSwitcher extends Widget
             'dashboardUrl' => Url::to(['/dashboard/dashboard']),
             'profileUrl' => $profileUrl,
             'spacesDirectoryUrl' => $spacesDirectoryUrl,
-            'siteIconUrl' => $this->getSiteIconUrl(),
             'currentSpace' => $currentSpace,
             'currentContext' => $currentContext,
             'currentRoute' => $currentRoute,
@@ -240,16 +239,6 @@ class ContextSwitcher extends Widget
             return 'user';
         }
         return 'dashboard';
-    }
-
-    private function getSiteIconUrl(): ?string
-    {
-        try {
-            return \humhub\modules\web\pwa\widgets\SiteIcon::getUrl(32);
-        } catch (\Throwable $e) {
-            Yii::warning('ContextSwitcher: Failed to resolve site icon URL: ' . $e->getMessage(), 'modern-theme-2026');
-            return null;
-        }
     }
 
     private function getRecentSpacesByGuid(array $recentItems): array

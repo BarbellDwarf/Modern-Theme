@@ -81,8 +81,7 @@
           border-radius: 6px;
         }
 
-        .context-user-image,
-        .context-site-image {
+        .context-user-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -212,8 +211,7 @@
             border-radius: var(--radius);
           }
 
-          .context-user-image,
-          .context-site-image {
+          .context-user-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
