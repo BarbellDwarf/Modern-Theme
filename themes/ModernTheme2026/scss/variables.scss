@@ -51,7 +51,9 @@ $body-bg-tertiary: $gray-100 !default;
 // Text Colors
 $text-color-primary: $gray-900 !default;
 $text-color-secondary: $gray-600 !default;
-$text-color-muted: $gray-500 !default;
+// Slightly darker than gray-500: #6b7280 falls to 4.39:1 on the tertiary
+// surface, while this value stays above 4.5:1 on all three light surfaces.
+$text-color-muted: #636b78 !default;
 $text-color-light: $gray-400 !default;
 $text-color-inverse: #ffffff !default;
 
