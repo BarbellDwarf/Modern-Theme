@@ -70,16 +70,6 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-// Optimize shadows (use single shadow instead of multiple when possible)
-.panel,
-.card {
-    box-shadow: var(--shadow-sm);
-    
-    &:hover {
-        box-shadow: var(--shadow-md);
-    }
-}
-
 // Optimize scroll performance
 .modal-body,
 .list-group {

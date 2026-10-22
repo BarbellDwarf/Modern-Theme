@@ -66,19 +66,6 @@
 
 // ── Config Form (views/config/index.php) ─────────────────────────────────
 
-// Palette selection button (round color swatch)
-.mt2026-config-palette-btn {
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  position: relative;
-  border: 2px solid transparent;
-  transition: border-color 0.15s, transform 0.15s;
-  &:hover { transform: scale(1.1); }
-  &.active { border-color: var(--color-primary); }
-}
-
 // Config section panel (palette grid, mobile nav, mail, nav labels)
 .mt2026-config-section {
   margin-top: var(--space-6);

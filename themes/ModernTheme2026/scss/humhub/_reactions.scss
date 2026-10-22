@@ -240,17 +240,6 @@
   background: var(--color-bg-tertiary);
 }
 
-// Inline reaction summary — rendered as a tappable link on the right side of the addons bar.
-// JS wraps this in an <a> with class mt2026-reaction-summary-link.
-.mt2026-reaction-summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-  vertical-align: middle;
-  font-size: 13px;
-}
-
 .mt2026-reaction-count {
   display: inline-flex;
   align-items: center;

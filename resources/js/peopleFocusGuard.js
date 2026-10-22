@@ -55,7 +55,7 @@ humhub.module('modernTheme.peopleFocusGuard', function(module, require, $) {
 
         var overlayHtml =
             '<div class="mt2026-search-overlay" id="mt2026-search-overlay" role="search">' +
-            '<button type="button" id="mt2026-search-back" aria-label="Close search"><i class="fa fa-arrow-left"></i></button>' +
+            '<button type="button" id="mt2026-search-back" class="mt2026-search-overlay-back" aria-label="Close search"><i class="fa fa-arrow-left"></i></button>' +
             '<form method="get" action="' + window.location.pathname + '" style="display:contents">' +
             '<input type="text" name="keyword" placeholder="Search people\u2026" autocomplete="off">' +
             '<button type="submit" aria-label="Search"><i class="fa fa-search"></i></button>' +

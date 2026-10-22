@@ -621,19 +621,6 @@ body.mail-list-open::before {
   }
 }
 
-// ── DESKTOP TWO-COLUMN POLISH ────────────────────────────────────────────────
-@media (min-width: 992px) {
-  .mt2026-mail-shell {
-    .mt2026-mail-sidebar {
-      border-right: 1px solid var(--color-border-light);
-    }
-
-    .mt2026-mail-main {
-      box-shadow: inset 4px 0 12px rgba(0, 0, 0, 0.02);
-    }
-  }
-}
-
 @media (min-width: 1400px) {
   #mail-conversation-overview {
     width: 360px;

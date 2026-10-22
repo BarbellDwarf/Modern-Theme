@@ -11,13 +11,6 @@
   overflow-y: auto;
 }
 
-.mt2026-drawer-conversations {
-  left: 0;
-  width: 85%;
-  max-width: 320px;
-  animation: slideInLeft 300ms ease-out forwards;
-}
-
 .mt2026-drawer-settings {
   right: 0;
   width: 75%;
@@ -127,11 +120,6 @@
 }
 
 // ── ANIMATIONS ───────────────────────────────────────────────────────────────
-@keyframes slideInLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
 @keyframes slideInRight {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
