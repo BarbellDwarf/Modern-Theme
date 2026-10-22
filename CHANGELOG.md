@@ -10,10 +10,12 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - HumHub 1.19: `humhub\libs\Html` was replaced with `humhub\helpers\Html` (still valid on 1.18) so the theme layout no longer fatals with `Class "humhub\libs\Html" not found`.
 - HumHub 1.19: published theme paths are now relative to the assets filesystem mount, so the theme CSS health check and rebuild use the asset filesystem instead of native file calls. This stops the `Detected invalid theme.css, rebuilding` loop.
 - HumHub 1.19: `compile-css.php` detects core SCSS in `protected/humhub/resources/scss` (1.19) or `static/scss` (1.18), and the parent theme in `protected/humhub/themes/HumHub` (1.19) or `themes/HumHub` (1.18).
-
-### Known issues on HumHub 1.19
-- Emoji reactions are not ported. `ReactionsController` still extends `humhub\modules\content\components\ContentAddonController` (removed in 1.19) and keys the `like` table by `object_model`/`object_id` (1.19 replaced these with `content_id`/`content_addon_record_id` via `humhub\models\RecordMap`). The feature keeps working on 1.18; on 1.19 the reaction endpoints fail.
-- `widgets/ContextSwitcher.php` asks the removed `humhub\modules\web\pwa\widgets\SiteIcon` for the site icon. The call is wrapped in try/catch, so 1.19 falls back to no icon and logs a warning.
+- HumHub 1.19: emoji reactions work again. The controller resolves `recordId` targets through `RecordMap`, uses the `content_id`/`content_addon_record_id` like-table layout, and the picker reads `recordId` links. A follow-up migration rebuilds the reaction index for either table layout, including installs upgraded from 1.18.
+- HumHub 1.19: the context switcher no longer calls the removed `SiteIcon` widget or logs a warning; it uses its existing glyph fallback.
+- Login: long site titles wrap on a balanced scale instead of four ragged lines, short desktop viewports fit without scrolling, and the login card now uses the glass treatment the theme describes.
+- Mobile: body text stays at 16px, and comment/addon pills plus bottom-nav labels meet the 44px touch target guidance.
+- Navigation: removed the duplicate Dashboard entry from the top menu; the context switcher and logo still link there.
+- Performance: the compiled theme stylesheet is no longer loaded twice, dead CSS rules were removed, and static panels no longer lift on hover.
 
 ## [1.1.1] - 2026-07-30
 
