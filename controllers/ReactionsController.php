@@ -248,8 +248,13 @@ class ReactionsController extends Controller
                 $this->scope['content_addon_record_id'] = null;
             }
         } else {
+            // Matches what ContentAddonController stored on 1.18.
+            $objectModel = class_exists('humhub\components\behaviors\PolymorphicRelation')
+                ? \humhub\components\behaviors\PolymorphicRelation::getObjectModel($target)
+                : get_class($target);
+
             $this->scope = [
-                'object_model' => get_class($target),
+                'object_model' => $objectModel,
                 'object_id' => $target->id,
             ];
         }
