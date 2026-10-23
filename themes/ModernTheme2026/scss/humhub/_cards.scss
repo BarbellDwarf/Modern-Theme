@@ -1,6 +1,27 @@
 // Modern Theme 2026 - Cards & Panels
 // Modern card designs with glassmorphism and depth
 
+// A panel that directly wraps stream entries is a COLUMN, not a card — flatten it
+// so posts don't render as a card floating inside another card (double-box).
+// :has() is supported in all evergreen browsers (2023+).
+.panel:has(> .wall-entry > .panel),
+.panel:has(> .stream-entry > .panel) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+// Stacked comments previously touched with no gap.
+.wall-entry .comment {
+  margin-bottom: var(--space-2);
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
 .panel, .card {
   @include card;
   margin-bottom: var(--space-6);
