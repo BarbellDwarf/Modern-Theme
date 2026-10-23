@@ -31,6 +31,25 @@
         }
     }
 
+    // Stream wrappers stay flat in dark mode too: the post's inner .panel is
+    // the only card (see _stream-posts.scss).
+    .layout-content-container:has(.wall-entry),
+    .layout-content-container:has(.stream-entry),
+    .dashboard-wall-stream,
+    .s2_stream,
+    .s2_streamContent,
+    .s2_streamContent > .wall-entry,
+    .s2_streamContent > .stream-entry {
+        background-color: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+
+        &:hover {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+    }
+
     // Force like/comment icons to be visible in dark mode regardless of
     // which template or parent selector matched.
     .wall-entry-controls {

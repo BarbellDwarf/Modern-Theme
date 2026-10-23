@@ -179,18 +179,31 @@
 }
 
 // ── Single-box stream posts (all screen sizes) ───────────────────────────────
-// The DOM structure is:  .wall-entry (outer) > .panel.panel-default (inner)
-// Both get card styling from _cards.scss → creates the "double box" appearance.
-//
-// Solution: keep .wall-entry as the sole visible card; make the inner .panel
-// completely transparent so there is only ONE box per post.
-
-// The inner .panel is the card; the outer .wall-entry is a transparent wrapper.
-// The .panel gets the card background, border, and shadow.
-// We add the accent line to the .panel-heading and clean up spacing.
+// Real DOM: .layout-content-container > .dashboard-wall-stream > .s2_stream >
+//           .s2_streamContent > .wall-entry > .panel
+// .wall-entry and .panel both get card chrome from _cards.scss, so a post reads
+// as a card inside a card. Keep the inner .panel as the only box and flatten
+// every wrapper above it. :has() keeps widget-only columns (space/profile)
+// untouched, and is supported in all evergreen browsers (2023+).
+.layout-content-container:has(.wall-entry),
+.layout-content-container:has(.stream-entry),
+.dashboard-wall-stream,
+.s2_stream,
+.s2_streamContent {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
 
 .s2_streamContent > .wall-entry,
 .s2_streamContent > .stream-entry {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
   margin-bottom: var(--space-4) !important;
 
   // Accent line on the panel heading (top of the card)
