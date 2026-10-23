@@ -112,8 +112,9 @@ if (window.innerWidth < 992 || /Mobi|Android/i.test(navigator.userAgent)) {
                     <li>
                         <a href="<?= $space->getUrl() ?>" class="mobile-space-item">
                             <span class="mobile-space-icon">
-                                <?php if ($space->getProfileImage()->hasImage()): ?>
-                                    <?= Html::img($space->getProfileImage()->getUrl(), ['class' => 'mobile-space-img', 'alt' => Html::encode($space->name)]) ?>
+                                <?php $pi = $space->getProfileImage(); /* HumHub 1.19 ProfileImage has no hasImage(); getUrl() falls back to the default asset. */ ?>
+                                <?php if (method_exists($pi, 'hasImage') ? $pi->hasImage() : true): ?>
+                                    <?= Html::img($pi->getUrl(), ['class' => 'mobile-space-img', 'alt' => Html::encode($space->name)]) ?>
                                 <?php else: ?>
                                     <span class="mobile-space-initials"><?= Html::encode(mb_strtoupper(mb_substr($space->name, 0, 2))) ?></span>
                                 <?php endif; ?>
