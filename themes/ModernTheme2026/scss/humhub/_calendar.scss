@@ -345,3 +345,113 @@
     }
   }
 }
+
+// Phone layout: collapse the calendar filter bar into a single "Filters" row so
+// the month grid stays above the fold. Desktop keeps the four controls inline.
+.mt2026-calendar-filters__toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mt2026-calendar-filters__toggle {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-weight: $font-weight-semibold;
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      border-color: var(--color-border-dark);
+    }
+
+    &[aria-expanded="true"] {
+      border-color: var(--color-primary);
+    }
+  }
+
+  .mt2026-calendar-filters__icon::before {
+    content: '\f0b0'; // fa-filter
+    font-family: FontAwesome, 'Font Awesome 5 Free';
+    font-size: var(--font-size-base);
+    line-height: 1;
+  }
+
+  .mt2026-calendar-filters__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: auto;
+    color: #fff;
+    background: var(--color-primary-strong);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .mt2026-calendar-filters:not(.mt2026-calendar-filters--open) > .form-search > .mt2026-calendar-filters__panel {
+    display: none !important;
+  }
+
+  .mt2026-calendar-filters__panel {
+    flex-direction: column;
+    gap: var(--space-3) !important;
+    margin-top: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  // Compact "today" button: icon only, translated label kept as accessible name.
+  .fc .fc-today-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 0;
+
+    &::before {
+      content: '\f133'; // fa-calendar
+      font-family: FontAwesome, 'Font Awesome 5 Free';
+      font-size: var(--font-size-base);
+      line-height: 1;
+    }
+  }
+
+  .fc .fc-toolbar {
+    margin-bottom: var(--space-2) !important;
+  }
+
+  // Quiet one-line hint instead of the tinted alert box.
+  .mt2026-calendar-empty {
+    display: block;
+    margin: 0 var(--space-4) var(--space-2);
+    padding: 0;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mt2026-calendar-empty__dismiss {
+    display: none;
+  }
+}
