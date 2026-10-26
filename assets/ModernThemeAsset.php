@@ -29,6 +29,10 @@ class ModernThemeAsset extends AssetBundle
         'js/dropdownManager.js',
         'js/dashboardComposer.js',
         'js/commentSubmit.js',
+        'js/spacePolish.js',
+        'js/copyPolish.js',
+        'js/profileInitials.js',
+        'js/calendarPolish.js',
     ];
 
     public $depends = [

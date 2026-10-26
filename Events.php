@@ -207,6 +207,15 @@ class Events
             // Mail views — structural conversation layout override for fixed composer shell
             Yii::getAlias('@humhub/modules/mail') . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'mail'
                 => $modulePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'mail' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'mail',
+            // Space home — join explanation card and secondary CTA
+            Yii::getAlias('@humhub/modules/space') . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'space'
+                => $modulePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'space' . DIRECTORY_SEPARATOR . 'space',
+            // Space header widgets — Join/Follow labels and hint
+            Yii::getAlias('@humhub/modules/space') . DIRECTORY_SEPARATOR . 'widgets' . DIRECTORY_SEPARATOR . 'views'
+                => $modulePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'space' . DIRECTORY_SEPARATOR . 'widgets',
+            // Notification list — teaching empty state
+            Yii::getAlias('@humhub/modules/notification') . DIRECTORY_SEPARATOR . 'widgets' . DIRECTORY_SEPARATOR . 'views'
+                => $modulePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'notification' . DIRECTORY_SEPARATOR . 'widgets',
         ];
 
         $pathMap = $view->theme->pathMap ?? [];

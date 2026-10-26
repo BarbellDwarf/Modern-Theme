@@ -13,7 +13,7 @@ use yii\helpers\Html;
      data-reaction-current="<?= Html::encode($currentUserReaction) ?>"
      data-like-url="<?= Html::encode($likeUrl) ?>">
 
-  <button class="like-button <?= $isReacted ? 'liked' : '' ?>" type="button">
+  <button class="like-button <?= $isReacted ? 'liked' : '' ?>" type="button" title="React" aria-label="React">
     <i class="fa <?= $isReacted ? '' : 'fa-thumbs-up' ?>">
       <?= $isReacted ? ($reactions[$currentUserReaction]['emoji'] ?? '👍') : '' ?>
     </i>

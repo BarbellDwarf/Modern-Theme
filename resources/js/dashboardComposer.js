@@ -1,15 +1,42 @@
 humhub.module('modernTheme.dashboardComposer', function(module, require, $) {
 
     var event = require('event');
+    var status = require('ui.status');
     var EVENT_NS = '.mt2026DashboardComposer';
 
-    var collapseAll = function() {
-        $('[data-mt2026-dashboard-composer]').each(function() {
+    var resetComposer = function() {
+        var reset = 0;
+
+        $('[data-mt2026-dashboard-composer].is-open').each(function() {
             var $composer = $(this);
+            var $body = $composer.find('[data-mt2026-dashboard-composer-body]');
+
+            // Core resetForm() clears the HumHub form, but the dashboard copy is
+            // collapsed by that reset before ProseMirror always sees the clear.
+            // Empty the editor explicitly so a second submit cannot re-post.
+            $body.find('.ProseMirror[contenteditable="true"]').each(function() {
+                this.innerHTML = '';
+            });
+            $body.find('.humhub-ui-richtext').trigger('clear');
+            $body.find('textarea').val('');
+            $body.find('form').each(function() {
+                this.reset();
+            });
+
             $composer.removeClass('is-open');
-            $composer.find('[data-mt2026-dashboard-composer-body]').attr('hidden', 'hidden');
+            $body.attr('hidden', 'hidden');
             $composer.find('[data-mt2026-dashboard-composer-trigger]').attr('aria-expanded', 'false');
+            reset++;
         });
+
+        return reset;
+    };
+
+    var onSubmitted = function() {
+        // Only feedback for a post made through this composer, not stream forms.
+        if (resetComposer() > 0) {
+            status.success('Post published');
+        }
     };
 
     var init = function() {
@@ -36,7 +63,7 @@ humhub.module('modernTheme.dashboardComposer', function(module, require, $) {
             }
         });
 
-        event.off(EVENT_NS).on('humhub:content:afterSubmit' + EVENT_NS, collapseAll);
+        event.off(EVENT_NS).on('humhub:content:afterSubmit' + EVENT_NS, onSubmitted);
     };
 
     var unload = function() {

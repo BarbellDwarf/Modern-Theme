@@ -1,0 +1,117 @@
+// Modern Theme 2026 - State clarity and copy polish
+// Join cards, empty states, initials avatar and calendar notice.
+
+.mt2026-space-controls-hint {
+  clear: both;
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: right;
+}
+
+.mt2026-join-card {
+  padding: var(--space-6);
+  text-align: center;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.streamMessage .panel-body .mt2026-join-card {
+  border: 0;
+  background: transparent;
+}
+
+.mt2026-join-card__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.mt2026-join-card__text {
+  max-width: 440px;
+  margin: 0 auto var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+.mt2026-join-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+}
+
+.mt2026-join-cta {
+  margin-top: var(--space-4);
+}
+
+.mt2026-empty-state {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.mt2026-empty-state__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.mt2026-empty-state__text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+// Initials avatar for profiles without a photo.
+.profile-user-photo-container.mt2026-has-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-primary);
+  border-radius: 9999px;
+
+  > a,
+  > img {
+    display: none !important;
+  }
+}
+
+.mt2026-profile-initials {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+// Calendar empty-month notice.
+.mt2026-calendar-empty {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-3) var(--space-4) 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-secondary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+}
+
+.mt2026-calendar-empty__dismiss {
+  padding: 0 var(--space-2);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 0;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+
+  &:hover,
+  &:focus {
+    color: var(--color-text-primary);
+  }
+}
