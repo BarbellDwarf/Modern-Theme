@@ -10,6 +10,8 @@
  * @var array $mobileNavLabels
  * @var bool $mobileMoreAutoModules
  * @var string $mobileMoreHiddenModuleIds
+ * @var int $dashboardComposerSpaceId
+ * @var \humhub\modules\space\models\Space[] $composerSpaces
  */
 
 use humhub\modules\modernTheme2026\controllers\ConfigController;
@@ -245,6 +247,45 @@ $previewKeys = ['primary', 'accent', 'secondary', 'success', 'danger'];
 
             <button type="submit" class="btn btn-primary btn-sm" style="margin-top:8px;">
                 <i class="fa fa-save"></i> <?= Yii::t('ModernTheme2026.config', 'Save Mail Settings') ?>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Dashboard Composer Settings -->
+<div class="panel panel-default mt2026-config-section">
+    <div class="panel-heading">
+        <strong><i class="fa fa-pencil-square-o"></i> <?= Yii::t('ModernTheme2026.config', 'Dashboard Composer') ?></strong>
+        <div class="text-muted mt2026-config-meta-text">
+            Choose where posts made from the dashboard composer are published.
+        </div>
+    </div>
+    <div class="panel-body">
+        <form method="post" action="<?= Url::to(['/modern-theme-2026/config']) ?>">
+            <input type="hidden" name="<?= Yii::$app->request->csrfParam ?>" value="<?= Yii::$app->request->csrfToken ?>">
+            <input type="hidden" name="dashboardComposerSubmit" value="1">
+
+            <div class="form-group">
+                <label for="dashboardComposerSpaceId" class="control-label">
+                    <?= Yii::t('ModernTheme2026.config', 'Post to') ?>
+                </label>
+                <select id="dashboardComposerSpaceId" name="dashboardComposerSpaceId" class="form-control" style="max-width:360px;">
+                    <option value="0" <?= $dashboardComposerSpaceId === 0 ? 'selected' : '' ?>>
+                        <?= Yii::t('ModernTheme2026.config', 'Automatic (most recently visited space)') ?>
+                    </option>
+                    <?php foreach ($composerSpaces as $space): ?>
+                        <option value="<?= (int)$space->id ?>" <?= $dashboardComposerSpaceId === (int)$space->id ? 'selected' : '' ?>>
+                            <?= Html::encode($space->name) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="help-block mt2026-config-sub-text">
+                    Users who cannot post in the selected space fall back to Automatic.
+                </p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fa fa-save"></i> <?= Yii::t('ModernTheme2026.config', 'Save Composer Settings') ?>
             </button>
         </form>
     </div>

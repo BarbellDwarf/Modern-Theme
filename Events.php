@@ -10,6 +10,7 @@ namespace humhub\modules\modernTheme2026;
 use humhub\components\View;
 use humhub\modules\modernTheme2026\assets\ModernThemeAsset;
 use humhub\modules\modernTheme2026\controllers\ConfigController;
+use humhub\modules\modernTheme2026\widgets\DashboardComposer;
 use humhub\modules\modernTheme2026\widgets\MobileBottomNav;
 use humhub\widgets\TopMenu;
 use Yii;
@@ -80,6 +81,35 @@ class Events
             echo MobileBottomNav::widget();
         } catch (\Exception $e) {
             Yii::error('Failed to render MobileBottomNav: ' . $e->getMessage(), 'modern-theme-2026');
+        }
+    }
+
+    /**
+     * Render the dashboard composer above the stream.
+     *
+     * DashboardContent echoes the stream directly, so beforeRun is the only
+     * stable insertion point across HumHub 1.18 and 1.19.
+     */
+    public static function onDashboardContentBeforeRun($event): void
+    {
+        if (Yii::$app->request->isAjax || Yii::$app->user->isGuest) {
+            return;
+        }
+
+        $module = static::getModuleIfThemeActive();
+        if (!$module) {
+            return;
+        }
+
+        // A profile post form is already rendered by HumHub itself.
+        if (!empty($event->sender->showProfilePostForm)) {
+            return;
+        }
+
+        try {
+            echo DashboardComposer::widget();
+        } catch (\Throwable $e) {
+            Yii::error('Failed to render DashboardComposer: ' . $e->getMessage(), 'modern-theme-2026');
         }
     }
 

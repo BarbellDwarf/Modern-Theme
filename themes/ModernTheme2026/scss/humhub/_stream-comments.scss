@@ -215,6 +215,26 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   }
 }
 
+// Visible label on HumHub's icon-only comment submit button.
+.richtext-create-buttons .btn-comment-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+  font-weight: 600;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 991px) {
+  .richtext-create-buttons .btn-comment-submit {
+    min-height: 44px;
+  }
+}
+
 // ── Single-box stream — comment container inside post card ──────────────────
 .s2_streamContent > .wall-entry,
 .s2_streamContent > .stream-entry {

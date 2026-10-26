@@ -6,6 +6,7 @@
  */
 
 use humhub\components\View;
+use humhub\modules\dashboard\widgets\DashboardContent;
 use humhub\modules\modernTheme2026\Events;
 use humhub\widgets\TopMenu;
 use yii\base\Application;
@@ -34,6 +35,11 @@ return [
             'class' => TopMenu::class,
             'event' => TopMenu::EVENT_RUN,
             'callback' => [Events::class, 'onTopMenuRun'],
+        ],
+        [
+            'class' => DashboardContent::class,
+            'event' => DashboardContent::EVENT_BEFORE_RUN,
+            'callback' => [Events::class, 'onDashboardContentBeforeRun'],
         ],
     ],
 ];

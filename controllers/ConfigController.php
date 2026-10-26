@@ -8,6 +8,7 @@ namespace humhub\modules\modernTheme2026\controllers;
 
 use humhub\modules\admin\components\Controller;
 use humhub\modules\modernTheme2026\Module;
+use humhub\modules\space\models\Space;
 use Yii;
 
 class ConfigController extends Controller
@@ -76,7 +77,16 @@ class ConfigController extends Controller
                 return $this->redirect(['/modern-theme-2026/config']);
             }
 
-            // ── Handler 4: Palette Application ────────────────────────────
+            // ── Handler 4: Dashboard Composer ─────────────────────────────
+            if (Yii::$app->request->post('dashboardComposerSubmit') !== null) {
+                $spaceId = (int)Yii::$app->request->post('dashboardComposerSpaceId', 0);
+                $settings->set('dashboardComposerSpaceId', max(0, $spaceId));
+                Yii::$app->cache->flush();
+                $this->view->saved();
+                return $this->redirect(['/modern-theme-2026/config']);
+            }
+
+            // ── Handler 5: Palette Application ────────────────────────────
             $palette = Yii::$app->request->post('palette');
             $palettes = self::getPalettes();
 
@@ -119,6 +129,11 @@ class ConfigController extends Controller
             'mobileNavLabels' => self::getMobileNavLabels(),
             'mobileMoreAutoModules' => self::isMobileMoreAutoModulesEnabled(),
             'mobileMoreHiddenModuleIds' => self::getMobileMoreHiddenModuleIdsRaw(),
+            'dashboardComposerSpaceId' => self::getDashboardComposerSpaceId(),
+            'composerSpaces' => Space::find()
+                ->where(['status' => Space::STATUS_ENABLED])
+                ->orderBy(['name' => SORT_ASC])
+                ->all(),
         ]);
     }
 
@@ -201,6 +216,16 @@ class ConfigController extends Controller
 
         $parts = preg_split('/[\s,]+/', strtolower($raw), -1, PREG_SPLIT_NO_EMPTY);
         return array_values(array_unique($parts ?: []));
+    }
+
+    // ── Dashboard Composer ──────────────────────────────────────────────────
+
+    /**
+     * Space that receives dashboard composer posts. 0 means automatic.
+     */
+    public static function getDashboardComposerSpaceId(): int
+    {
+        return max(0, (int)Yii::$app->settings->get('dashboardComposerSpaceId', 0));
     }
 
     // ── Mail Settings ───────────────────────────────────────────────────────
