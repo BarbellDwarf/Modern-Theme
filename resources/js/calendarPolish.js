@@ -4,7 +4,7 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
     var timer = null;
     var dismissed = false;
 
-    var VIEW_BUTTONS = '.fc-dayGridMonth-button, .fc-dayGridWeek-button, .fc-dayGridDay-button, .fc-listWeek-button';
+    var VIEW_BUTTONS = '.fc-dayGridMonth-button, .fc-timeGridWeek-button, .fc-timeGridDay-button, .fc-listWeek-button';
     var NAV_BUTTONS = '.fc-prev-button, .fc-next-button, .fc-today-button';
 
     var setPressed = function() {

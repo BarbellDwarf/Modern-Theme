@@ -10,24 +10,35 @@ use yii\helpers\Url;
  */
 
 $isMember = !Yii::$app->user->isGuest && $space->isMember();
-$requiresApproval = (int)$space->join_policy === Space::JOIN_POLICY_APPLICATION;
+$joinPolicy = (int)$space->join_policy;
+$isInviteOnly = $joinPolicy === Space::JOIN_POLICY_NONE;
+$requiresApproval = $joinPolicy === Space::JOIN_POLICY_APPLICATION;
 $canJoin = !Yii::$app->user->isGuest && !$isMember && $space->canJoin();
 $canRequestMembership = !Yii::$app->user->isGuest && !$isMember && $requiresApproval;
 $spaceName = Html::encode($space->getDisplayName());
+
+if ($isInviteOnly) {
+    $title = Yii::t('ModernTheme2026.base', 'This space is invite-only');
+    $text = Yii::t('ModernTheme2026.base', 'Ask a space administrator for an invitation.');
+} elseif ($requiresApproval) {
+    $title = Yii::t('ModernTheme2026.base', 'Request to join {space}', ['{space}' => $spaceName]);
+    $text = Yii::t('ModernTheme2026.base', 'Request membership to post and comment in this space.');
+} else {
+    $title = Yii::t('ModernTheme2026.base', 'Join {space} to see posts', ['{space}' => $spaceName]);
+    $text = Yii::t('ModernTheme2026.base', 'Become a member to post and comment in this space.');
+}
 ?>
 <div class="mt2026-join-card" data-mt2026-join-card>
-    <h3 class="mt2026-join-card__title">
-        <?= $requiresApproval
-            ? Yii::t('ModernTheme2026.base', 'Request to join {space}', ['{space}' => $spaceName])
-            : Yii::t('ModernTheme2026.base', 'Join {space} to see posts', ['{space}' => $spaceName]) ?>
-    </h3>
-    <p class="mt2026-join-card__text">
-        <?= $requiresApproval
-            ? Yii::t('ModernTheme2026.base', 'Request membership to post and comment in this space.')
-            : Yii::t('ModernTheme2026.base', 'Become a member to post and comment in this space.') ?>
-    </p>
+    <h3 class="mt2026-join-card__title"><?= $title ?></h3>
+    <p class="mt2026-join-card__text"><?= $text ?></p>
     <div class="mt2026-join-card__actions">
-        <?php if ($canJoin || $canRequestMembership): ?>
+        <?php if ($isInviteOnly): ?>
+            <?= Html::a(
+                Yii::t('ModernTheme2026.base', 'View space admins'),
+                $space->createUrl('/space/space/about'),
+                ['class' => 'btn btn-accent mt2026-space-join-btn']
+            ) ?>
+        <?php elseif ($canJoin || $canRequestMembership): ?>
             <?php if ($requiresApproval): ?>
                 <?= Html::a(
                     Yii::t('ModernTheme2026.base', 'Request to join'),

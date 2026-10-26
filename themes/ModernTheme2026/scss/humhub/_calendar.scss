@@ -6,10 +6,10 @@
 // classes on those buttons make the inactive state look like a primary action,
 // so neutralise it and keep only the selected view filled.
 .fc {
-  .fc-dayGridMonth-button,
-  .fc-dayGridWeek-button,
-  .fc-dayGridDay-button,
-  .fc-listWeek-button {
+  .fc-dayGridMonth-button:not(.active),
+  .fc-timeGridWeek-button:not(.active),
+  .fc-timeGridDay-button:not(.active),
+  .fc-listWeek-button:not(.active) {
     background-color: var(--color-bg-secondary) !important;
     border: 1px solid var(--color-border) !important;
     color: var(--color-text-primary) !important;
@@ -21,19 +21,22 @@
       border-color: var(--color-border-dark) !important;
       color: var(--color-text-primary) !important;
     }
+  }
 
-    &.active {
-      background-color: var(--color-primary) !important;
-      border-color: var(--color-primary) !important;
+  .fc-dayGridMonth-button.active,
+  .fc-timeGridWeek-button.active,
+  .fc-timeGridDay-button.active,
+  .fc-listWeek-button.active {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-primary-dark) !important;
+      border-color: var(--color-primary-dark) !important;
       color: #fff !important;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
-
-      &:hover,
-      &:focus {
-        background-color: var(--color-primary-dark) !important;
-        border-color: var(--color-primary-dark) !important;
-        color: #fff !important;
-      }
     }
   }
 

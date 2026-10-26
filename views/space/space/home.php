@@ -25,7 +25,11 @@ $canJoin = !$isMember && !Yii::$app->user->isGuest && $space->canJoin();
 // that as card-worthy too, so the empty stream is not a dead end.
 $canRequestMembership = !$isMember && !Yii::$app->user->isGuest
     && (int)$space->join_policy === Space::JOIN_POLICY_APPLICATION;
-$showJoinCard = $canJoin || $canRequestMembership;
+// Invite-only spaces cannot be joined from here, but the core "no public
+// content" sentence leaves the user without a next step.
+$isInviteOnly = !$isMember && !Yii::$app->user->isGuest
+    && (int)$space->join_policy === Space::JOIN_POLICY_NONE;
+$showJoinCard = $canJoin || $canRequestMembership || $isInviteOnly;
 
 if ($canCreateEntries) {
     $emptyMessage = Yii::t('SpaceModule.base', '<b>This space is still empty!</b><br>Start by posting something here...');

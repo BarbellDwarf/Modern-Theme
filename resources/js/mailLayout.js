@@ -265,6 +265,26 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
     }
 
     // ── DESKTOP ENTER-TO-SEND ─────────────────────────────────────────────────
+    // The richtext editor writes into the hidden [message] textarea on focusout.
+    // Submit paths that fire before focusout (Enter or a Reply click) therefore
+    // need this sync, otherwise the request carries an empty message.
+    function syncReplyEditor(editorEl, form) {
+        if (!editorEl || !form) return;
+        try {
+            editorEl.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+        } catch (err) {}
+        editorEl.blur();
+
+        var messageInput = form.querySelector('[name$="[message]"]');
+        if (messageInput && !String(messageInput.value || '').trim()) {
+            var plainText = String(editorEl.textContent || '').replace(/\u200B/g, '').trim();
+            if (plainText.length > 0) {
+                messageInput.value = plainText;
+                try { $(messageInput).trigger('change').trigger('blur'); } catch (err) {}
+            }
+        }
+    }
+
     function handleEnterToSend(e) {
         if (e.key !== 'Enter') return;
         if (isMobileWidth()) return;
@@ -291,19 +311,7 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
             if (form) {
                 var submitBtn = form.querySelector('.reply-button');
                 if (submitBtn) {
-                    try {
-                        editorEl.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
-                    } catch (err) {}
-                    editorEl.blur();
-
-                    var messageInput = form.querySelector('[name$="[message]"]');
-                    if (messageInput && !String(messageInput.value || '').trim()) {
-                        var plainText = String(editorEl.textContent || '').replace(/\u200B/g, '').trim();
-                        if (plainText.length > 0) {
-                            messageInput.value = plainText;
-                            try { $(messageInput).trigger('change').trigger('blur'); } catch (err) {}
-                        }
-                    }
+                    syncReplyEditor(editorEl, form);
 
                     window.setTimeout(function() {
                         try { submitBtn.click(); } catch (err) {}
@@ -321,6 +329,19 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
                 }));
             } catch (err) {}
         }
+    }
+
+    // Capture phase: sync before HumHub's delegated click handler submits.
+    function handleReplyClick(e) {
+        var button = e.target && e.target.closest
+            ? e.target.closest('.mail-message-form .reply-button')
+            : null;
+        if (!button) return;
+
+        var form = button.closest('.mail-message-form');
+        if (!form) return;
+
+        syncReplyEditor(form.querySelector('.ProseMirror'), form);
     }
 
     // ── EVENT DELEGATION ─────────────────────────────────────────────────────
@@ -607,6 +628,7 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
 
     // ── EVENT LISTENERS ──────────────────────────────────────────────────────
     document.addEventListener('keydown', handleEnterToSend, true);
+    document.addEventListener('click', handleReplyClick, true);
 
     onMailEscapeKey = function(e) {
         if (e.key === 'Escape' && document.body.classList.contains('mail-list-open')) {
@@ -658,6 +680,7 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
         $(document).off('.mt2026Mail');
         $(window).off('.mt2026Mail');
         document.removeEventListener('keydown', handleEnterToSend, true);
+        document.removeEventListener('click', handleReplyClick, true);
         document.removeEventListener('keydown', onMailEscapeKey);
         if (onMailOverlayClick) {
             document.body.removeEventListener('click', onMailOverlayClick);

@@ -34,6 +34,8 @@ $bodyId = 'mt2026-dashboard-composer-body-' . (int)$space->id;
          class="mt2026-dashboard-composer__body"
          data-mt2026-dashboard-composer-body
          hidden>
-        <?= $formHtml ?>
+        <div data-stream-create-content="stream.wall.WallStream">
+            <?= $formHtml ?>
+        </div>
     </div>
 </div>

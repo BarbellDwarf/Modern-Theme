@@ -2,6 +2,7 @@
 
 namespace humhub\modules\modernTheme2026\widgets;
 
+use humhub\modules\content\widgets\WallCreateContentFormContainer;
 use humhub\modules\modernTheme2026\controllers\ConfigController;
 use humhub\modules\space\models\Membership;
 use humhub\modules\space\models\Space;
@@ -18,11 +19,11 @@ use yii\helpers\Url;
  */
 class DashboardComposer extends Widget
 {
-    private const POST_FORM_CLASS = 'humhub\modules\post\widgets\Form';
+    private const CREATE_FORM_CLASS = WallCreateContentFormContainer::class;
 
     public function run()
     {
-        if (Yii::$app->user->isGuest || !class_exists(self::POST_FORM_CLASS)) {
+        if (Yii::$app->user->isGuest || !class_exists(self::CREATE_FORM_CLASS)) {
             return '';
         }
 
@@ -77,7 +78,9 @@ class DashboardComposer extends Widget
                 continue;
             }
 
-            $formHtml = call_user_func([self::POST_FORM_CLASS, 'widget'], ['contentContainer' => $space]);
+            // The container renders the same #contentFormBody wrapper and
+            // content menu that a space stream binds its create-form JS to.
+            $formHtml = call_user_func([self::CREATE_FORM_CLASS, 'widget'], ['contentContainer' => $space]);
             if (trim($formHtml) !== '') {
                 return ['space' => $space, 'formHtml' => $formHtml];
             }
