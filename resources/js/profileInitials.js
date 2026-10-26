@@ -19,7 +19,8 @@ humhub.module('modernTheme.profileInitials', function(module, require, $) {
     };
 
     var init = function() {
-        $('.profile-user-photo-container img[src*="default_user"]').each(function() {
+        $('.profile-user-photo-container img[src*="default_user"], ' +
+          '.profile-user-photo-container img[src*="default_space"]').each(function() {
             var $image = $(this);
             var $container = $image.closest('.profile-user-photo-container');
 

@@ -48,15 +48,36 @@ body.mt2026-keyboard-open {
 // -----------------------------------------------------------------------
 // Mobile-specific enhancements for Modern Theme 2026
 @media (max-width: 991px) {
-    // Space sidebar nav: convert vertical list to horizontal scrollable pill bar
-    .layout-nav-container {
+    // Space/profile nav: attached full-width tab row under the header card.
+    // Scoped to the content layouts so unrelated .layout-nav-container widgets
+    // (dashboard etc.) keep their own styling.
+    .space-content .layout-nav-container,
+    .profile-content .layout-nav-container {
         width: 100% !important;
         max-width: 100% !important;
         flex: 0 0 100% !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
-        margin-bottom: 12px;
-        overflow: visible !important; // Don't clip rounded pill borders
+        padding: 0 12px !important;
+        margin: 0 0 12px !important;
+        overflow: visible !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+
+        // Strip any card chrome between the aside and the tab list.
+        > .panel,
+        > .panel-body,
+        .panel {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .panel-heading {
+            display: none !important;
+        }
 
         // Handle both .list-group (LeftNavigation widget) and .nav/.nav-pills
         .list-group,
@@ -65,13 +86,15 @@ body.mt2026-keyboard-open {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            justify-content: center !important; // center pills when they fit; scroll handles overflow
+            justify-content: flex-start !important;
+            width: 100%;
             overflow-x: auto !important;
-            overflow-y: visible !important; // Allow rounded borders to show
-            gap: 6px;
-            padding: 4px 0 8px !important; // bottom padding for scroll shadow
+            overflow-y: hidden !important;
+            gap: 0 !important;
+            padding: 0 !important;
             margin: 0 !important;
             list-style: none;
+            border-bottom: 1px solid var(--color-border, #e5e7eb);
             scrollbar-width: none; // Firefox
 
             &::-webkit-scrollbar { display: none; } // Chrome/Safari
@@ -79,60 +102,77 @@ body.mt2026-keyboard-open {
             .list-group-item,
             > li,
             .nav-item {
-                flex-shrink: 0 !important;
+                flex: 1 1 0 !important;
                 width: auto !important;
+                min-width: 72px;
                 float: none !important;
-                overflow: visible !important; // Don't clip border-radius
+                margin: 0 !important;
+                overflow: visible !important;
 
                 > a,
                 > .nav-link,
                 &.list-group-item {
-                    display: inline-flex;
+                    display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 8px;
-                    white-space: nowrap;
-                    padding: 10px 18px !important;
+                    gap: 6px;
+                    width: 100%;
                     min-height: 44px;
-                    border-radius: 22px !important;
-                    border: 1px solid var(--color-border, #e5e7eb) !important;
-                    color: var(--color-text-secondary, #4b5563);
-                    background: var(--color-bg-primary, #fff);
-                    font-size: 15px;
+                    padding: 0 10px !important;
+                    border: 0 !important;
+                    border-bottom: 3px solid transparent !important;
+                    border-radius: 0 !important;
+                    background: transparent !important;
+                    color: var(--color-text-muted, #6b7280) !important;
+                    font-size: 14px;
                     font-weight: 600;
+                    white-space: nowrap;
                     text-decoration: none;
                     margin: 0 !important;
 
                     i,
                     .fa,
                     .glyphicon {
-                        font-size: 15px;
+                        font-size: 14px;
                         line-height: 1;
                     }
 
-                    &:hover, &:focus {
-                        background: var(--color-bg-secondary, #f3f4f6);
-                        color: var(--color-text-primary, #111827);
+                    &:hover,
+                    &:focus {
+                        background: var(--color-bg-secondary, #f3f4f6) !important;
+                        color: var(--color-text-primary, #111827) !important;
+                        border-bottom-color: transparent !important;
                     }
 
-                    &.active, &:active {
-                        background: var(--color-primary-strong, #1e6ad6) !important;
-                        color: #fff !important;
-                        border-color: var(--color-primary-strong, #1e6ad6) !important;
+                    &.active,
+                    &:active {
+                        background: transparent !important;
+                        color: var(--color-primary-strong, #1e6ad6) !important;
+                        border-bottom-color: var(--color-primary-strong, #1e6ad6) !important;
                     }
                 }
 
                 // HumHub marks active with class on li, not the anchor
                 &.active > a,
                 &.active > .nav-link {
-                    background: var(--color-primary-strong, #1e6ad6) !important;
-                    color: #fff !important;
-                    border-color: var(--color-primary-strong, #1e6ad6) !important;
+                    background: transparent !important;
+                    color: var(--color-primary-strong, #1e6ad6) !important;
+                    border-bottom-color: var(--color-primary-strong, #1e6ad6) !important;
                 }
 
                 // Active indicator bar from desktop theme doesn't apply
                 &.active::before { display: none; }
             }
+        }
+    }
+
+    // Tabs sit flush under the header card.
+    .space-layout-container > .row:first-child,
+    .profile-layout-container > .row:first-child {
+        margin-bottom: 0 !important;
+
+        .panel-profile {
+            margin-bottom: 0 !important;
         }
     }
 
@@ -854,13 +894,44 @@ body.mt2026-keyboard-open {
     }
 }
 
-// ── Fix #9: Hide ProseMirror formatting toolbar on mobile post form ──────────
-// The comment editor already hides its toolbar on mobile; do the same for
-// the main post creation form so the toolbar doesn't hog vertical space.
-@media (max-width: 991px) {
+// ── Fix #9: ProseMirror formatting toolbar on the mobile post form ───────────
+// The toolbar stays collapsed on phones and is revealed by a single
+// "Formatting" button in the composer footer. Desktop/tablet keep the full bar.
+@media (max-width: 767px) {
     #contentFormBody .ProseMirror-menubar,
     .content-form-body .ProseMirror-menubar {
-        display: none;
+        display: none !important;
+    }
+
+    #contentFormBody.mt2026-formatting-open .ProseMirror-menubar,
+    .content-form-body.mt2026-formatting-open .ProseMirror-menubar {
+        display: flex !important;
+    }
+
+    .mt2026-formatting-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 14px;
+        border: 1px solid var(--color-border, #e5e7eb);
+        border-radius: var(--radius, 8px);
+        background: var(--color-bg-primary, #fff);
+        color: var(--color-text-secondary, #4b5563);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+
+        &[aria-expanded="true"] {
+            border-color: var(--color-primary-strong, #1e6ad6);
+            color: var(--color-primary-strong, #1e6ad6);
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .mt2026-formatting-toggle {
+        display: none !important;
     }
 }
 
@@ -871,5 +942,22 @@ body.mt2026-keyboard-open {
     .stream-entry-header .timestamp,
     .comment .single-comment .comment-heading .timestamp {
         font-size: 14px;
+    }
+}
+
+// ── Page scrollbar on mobile/tablet ─────────────────────────────────────────
+// The 12px desktop scrollbar eats width on phones. Hide it below 992px while
+// leaving scrolling and keyboard focus untouched.
+@media (max-width: 991px) {
+    html,
+    body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        width: 0;
+        height: 0;
     }
 }

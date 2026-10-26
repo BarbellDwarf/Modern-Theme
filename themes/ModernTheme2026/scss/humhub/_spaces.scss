@@ -265,3 +265,253 @@
         padding-bottom: 8px;
     }
 }
+
+// ── Mobile space/profile header: stacked card (<768px) ───────────────────────
+// Desktop paints the name and subtitle as an absolute overlay on the banner,
+// with the avatar hanging off its bottom edge. That layout collapses on a
+// phone: the title is clipped, white text lands on a light banner and the
+// controls are pushed out of the card. Rebuild it as a vertical stack:
+//
+//   banner (full bleed)
+//   avatar (overlaps the banner bottom-left)
+//   title + subtitle (static, dark, full width)
+//   stats + join/follow + gear (wrapping row, 44px targets)
+//
+// display:contents removes the banner wrapper's box so the image, title and
+// avatar become children of the header and can be reordered. The wrapper's
+// absolute-positioned upload controls are re-pinned to the banner area.
+
+@media (max-width: 767px) {
+    .panel-profile {
+        padding: 0 !important;
+        overflow: visible;
+    }
+
+    .panel-profile .panel-profile-header {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent;
+    }
+
+    // Unwrap the banner container. Its background/overflow move to the image.
+    .panel-profile .panel-profile-header .profile-banner-image-container {
+        display: contents !important;
+    }
+
+    .panel-profile .panel-profile-header .profile-banner-image-container > .img-profile-header-background {
+        order: 1;
+        width: 100% !important;
+        height: 140px !important;
+        min-height: 140px !important;
+        max-height: 140px !important;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        background-color: #334155;
+        border-radius: var(--radius-md, 10px) var(--radius-md, 10px) 0 0;
+    }
+
+    // Banner upload controls: keep them over the banner, not the whole card.
+    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-buttons {
+        top: 8px;
+        right: 8px;
+        bottom: auto;
+        z-index: 4;
+    }
+
+    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-loader {
+        top: 0;
+        height: 140px;
+    }
+
+    // Circular 64px avatar, overlapping the banner by 24px.
+    .panel-profile .panel-profile-header .profile-user-photo-container {
+        order: 2;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 64px !important;
+        height: 64px !important;
+        margin: -24px 0 0 12px !important;
+        z-index: 2;
+        overflow: hidden;
+        border: 2px solid var(--color-bg-primary, #fff);
+        border-radius: 50%;
+        background: var(--color-primary-strong, #1e6ad6);
+        box-shadow: var(--shadow-md, 0 4px 10px rgba(0, 0, 0, 0.18));
+    }
+
+    .panel-profile .panel-profile-header .profile-user-photo-container > a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo,
+    .panel-profile .panel-profile-header .profile-user-photo {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        display: block;
+        object-fit: cover;
+    }
+
+    .panel-profile .profile-user-photo-container.mt2026-has-initials .mt2026-profile-initials {
+        font-size: 1.25rem;
+    }
+
+    // Title block: static, dark, directly under the avatar.
+    .panel-profile .panel-profile-header .img-profile-data {
+        order: 3;
+        position: static !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 8px 12px 0 !important;
+        background: none !important;
+        color: var(--color-text-primary, #111827);
+
+        h1 {
+            max-width: 100% !important;
+            margin: 0 0 2px !important;
+            font-size: 20px !important;
+            line-height: 1.3 !important;
+            white-space: normal !important;
+            overflow: hidden !important;
+            text-overflow: clip !important;
+        }
+
+        h1 a {
+            display: -webkit-box;
+            overflow: hidden;
+            color: var(--color-text-primary, #111827) !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            line-height: 1.3 !important;
+            text-shadow: none !important;
+            white-space: normal !important;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        h2,
+        h2.space {
+            max-width: 100% !important;
+            margin: 0 !important;
+            color: var(--color-text-muted, #6b7280) !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 1.4 !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+            text-shadow: none !important;
+        }
+    }
+
+    // Controls: stats + join/follow + gear on their own wrapping row.
+    .panel-profile > .panel-body {
+        padding: 8px 12px 12px !important;
+        border-radius: 0 0 var(--radius-md, 10px) var(--radius-md, 10px);
+    }
+
+    .panel-profile .panel-profile-controls {
+        padding: 0 !important;
+    }
+
+    .panel-profile .panel-profile-controls .container {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    .panel-profile .panel-profile-controls .row,
+    .panel-profile .panel-profile-controls .col-lg-12 {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        float: none !important;
+    }
+
+    .panel-profile .statistics {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 12px;
+        float: none !important;
+    }
+
+    .panel-profile .statistics .entry {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 44px;
+        margin: 0 !important;
+        float: none !important;
+        line-height: 1.15;
+
+        br {
+            display: none;
+        }
+    }
+
+    .panel-profile .statistics .entry .count {
+        color: var(--color-text-primary, #111827);
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .panel-profile .statistics .entry .title {
+        color: var(--color-text-muted, #6b7280);
+        font-size: 12px;
+    }
+
+    .panel-profile .controls.controls-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+        margin-left: auto;
+        float: none !important;
+    }
+
+    .panel-profile .controls.controls-header .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 14px;
+    }
+
+    .panel-profile #space-header-controls-menu > a,
+    .panel-profile .controls.controls-header .dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0 8px;
+    }
+
+    // The join/follow hint is desktop-only reassurance; it is noise on a phone.
+    .panel-profile .mt2026-space-controls-hint {
+        display: none !important;
+    }
+}

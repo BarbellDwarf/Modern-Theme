@@ -668,6 +668,65 @@ body[data-bs-theme="light"] {
     }
 }
 
+// ── Narrow phones: declutter the top bar ────────────────────────────────────
+// Keep brand + search + notifications + avatar. Mail and the appearance
+// switcher move into the account dropdown; the avatar loses its caret.
+.mt2026-account-extra {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    #topbar > .container {
+        padding-right: 12px;
+        gap: 8px;
+    }
+
+    #topbar .notifications,
+    #topbar .topbar-actions {
+        margin-left: 0;
+        gap: 8px;
+    }
+
+    #mt2026-mobile-search,
+    #topbar .notifications .btn-group > a,
+    #topbar .topbar-actions .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
+    }
+
+    #topbar .topbar-actions .dropdown.account .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+    }
+
+    #topbar #user-account-image {
+        width: 32px;
+        height: 32px;
+    }
+
+    #account-dropdown-link::after {
+        display: none !important;
+    }
+
+    // Mail and appearance live in the account dropdown at this width.
+    #topbar .notifications .mt2026-header-extra {
+        display: none !important;
+    }
+
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra {
+        display: block;
+    }
+
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+    }
+}
+
 // ============================================================
 // Reset legacy HumHub account dropdown styles
 //

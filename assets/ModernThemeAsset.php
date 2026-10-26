@@ -33,6 +33,7 @@ class ModernThemeAsset extends AssetBundle
         'js/copyPolish.js',
         'js/profileInitials.js',
         'js/calendarPolish.js',
+        'js/mobileHeader.js',
     ];
 
     public $depends = [
