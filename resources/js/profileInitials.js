@@ -24,7 +24,10 @@ humhub.module('modernTheme.profileInitials', function(module, require, $) {
             var $image = $(this);
             var $container = $image.closest('.profile-user-photo-container');
 
-            if (!$container.length || $container.hasClass('mt2026-has-initials')) {
+            // Spaces already get an initials block from the core widget
+            // (.space-acronym); injecting here would stack two layers.
+            if (!$container.length || $container.hasClass('mt2026-has-initials') ||
+                $container.find('.space-acronym').length) {
                 return;
             }
 

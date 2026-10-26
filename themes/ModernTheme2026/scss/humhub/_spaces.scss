@@ -327,44 +327,65 @@
         height: 140px;
     }
 
-    // Circular 64px avatar, overlapping the banner by 24px.
+    // Square, circular 72px avatar overlapping the banner by 20px. Core
+    // writes 140px width/height and a 4px radius inline, so every dimension
+    // needs !important; flex-shrink must also be off or the box squashes.
     .panel-profile .panel-profile-header .profile-user-photo-container {
         order: 2;
         position: relative !important;
         bottom: auto !important;
         left: auto !important;
-        width: 64px !important;
-        height: 64px !important;
-        margin: -24px 0 0 12px !important;
+        display: flex !important;
+        flex: 0 0 72px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 72px !important;
+        height: 72px !important;
+        min-width: 72px !important;
+        min-height: 72px !important;
+        max-width: 72px !important;
+        max-height: 72px !important;
+        margin: -20px 0 0 12px !important;
         z-index: 2;
         overflow: hidden;
-        border: 2px solid var(--color-bg-primary, #fff);
-        border-radius: 50%;
-        background: var(--color-primary-strong, #1e6ad6);
-        box-shadow: var(--shadow-md, 0 4px 10px rgba(0, 0, 0, 0.18));
-    }
-
-    .panel-profile .panel-profile-header .profile-user-photo-container > a {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        overflow: hidden;
-    }
-
-    .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo,
-    .panel-profile .panel-profile-header .profile-user-photo {
-        width: 100% !important;
-        height: 100% !important;
-        max-width: none !important;
         border: 0 !important;
         border-radius: 50% !important;
-        display: block;
-        object-fit: cover;
+        background: var(--color-primary-strong, #1e6ad6);
+        // 2px surface ring so the avatar reads as separate from the banner.
+        box-shadow:
+            0 0 0 2px var(--color-bg-primary, #fff),
+            var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
     }
 
-    .panel-profile .profile-user-photo-container.mt2026-has-initials .mt2026-profile-initials {
-        font-size: 1.25rem;
+    // One avatar layer only: flatten the link wrapper so the core initials
+    // block (or the space image) is the single flex child of the container.
+    .panel-profile .panel-profile-header .profile-user-photo-container > a {
+        display: contents !important;
+    }
+
+    // Dimensions only. Never set display here: core hides the unused layer
+    // with .d-none-space-image (display:none !important) and a later
+    // !important display would resurrect the duplicate avatar.
+    .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym,
+    .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo {
+        flex: 0 0 72px !important;
+        width: 72px !important;
+        height: 72px !important;
+        min-width: 72px !important;
+        min-height: 72px !important;
+        max-width: 72px !important;
+        max-height: 72px !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        object-fit: cover;
+        overflow: hidden;
+        line-height: 1 !important;
+    }
+
+    // Core sizes initials as 50cqw; pin them at phone scale.
+    .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym span {
+        font-size: 22px !important;
+        line-height: 1 !important;
     }
 
     // Title block: static, dark, directly under the avatar.

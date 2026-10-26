@@ -6,10 +6,9 @@
     // --- Mobile bottom navigation ---------------------------------------
 
     .mobile-bottom-nav {
-        background: rgba(15, 23, 42, 0.95);
+        // Opaque so scrolled content cannot show through the bar.
+        background: var(--color-bg-secondary);
         border-top-color: var(--color-border);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
 
         .nav-item,
         .mobile-nav-item {
