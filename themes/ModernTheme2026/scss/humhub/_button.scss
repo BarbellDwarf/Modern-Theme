@@ -19,7 +19,26 @@
 
 // Button Variants
 .btn-primary {
-  @include button-variant(var(--color-primary), $primary-dark);
+  @include button-base;
+  background-color: var(--color-primary-strong, #1e6ad6);
+  border-color: var(--color-primary-strong, #1e6ad6);
+  color: #fff;
+  @include shadow('sm');
+
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: var(--color-primary-strong-hover, #1a5dbc);
+    border-color: var(--color-primary-strong-hover, #1a5dbc);
+    color: #fff;
+    @include shadow('md');
+  }
+
+  &:active:not(:disabled):not(.disabled),
+  &:focus {
+    background-color: var(--color-primary-strong-hover, #1a5dbc);
+    border-color: var(--color-primary-strong-hover, #1a5dbc);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 30, 106, 214), 0.3), var(--shadow-sm);
+  }
 }
 
 .btn-secondary {
@@ -29,34 +48,34 @@
 // Accent — maps to the theme accent colour (similar to primary but distinct)
 // HumHub's Button::accent() generates .btn-accent
 .btn-accent {
-  background-color: var(--color-accent, #5a8eeb);
-  border-color: var(--color-accent, #5a8eeb);
+  background-color: var(--color-accent-strong, #4a74c1);
+  border-color: var(--color-accent-strong, #4a74c1);
   color: #fff;
   @include shadow('sm');
 
   &:hover:not(:disabled):not(.disabled) {
-    background-color: var(--color-primary, #1e6ad6);
-    border-color: var(--color-primary, #1e6ad6);
+    background-color: var(--color-accent-strong-hover, #3f63a4);
+    border-color: var(--color-accent-strong-hover, #3f63a4);
     color: #fff;
     @include shadow('md');
   }
 
   &:active:not(:disabled):not(.disabled),
   &:focus {
-    background-color: var(--color-primary, #1e6ad6);
-    border-color: var(--color-primary, #1e6ad6);
+    background-color: var(--color-accent-strong-hover, #3f63a4);
+    border-color: var(--color-accent-strong-hover, #3f63a4);
     color: #fff;
-    box-shadow: 0 0 0 3px rgba(30, 106, 214, 0.3) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-strong, #4a74c1) 30%, transparent) !important;
   }
 
   [data-bs-theme="dark"] & {
-    background-color: var(--color-accent, #5a8eeb);
-    border-color: var(--color-accent, #5a8eeb);
+    background-color: var(--color-accent-strong, #4a74c1);
+    border-color: var(--color-accent-strong, #4a74c1);
     color: #fff;
 
     &:hover:not(:disabled):not(.disabled) {
-      background-color: var(--color-primary, #1e6ad6);
-      border-color: var(--color-primary, #1e6ad6);
+      background-color: var(--color-accent-strong-hover, #3f63a4);
+      border-color: var(--color-accent-strong-hover, #3f63a4);
     }
   }
 }
@@ -104,7 +123,8 @@
   background: transparent;
   
   &:hover:not(:disabled):not(.disabled) {
-    background: var(--color-primary);
+    background: var(--color-primary-strong, #1e6ad6);
+    border-color: var(--color-primary-strong, #1e6ad6);
     color: white;
     @include shadow('sm');
   }

@@ -116,18 +116,18 @@ body.mt2026-keyboard-open {
                     }
 
                     &.active, &:active {
-                        background: var(--color-primary, #1e6ad6) !important;
+                        background: var(--color-primary-strong, #1e6ad6) !important;
                         color: #fff !important;
-                        border-color: var(--color-primary, #1e6ad6) !important;
+                        border-color: var(--color-primary-strong, #1e6ad6) !important;
                     }
                 }
 
                 // HumHub marks active with class on li, not the anchor
                 &.active > a,
                 &.active > .nav-link {
-                    background: var(--color-primary, #1e6ad6) !important;
+                    background: var(--color-primary-strong, #1e6ad6) !important;
                     color: #fff !important;
-                    border-color: var(--color-primary, #1e6ad6) !important;
+                    border-color: var(--color-primary-strong, #1e6ad6) !important;
                 }
 
                 // Active indicator bar from desktop theme doesn't apply
@@ -536,7 +536,7 @@ body.mt2026-keyboard-open {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: var(--color-primary, #1e6ad6);
+    background: var(--color-primary-strong, #1e6ad6);
     color: #fff;
     border: none;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
@@ -633,7 +633,7 @@ body.mt2026-keyboard-open {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--color-primary, #1e6ad6);
+      background: var(--color-primary-strong, #1e6ad6);
       color: #fff;
       border: none;
       display: flex;
@@ -643,7 +643,7 @@ body.mt2026-keyboard-open {
       cursor: pointer;
 
       &:active {
-        background: var(--color-primary-dark, #1558b0);
+        background: var(--color-primary-strong-hover, #1a5dbc);
       }
     }
   }

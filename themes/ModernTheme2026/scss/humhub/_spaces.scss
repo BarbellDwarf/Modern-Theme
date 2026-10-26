@@ -19,7 +19,12 @@
     overflow: visible; // avatar hangs below the banner — must not clip
 
     .profile-banner-image-container {
+        position: relative;
         overflow: hidden; // clip banner image only
+        // Solid backdrop for spaces with no cover image, so the white title
+        // overlay never lands on the page background.
+        min-height: 140px;
+        background-color: #334155;
 
         .img-profile-header-background {
             width: 100%;
@@ -210,6 +215,31 @@
                 max-width: calc(100% - 600px);
             }
         }
+    }
+}
+
+// ── Profile header title legibility ───────────────────────────────────────────
+// Core paints white title text straight onto the banner. With no cover image, or
+// a light one, that is white on white. Give the text area its own dark scrim and
+// keep the title white; the banner container above supplies a solid fallback.
+
+.panel-profile-header .img-profile-data {
+    z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0) 0%,
+        rgba(15, 23, 42, 0.66) 20%,
+        rgba(15, 23, 42, 0.86) 60%,
+        rgba(15, 23, 42, 0.92) 100%
+    );
+
+    h1,
+    h1 a,
+    h2,
+    .space,
+    .space .link {
+        color: var(--color-text-inverse, #fff);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     }
 }
 

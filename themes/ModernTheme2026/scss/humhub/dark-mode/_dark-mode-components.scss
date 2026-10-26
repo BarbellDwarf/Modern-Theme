@@ -20,7 +20,7 @@
             }
 
             &:active {
-                background-color: var(--color-primary);
+                background-color: var(--color-primary-strong);
                 color: #fff;
             }
 
@@ -53,8 +53,8 @@
         }
 
         &.active {
-            background-color: var(--color-primary);
-            border-color: var(--color-primary);
+            background-color: var(--color-primary-strong);
+            border-color: var(--color-primary-strong);
             color: #fff;
         }
 
@@ -335,8 +335,8 @@
         }
 
         .page-item.active .page-link {
-            background-color: var(--color-primary);
-            border-color: var(--color-primary);
+            background-color: var(--color-primary-strong);
+            border-color: var(--color-primary-strong);
             color: #fff;
         }
 

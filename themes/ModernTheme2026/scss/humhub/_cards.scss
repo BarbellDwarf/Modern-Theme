@@ -82,9 +82,9 @@
   border-color: var(--color-primary);
   
   .panel-heading {
-    background: var(--color-primary);
+    background: var(--color-primary-strong);
     color: white;
-    border-bottom-color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary-strong-hover);
   }
 }
 

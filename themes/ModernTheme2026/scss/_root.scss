@@ -16,6 +16,12 @@
   
   // Accent Color
   --color-accent: #5a8eeb;
+
+  // Filled surfaces with white text (>=4.5:1). Links keep --color-primary.
+  --color-primary-strong: #1e6ad6;
+  --color-primary-strong-hover: #1a5dbc;
+  --color-accent-strong: #4a74c1;
+  --color-accent-strong-hover: #3f63a4;
   
   // Secondary Colors
   --color-secondary: #{$secondary};
@@ -144,6 +150,10 @@
   --color-primary: #1e6ad6;
   --color-primary-rgb: 30, 106, 214;
   --color-accent: #5a8eeb;
+  --color-primary-strong: #1e6ad6;
+  --color-primary-strong-hover: #1a5dbc;
+  --color-accent-strong: #4a74c1;
+  --color-accent-strong-hover: #3f63a4;
   --color-secondary: #7c3aed;
   --color-success: #10b981;
   --color-danger: #ef4444;
@@ -155,6 +165,10 @@
   --color-primary: #7c3aed;
   --color-primary-rgb: 124, 58, 237;
   --color-accent: #a78bfa;
+  --color-primary-strong: #7c3aed;
+  --color-primary-strong-hover: #6d33d1;
+  --color-accent-strong: #7d68bc;
+  --color-accent-strong-hover: #69589e;
   --color-secondary: #ec4899;
   --color-success: #10b981;
   --color-danger: #ef4444;
@@ -166,6 +180,10 @@
   --color-primary: #059669;
   --color-primary-rgb: 5, 150, 105;
   --color-accent: #34d399;
+  --color-primary-strong: #04875e;
+  --color-primary-strong-hover: #047552;
+  --color-accent-strong: #218560;
+  --color-accent-strong-hover: #1b6c4e;
   --color-secondary: #10b981;
   --color-success: #16a34a;
   --color-danger: #dc2626;
@@ -177,6 +195,10 @@
   --color-primary: #475569;
   --color-primary-rgb: 71, 85, 105;
   --color-accent: #94a3b8;
+  --color-primary-strong: #475569;
+  --color-primary-strong-hover: #3e4b5c;
+  --color-accent-strong: #6c7786;
+  --color-accent-strong-hover: #5a6370;
   --color-secondary: #334155;
   --color-success: #16a34a;
   --color-danger: #dc2626;
@@ -188,6 +210,10 @@
   --color-primary: #ea580c;
   --color-primary-rgb: 234, 88, 12;
   --color-accent: #fb923c;
+  --color-primary-strong: #cc4d0a;
+  --color-primary-strong-hover: #b04209;
+  --color-accent-strong: #ab6329;
+  --color-accent-strong-hover: #8d5222;
   --color-secondary: #dc2626;
   --color-success: #16a34a;
   --color-danger: #b91c1c;
@@ -199,6 +225,10 @@
   --color-primary: #db2777;
   --color-primary-rgb: 219, 39, 119;
   --color-accent: #f472b6;
+  --color-primary-strong: #db2777;
+  --color-primary-strong-hover: #c12269;
+  --color-accent-strong: #b55487;
+  --color-accent-strong-hover: #974771;
   --color-secondary: #ec4899;
   --color-success: #16a34a;
   --color-danger: #dc2626;
@@ -210,6 +240,10 @@
   --color-primary: #0891b2;
   --color-primary-rgb: 8, 145, 178;
   --color-accent: #22d3ee;
+  --color-primary-strong: #07819e;
+  --color-primary-strong-hover: #067089;
+  --color-accent-strong: #158191;
+  --color-accent-strong-hover: #116775;
   --color-secondary: #0e7490;
   --color-success: #059669;
   --color-danger: #dc2626;
@@ -221,6 +255,10 @@
   --color-primary: #6366f1;
   --color-primary-rgb: 99, 102, 241;
   --color-accent: #818cf8;
+  --color-primary-strong: #6265ef;
+  --color-primary-strong-hover: #5659d2;
+  --color-accent-strong: #666fc4;
+  --color-accent-strong-hover: #565ea6;
   --color-secondary: #4f46e5;
   --color-success: #10b981;
   --color-danger: #f43f5e;
@@ -232,6 +270,10 @@
   --color-primary: #d97706;
   --color-primary-rgb: 217, 119, 6;
   --color-accent: #fbbf24;
+  --color-primary-strong: #b26205;
+  --color-primary-strong-hover: #985304;
+  --color-accent-strong: #947115;
+  --color-accent-strong-hover: #765a11;
   --color-secondary: #b45309;
   --color-success: #16a34a;
   --color-danger: #dc2626;
@@ -243,6 +285,10 @@
   --color-primary: #1d4ed8;
   --color-primary-rgb: 29, 78, 216;
   --color-accent: #3b82f6;
+  --color-primary-strong: #1d4ed8;
+  --color-primary-strong-hover: #1a45be;
+  --color-accent-strong: #3472d8;
+  --color-accent-strong-hover: #2d63bb;
   --color-secondary: #1e40af;
   --color-success: #16a34a;
   --color-danger: #dc2626;
@@ -254,6 +300,10 @@
   --color-primary: #b91c1c;
   --color-primary-rgb: 185, 28, 28;
   --color-accent: #ef4444;
+  --color-primary-strong: #b91c1c;
+  --color-primary-strong-hover: #a31919;
+  --color-accent-strong: #d73d3d;
+  --color-accent-strong-hover: #ba3535;
   --color-secondary: #991b1b;
   --color-success: #16a34a;
   --color-danger: #7f1d1d;
@@ -265,6 +315,10 @@
   --color-primary: #8b5cf6;
   --color-primary-rgb: 139, 92, 246;
   --color-accent: #c4b5fd;
+  --color-primary-strong: #8558ec;
+  --color-primary-strong-hover: #754dcf;
+  --color-accent-strong: #7a709d;
+  --color-accent-strong-hover: #625a7e;
   --color-secondary: #a78bfa;
   --color-success: #16a34a;
   --color-danger: #dc2626;

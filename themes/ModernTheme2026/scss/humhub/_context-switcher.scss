@@ -371,8 +371,8 @@ body[data-bs-theme="light"] .context-switcher {
   }
 
   &.active {
-    background-color: var(--color-primary, #1e6ad6);
-    border-color: var(--color-primary, #1e6ad6);
+    background-color: var(--color-primary-strong, #1e6ad6);
+    border-color: var(--color-primary-strong, #1e6ad6);
     color: #ffffff;
   }
 

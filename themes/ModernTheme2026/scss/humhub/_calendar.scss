@@ -27,15 +27,15 @@
   .fc-timeGridWeek-button.active,
   .fc-timeGridDay-button.active,
   .fc-listWeek-button.active {
-    background-color: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
+    background-color: var(--color-primary-strong) !important;
+    border-color: var(--color-primary-strong) !important;
     color: #fff !important;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
 
     &:hover,
     &:focus {
-      background-color: var(--color-primary-dark) !important;
-      border-color: var(--color-primary-dark) !important;
+      background-color: var(--color-primary-strong-hover) !important;
+      border-color: var(--color-primary-strong-hover) !important;
       color: #fff !important;
     }
   }

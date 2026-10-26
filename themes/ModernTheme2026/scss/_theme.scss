@@ -260,9 +260,9 @@ html {
       }
 
       &.active {
-        background: var(--color-primary);
+        background: var(--color-primary-strong);
         color: #fff;
-        border-color: var(--color-primary);
+        border-color: var(--color-primary-strong);
         font-weight: 600;
       }
     }

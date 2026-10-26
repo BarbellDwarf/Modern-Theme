@@ -40,8 +40,8 @@
       }
       
       &.active {
-        background: var(--color-primary-lightest);
-        color: var(--color-primary);
+        background: var(--color-primary-strong);
+        color: #fff;
         font-weight: $font-weight-semibold;
         
         &::before {
@@ -52,7 +52,7 @@
           transform: translateY(-50%);
           width: 3px;
           height: 60%;
-          background: var(--color-primary);
+          background: rgba(255, 255, 255, 0.85);
           border-radius: 0 var(--radius) var(--radius) 0;
         }
       }

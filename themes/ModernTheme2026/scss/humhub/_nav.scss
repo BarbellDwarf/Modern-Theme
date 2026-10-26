@@ -50,7 +50,7 @@
       }
       
       &.active {
-        background: var(--color-primary);
+        background: var(--color-primary-strong);
         color: white;
         @include shadow('sm');
       }
