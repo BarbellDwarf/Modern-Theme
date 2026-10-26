@@ -189,7 +189,14 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
         header.insertBefore(backBtn, header.firstChild);
     }
 
+    // HumHub 1.19 renders its own inbox filter (search) inside the sidebar
+    // heading; adding ours would duplicate it and hide the native controls.
+    function hasNativeInboxFilter() {
+        return !!document.getElementById('mail-filter-root');
+    }
+
     function injectSearchHTML() {
+        if (hasNativeInboxFilter()) return;
         var sidebar = document.getElementById('mail-conversation-overview');
         if (!sidebar) return;
         if (sidebar.querySelector('.mt2026-mail-sidebar-search')) return;
@@ -568,7 +575,9 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
 
         if (!sidebar) return;
 
-        var headingToggle = sidebar.querySelector('.panel-heading > a');
+        // On 1.19 this anchor is HumHub's own inbox toggle (data-action-click);
+        // hijacking it breaks the native list toggle, so leave it alone.
+        var headingToggle = hasNativeInboxFilter() ? null : sidebar.querySelector('.panel-heading > a');
         if (headingToggle && !headingToggle.hasAttribute('data-mt2026-mail-toggle')) {
             headingToggle.setAttribute('data-mt2026-mail-toggle', '1');
             headingToggle.addEventListener('click', function(e) {

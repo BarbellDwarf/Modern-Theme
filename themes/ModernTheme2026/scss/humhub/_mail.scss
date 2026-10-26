@@ -29,24 +29,28 @@ body.mt2026-mail-page .mobile-bottom-nav {
   box-shadow: var(--shadow-lg);
 }
 
-body.mail-list-open #mail-conversation-overview {
-  transform: translateX(0);
-}
+// The list is an off-canvas drawer only below the desktop breakpoint; on
+// desktop it sits in its column, so the open state must not lock or dim the page.
+@media (max-width: 991px) {
+  body.mail-list-open #mail-conversation-overview {
+    transform: translateX(0);
+  }
 
-body.mail-list-open {
-  overflow: hidden;
-}
+  body.mail-list-open {
+    overflow: hidden;
+  }
 
-body.mail-list-open::before {
-  content: '';
-  position: fixed;
-  top: max(56px, var(--hh-fixed-header-height, 60px));
-  right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom, 0));
-  left: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 1039;
-  pointer-events: auto;
+  body.mail-list-open::before {
+    content: '';
+    position: fixed;
+    top: max(56px, var(--hh-fixed-header-height, 60px));
+    right: 0;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0));
+    left: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1039;
+    pointer-events: auto;
+  }
 }
 
 #mail-conversation-overview .panel-heading {

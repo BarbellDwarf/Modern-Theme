@@ -56,7 +56,8 @@
     flex-direction: column;
   }
 
-  #mail-conversation-overview {
+  // Body class outranks the later unconditional drawer rule in _mail.scss.
+  body.mt2026-mail-page #mail-conversation-overview {
     position: relative;
     top: auto;
     left: auto;
