@@ -10,9 +10,8 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
             var label = count > 1 ? 'Comments' : 'Comment';
 
             $count.parent().contents().each(function() {
-                if (this.nodeType === 3 && /Comment(s)?\s*$/.test(this.nodeValue)) {
-                    this.nodeValue = this.nodeValue.replace(/Comment(s)?\s*$/, label);
-                    return false;
+                if (this.nodeType === 3) {
+                    this.nodeValue = this.nodeValue.replace(/\bComments?\b/g, label);
                 }
             });
 
@@ -36,11 +35,21 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
     var normaliseCounters = function() {
         $('.statistics .entry').each(function() {
             var $entry = $(this);
-            var count = $.trim($entry.find('.count').first().text());
+            var count = parseInt($.trim($entry.find('.count').first().text()), 10);
             var $title = $entry.find('.title').first();
-            if (count === '1' && $.trim($title.text()) === 'Posts') {
-                $title.text('post');
+
+            // Number and label are separate nodes with a <br> between them, so
+            // normalise the label node instead of the entry's text.
+            if (isNaN(count) || !$title.length) {
+                return;
             }
+
+            var label = $.trim($title.text()).toLowerCase();
+            if (label !== 'post' && label !== 'posts') {
+                return;
+            }
+
+            $title.text(count === 1 ? 'post' : 'posts');
         });
     };
 

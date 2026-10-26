@@ -43,9 +43,15 @@ $renderValue = static function ($field) use ($user, $phoneFields): string {
 };
 
 $sections = [];
+$hasFields = false;
 foreach ($categories as $category) {
     $rows = [];
-    foreach ($user->profile->getProfileFields($category) as $field) {
+    $fields = $user->profile->getProfileFields($category);
+    if ($fields !== []) {
+        $hasFields = true;
+    }
+
+    foreach ($fields as $field) {
         $value = $renderValue($field);
         $plain = preg_replace('/\s+/u', '', strip_tags(html_entity_decode($value))) ?? '';
         if ($plain === '' && stripos($value, '<img') === false) {
@@ -60,13 +66,19 @@ foreach ($categories as $category) {
 }
 ?>
 
-<?php if ($sections !== []): ?>
+<?php if ($hasFields): ?>
 <div id="user-profile-about" class="panel panel-default">
     <div class="panel-heading">
         <?= Yii::t('UserModule.profile', '<strong>About</strong> this user') ?>
     </div>
 
     <div class="panel-body">
+        <?php if ($sections === []): ?>
+            <p class="mt2026-profile-about-empty text-muted">
+                <?= Yii::t('ModernTheme2026.base', 'This member has not shared any profile details yet.') ?>
+            </p>
+        <?php endif; ?>
+
         <?php if (count($sections) > 1): ?>
             <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                 <?php foreach ($sections as $index => $section): ?>

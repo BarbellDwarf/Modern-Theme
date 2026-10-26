@@ -4,18 +4,16 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
     var timer = null;
     var dismissed = false;
 
+    var VIEW_BUTTONS = '.fc-dayGridMonth-button, .fc-dayGridWeek-button, .fc-dayGridDay-button, .fc-listWeek-button';
+    var NAV_BUTTONS = '.fc-prev-button, .fc-next-button, .fc-today-button';
+
     var setPressed = function() {
-        $('#calendar .fc-button').each(function() {
+        $('#calendar').find(VIEW_BUTTONS).each(function() {
             var $button = $(this);
-            var classes = $button.attr('class') || '';
-
-            if (/fc-(prev|next|today)-button/.test(classes)) {
-                $button.removeAttr('aria-pressed');
-                return;
-            }
-
-            $button.attr('aria-pressed', $button.hasClass('fc-button-active') ? 'true' : 'false');
+            $button.attr('aria-pressed', $button.hasClass('active') ? 'true' : 'false');
         });
+
+        $('#calendar').find(NAV_BUTTONS).removeAttr('aria-pressed');
     };
 
     var syncEmptyNotice = function() {
@@ -72,7 +70,8 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
             .on('click.mt2026Calendar', '.mt2026-calendar-empty__dismiss', function() {
                 dismissed = true;
                 $(this).closest('.mt2026-calendar-empty').remove();
-            });
+            })
+            .on('click.mt2026Calendar', VIEW_BUTTONS, schedule);
 
         if (!calendar) {
             return;

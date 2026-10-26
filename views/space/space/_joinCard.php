@@ -9,13 +9,17 @@ use yii\helpers\Url;
  * @var Space $space
  */
 
-$canJoin = !Yii::$app->user->isGuest && $space->canJoin();
+$isMember = !Yii::$app->user->isGuest && $space->isMember();
 $requiresApproval = (int)$space->join_policy === Space::JOIN_POLICY_APPLICATION;
+$canJoin = !Yii::$app->user->isGuest && !$isMember && $space->canJoin();
+$canRequestMembership = !Yii::$app->user->isGuest && !$isMember && $requiresApproval;
 $spaceName = Html::encode($space->getDisplayName());
 ?>
 <div class="mt2026-join-card" data-mt2026-join-card>
     <h3 class="mt2026-join-card__title">
-        <?= Yii::t('ModernTheme2026.base', 'Join {space} to see posts', ['{space}' => $spaceName]) ?>
+        <?= $requiresApproval
+            ? Yii::t('ModernTheme2026.base', 'Request to join {space}', ['{space}' => $spaceName])
+            : Yii::t('ModernTheme2026.base', 'Join {space} to see posts', ['{space}' => $spaceName]) ?>
     </h3>
     <p class="mt2026-join-card__text">
         <?= $requiresApproval
@@ -23,7 +27,7 @@ $spaceName = Html::encode($space->getDisplayName());
             : Yii::t('ModernTheme2026.base', 'Become a member to post and comment in this space.') ?>
     </p>
     <div class="mt2026-join-card__actions">
-        <?php if ($canJoin): ?>
+        <?php if ($canJoin || $canRequestMembership): ?>
             <?php if ($requiresApproval): ?>
                 <?= Html::a(
                     Yii::t('ModernTheme2026.base', 'Request to join'),

@@ -21,12 +21,17 @@ use humhub\modules\stream\widgets\StreamViewer;
 /* @var $isSingleContentRequest bool */
 
 $canJoin = !$isMember && !Yii::$app->user->isGuest && $space->canJoin();
+// Approval spaces expose "request membership" instead of a free join. Treat
+// that as card-worthy too, so the empty stream is not a dead end.
+$canRequestMembership = !$isMember && !Yii::$app->user->isGuest
+    && (int)$space->join_policy === Space::JOIN_POLICY_APPLICATION;
+$showJoinCard = $canJoin || $canRequestMembership;
 
 if ($canCreateEntries) {
     $emptyMessage = Yii::t('SpaceModule.base', '<b>This space is still empty!</b><br>Start by posting something here...');
 } elseif ($isMember) {
     $emptyMessage = Yii::t('SpaceModule.base', '<b>This space is still empty!</b>');
-} elseif ($canJoin) {
+} elseif ($showJoinCard) {
     $emptyMessage = $this->render('_joinCard', ['space' => $space]);
 } else {
     $emptyMessage = Yii::t('SpaceModule.base', '<b>You are not member of this space and there is no public content, yet!</b>');
@@ -49,7 +54,7 @@ $module = Yii::$app->getModule('space');
     'messageStreamEmptyCss' => $canCreateEntries ? 'placeholder-empty-stream' : '',
 ]); ?>
 
-<?php if ($canJoin): ?>
+<?php if ($showJoinCard): ?>
     <div class="mt2026-join-cta" data-mt2026-join-cta hidden>
         <?= $this->render('_joinCard', ['space' => $space]) ?>
     </div>
