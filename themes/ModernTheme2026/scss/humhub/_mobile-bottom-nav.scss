@@ -153,8 +153,12 @@
         }
     }
 
-    // Adjust main content area
-    #layout-content,
+    // Adjust main content area. The bar is fixed, so the scrolling content needs
+    // the clearance: body padding alone measured 0 on some page types.
+    #layout-content {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0));
+    }
+
     .container-fluid {
         padding-bottom: 24px;
     }
