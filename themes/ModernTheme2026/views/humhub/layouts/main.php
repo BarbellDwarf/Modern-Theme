@@ -12,6 +12,7 @@ use humhub\widgets\NotificationArea;
 use humhub\widgets\SiteLogo;
 use humhub\widgets\TopMenu;
 use humhub\widgets\TopMenuRightStack;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 
@@ -44,6 +45,7 @@ $bodyClasses[] = 'modern-theme-2026';
             <div class="container flex-nowrap">
                 <div class="topbar-brand d-flex text-nowrap overflow-hidden">
                     <?= SiteLogo::widget() ?>
+                    <a class="mt2026-mobile-brand" href="<?= Url::home() ?>"><?= Html::encode(Yii::$app->name) ?></a>
                 </div>
 
                 <ul id="top-menu-nav" class="flex-grow-1 nav">
@@ -62,6 +64,12 @@ $bodyClasses[] = 'modern-theme-2026';
                     isOverflow() always returns false: nav height (56px) < 9999px → no items migrate.
                 -->
                 <div id="topbar-second" style="position:absolute;visibility:hidden;height:9999px;width:0;overflow:hidden;pointer-events:none;" aria-hidden="true"></div>
+
+                <?php if (!Yii::$app->user->isGuest): ?>
+                    <button type="button" id="mt2026-mobile-search" aria-label="<?= Html::encode(Yii::t('base', 'Search')) ?>" aria-controls="context-switcher-menu" aria-expanded="false">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                <?php endif; ?>
 
                 <ul class="nav" id="search-menu-nav">
                     <?= TopMenuRightStack::widget() ?>

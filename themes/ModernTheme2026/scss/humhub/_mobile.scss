@@ -298,10 +298,9 @@ body.mt2026-keyboard-open {
         padding: space(3);
     }
     
-    // Keep body text at 16px. The previous 14px shrink hurt readability on
-    // phones more than it bought space, and triggered iOS zoom on inputs.
+    // Base body text at 17px on phones for readability without iOS zoom.
     body {
-        font-size: $font-size-base;
+        font-size: 17px;
     }
     
     h1 { font-size: $font-size-2xl; }
@@ -862,5 +861,15 @@ body.mt2026-keyboard-open {
     #contentFormBody .ProseMirror-menubar,
     .content-form-body .ProseMirror-menubar {
         display: none;
+    }
+}
+
+// ── Mobile typography floor ──────────────────────────────────────────────────
+// Dates and post metadata were 12px on phones. Keep them at 14px minimum.
+@media (max-width: 991px) {
+    .wall-entry-header .timestamp,
+    .stream-entry-header .timestamp,
+    .comment .single-comment .comment-heading .timestamp {
+        font-size: 14px;
     }
 }

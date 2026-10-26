@@ -166,3 +166,50 @@
     }
   }
 }
+
+// ============================================================
+// Admin on phones — measured DOM
+// ============================================================
+// The Users page heading is a bare H4 inside .panel-body, sharing its row with
+// the action buttons. Stack the actions under the heading.
+@media (max-width: 767px) {
+  .mt2026-admin-content {
+    .panel-body {
+      h4 {
+        width: 100%;
+        overflow-wrap: normal;
+        word-break: keep-all;
+      }
+
+      > .btn-group,
+      > .float-end {
+        float: none !important;
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      > .btn-group .btn,
+      > .float-end .btn {
+        flex: 1 1 auto;
+        min-height: 44px;
+      }
+    }
+
+    // Tabs live inside a .tab-menu wrapper; scroll them instead of wrapping.
+    .tab-menu {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      .nav-tabs {
+        flex-wrap: nowrap;
+      }
+
+      .nav-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    }
+  }
+}

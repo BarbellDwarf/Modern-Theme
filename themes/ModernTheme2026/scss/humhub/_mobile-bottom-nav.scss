@@ -23,12 +23,13 @@
         overflow: hidden; // clip all children to bar bounds
 
         .nav-item {
-            flex: 1;
+            flex: 0 1 auto;
+            min-width: 44px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 4px 2px;
+            padding: 4px 4px;
             min-width: 0;
             position: relative;
             cursor: pointer;
@@ -59,7 +60,7 @@
             }
 
             .nav-label {
-                font-size: clamp(11px, 2.8vw, 12px);
+                font-size: 13px;
                 font-weight: 500;
                 line-height: 1.2;
                 white-space: nowrap;
@@ -73,11 +74,11 @@
                 position: absolute;
                 top: -4px;
                 right: -4px;
-                min-width: 18px;
-                min-height: 16px;
+                min-width: 20px;
+                min-height: 18px;
                 height: auto;
                 padding: 0 5px;
-                font-size: 9px;
+                font-size: 11px;
                 font-weight: 600;
                 line-height: 1.1;
                 font-variant-numeric: tabular-nums;
@@ -134,7 +135,7 @@
 // Add bottom padding to body to prevent content from being hidden by bottom nav
 @media (max-width: 991px) {
     body {
-        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0));
         
         // Fill the safe-area space (behind OS nav buttons) with solid background.
         // z-index must be high enough to cover all page content (including modals)
@@ -240,7 +241,7 @@
     body.mobile,
     body[data-mobile="true"],
     .mobile-app {
-        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0));
     }
 }
 

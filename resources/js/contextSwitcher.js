@@ -28,6 +28,7 @@ humhub.module('modernTheme.contextSwitcher', function(module, require, $) {
 
         $menu.css({visibility:'visible', opacity:'1', pointerEvents:'auto'}).attr('aria-hidden', 'false');
         $btn.attr('aria-expanded', 'true').addClass('active');
+        $('#mt2026-mobile-search').attr('aria-expanded', 'true');
         isOpen = true;
 
         if (window.innerWidth < 768) {
@@ -46,6 +47,7 @@ humhub.module('modernTheme.contextSwitcher', function(module, require, $) {
 
         $menu.css({visibility:'hidden', opacity:'0', pointerEvents:'none'}).attr('aria-hidden', 'true');
         $btn.attr('aria-expanded', 'false').removeClass('active');
+        $('#mt2026-mobile-search').attr('aria-expanded', 'false');
         isOpen = false;
 
         $('body').css('overflow', '');
@@ -60,8 +62,8 @@ humhub.module('modernTheme.contextSwitcher', function(module, require, $) {
     };
 
     var bindToggleButton = function() {
-        $(document).off('click.contextSwitcher', '#context-switcher-btn, .context-switcher-button')
-            .on('click.contextSwitcher', '#context-switcher-btn, .context-switcher-button', function(e) {
+        $(document).off('click.contextSwitcher', '#context-switcher-btn, .context-switcher-button, #mt2026-mobile-search')
+            .on('click.contextSwitcher', '#context-switcher-btn, .context-switcher-button, #mt2026-mobile-search', function(e) {
                 e.stopPropagation();
                 toggleSwitcher();
             });
@@ -70,7 +72,7 @@ humhub.module('modernTheme.contextSwitcher', function(module, require, $) {
     var bindOutsideClick = function() {
         $(document).off('mousedown.contextSwitcher')
             .on('mousedown.contextSwitcher', function(e) {
-                if (isOpen && !$(e.target).closest('#context-switcher').length) {
+                if (isOpen && !$(e.target).closest('#context-switcher, #mt2026-mobile-search').length) {
                     closeSwitcher();
                 }
             });

@@ -1,6 +1,16 @@
 // Modern Theme 2026 - Top Navigation Bar
 // Clean, modern top bar with proper styling
 
+// Mobile-only search trigger (opens the context switcher popover)
+#mt2026-mobile-search {
+    display: none;
+}
+
+// Mobile-only site-name fallback (shown when the logo markup is hidden on phones)
+.mt2026-mobile-brand {
+    display: none;
+}
+
 .navbar.topbar {
     // Override HumHub core's .topbar { height: 50px } which clips content
     height: auto !important;
@@ -510,18 +520,151 @@ body[data-bs-theme="light"] {
     }
 }
 
-// Mobile + tablet topbar: hidden — bottom navigation replaces it
+// Mobile header: compact sticky bar (brand, search, notifications, mail, account)
+// Search reuses the context-switcher popover; bottom nav keeps page destinations.
 @media (max-width: 991px) {
-    // Hide top navbar on mobile/tablet — bottom navigation replaces it
+    :root {
+        --mt2026-topbar-height: 54px;
+    }
+
     #topbar-first,
-    #topbar-second,
-    .topbar {
+    #topbar-second {
         display: none !important;
     }
 
-    // Remove body padding that accounts for the hidden fixed navbar
+    #topbar.topbar {
+        display: block !important;
+        height: calc(54px + env(safe-area-inset-top, 0px)) !important;
+        padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    #topbar > .container {
+        height: 54px;
+        min-height: 54px;
+        padding-left: 12px;
+        padding-right: 6px;
+        gap: 4px;
+    }
+
     body {
-        padding-top: 0 !important;
+        padding-top: calc(54px + env(safe-area-inset-top, 0px)) !important;
+    }
+
+    #topbar .topbar-brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
+
+        // Custom logo markup is hidden; show the site name as plain text.
+        > :not(.mt2026-mobile-brand) {
+            display: none !important;
+        }
+
+        .mt2026-mobile-brand {
+            display: block !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            text-decoration: none;
+        }
+    }
+
+    // Keep the context-switcher <li> as the fixed overlay host, but no button.
+    #top-menu-nav {
+        flex: 0 0 auto;
+        width: 0;
+        min-width: 0;
+        margin: 0;
+        overflow: visible;
+
+        > li {
+            display: none !important;
+        }
+
+        > li.context-switcher {
+            display: block !important;
+            width: 0;
+            height: 0;
+            overflow: visible;
+        }
+
+        .context-switcher-button {
+            display: none !important;
+        }
+    }
+
+    #mt2026-mobile-search {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin-left: auto;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--color-text-primary);
+        font-size: 20px;
+    }
+
+    #search-menu-nav {
+        display: none !important;
+    }
+
+    #topbar .notifications {
+        height: 100%;
+        margin-left: 2px;
+        gap: 4px;
+    }
+
+    #topbar .topbar-actions {
+        height: 100%;
+        margin-left: 2px;
+    }
+
+    #topbar .notifications .btn-group > a,
+    #topbar .notifications .dropdown-toggle,
+    #topbar .topbar-actions .dropdown-toggle {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+        font-size: 20px;
+    }
+
+    #topbar .badge-notifications,
+    #topbar #badge-messages {
+        min-width: 18px;
+        font-size: 11px !important;
+        line-height: 1.2;
+    }
+
+    #topbar .notifications .dropdown-menu {
+        right: 0 !important;
+        left: auto !important;
+        min-width: min(320px, calc(100vw - 24px)) !important;
+        max-width: calc(100vw - 12px) !important;
+    }
+
+    #topbar .topbar-actions .dropdown.account .dropdown-toggle {
+        width: 40px;
+        min-width: 40px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    #topbar .topbar-actions .dropdown.account .user-title {
+        display: none !important;
+    }
+
+    #topbar #user-account-image {
+        width: 30px;
+        height: 30px;
     }
 }
 
