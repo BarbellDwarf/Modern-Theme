@@ -174,7 +174,7 @@ The theme includes a dedicated admin panel for customization:
 
 ### Performance
 - Optimized compiled CSS and lightweight JavaScript modules for interactive behavior
-- CSS is served from precompiled `dist/theme.css` for predictable runtime performance
+- CSS is served from the published theme `resources/css/theme.css` for predictable runtime performance
 - Cached assets for optimal performance
 
 ### Browser Support
@@ -209,7 +209,7 @@ The theme includes a dedicated admin panel for customization:
 ### Styles look broken or incomplete
 - Run `php yii modern-theme-2026/update` from the protected directory
 - Verify ModernTheme2026 is selected as active theme
-- Check that CSS file was compiled: `themes/ModernTheme2026/dist/theme.css` exists and is not empty
+- Check that the CSS file was compiled: `themes/ModernTheme2026/resources/css/theme.css` exists and is not empty
 
 ### Issues with mobile app
 - Ensure you're on the latest version of Modern Theme 2026

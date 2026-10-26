@@ -19,6 +19,9 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - Navigation: removed the duplicate Dashboard entry from the top menu; the context switcher and logo still link there.
 - Performance: the compiled theme stylesheet is no longer loaded twice, dead CSS rules were removed, and static panels no longer lift on hover.
 
+### Removed
+- Deleted the stale pre-1.19 compiled stylesheet `themes/ModernTheme2026/dist/theme.css`. Nothing loads it (the theme layout serves the published `resources/css/theme.css`), and it still referenced a `select_arrow.png` that the shipped theme does not contain. `compile-css.php` keeps writing a fresh `dist/theme.css` for standalone builds.
+
 ## [1.1.1] - 2026-07-30
 
 ### Added
