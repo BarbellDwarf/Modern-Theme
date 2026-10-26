@@ -111,3 +111,58 @@
     }
   }
 }
+
+// ============================================================
+// Admin on phones (< 768px)
+// ============================================================
+// Heading and its action buttons share one line on desktop, which squeezes
+// the heading until words break mid-word at 390px. Stack them instead.
+@media (max-width: 767px) {
+  .mt2026-admin-content > .panel > .panel-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+
+    // Heading first, at full width, free to wrap between words.
+    h1, h2, h3, h4 {
+      width: 100%;
+      margin: 0;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    // Actions get their own row with 44px touch targets.
+    > .pull-right,
+    > .pull-left,
+    > .float-end,
+    > .float-start {
+      float: none !important;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  // Sub-menu tabs: one scrollable row instead of wrapping onto extra lines.
+  .mt2026-admin-content > .panel > .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0;
+
+    > li {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      white-space: nowrap;
+    }
+  }
+}

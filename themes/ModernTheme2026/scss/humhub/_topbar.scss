@@ -606,3 +606,14 @@ body[data-bs-theme="light"] {
         }
     }
 }
+
+// ── Top-nav keyboard focus ──────────────────────────────────────────────────
+// Directory and Usermap render as core .nav-link items and picked up HumHub's
+// own `:focus { outline: none }`, so the generic a:focus-visible ring lost on
+// specificity. An id-scoped rule outranks any core nav-link reset.
+#topbar #top-menu-nav > li > a:focus-visible,
+#topbar .navbar-nav .nav-link:focus-visible {
+    outline: 3px solid var(--color-primary, #1e6ad6);
+    outline-offset: 2px;
+    border-radius: $border-radius-sm;
+}

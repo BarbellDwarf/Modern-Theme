@@ -27,7 +27,7 @@ class ModernThemeAsset extends AssetBundle
         'js/mobileCommentCompose.js',
         'js/mobileContentToggle.js',
         'js/dropdownManager.js',
-        'js/dashboardComposer.js',
+        'js/composerFocus.js',
         'js/commentSubmit.js',
         'js/spacePolish.js',
         'js/copyPolish.js',

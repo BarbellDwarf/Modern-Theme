@@ -7,6 +7,7 @@
   .grid-view,
   .gridview {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
 
     table {
@@ -24,6 +25,19 @@
         min-width: 480px;
       }
     }
+  }
+
+  // Plain tables (information pages, settings summaries) scroll the panel body
+  // sideways rather than squeezing cells until words break.
+  .panel-body:has(> table),
+  .panel-body:has(> .table) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    word-break: normal;
+    overflow-wrap: normal;
   }
 
   // Action buttons row (float-end buttons above GridView)

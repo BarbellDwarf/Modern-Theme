@@ -1,6 +1,6 @@
 // ── Dashboard composer ─────────────────────────────────────────────────────
-// Card pinned above the dashboard stream. The real post form is injected by
-// HumHub and stays hidden until the placeholder is activated.
+// Card pinned above the dashboard stream. It links to the space stream, where
+// HumHub's own post form lives, instead of embedding a second copy of the form.
 
 .mt2026-dashboard-composer {
   margin-bottom: var(--space-4);
@@ -23,12 +23,14 @@
     color: var(--color-text-secondary);
     font-size: var(--font-size-base);
     text-align: left;
-    cursor: pointer;
+    text-decoration: none;
     transition: background-color 150ms ease;
 
     &:hover,
     &:focus {
       background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+      text-decoration: none;
     }
 
     &:focus-visible {
@@ -40,6 +42,7 @@
   &__avatar {
     width: 40px;
     height: 40px;
+    aspect-ratio: 1 / 1;
     border-radius: var(--radius-full);
     object-fit: cover;
     flex: 0 0 40px;
@@ -47,17 +50,6 @@
 
   &__placeholder {
     flex: 1 1 auto;
-  }
-
-  &__body {
-    margin-top: var(--space-2);
-
-    .panel {
-      margin: 0;
-      border: 0;
-      box-shadow: none;
-      background: transparent;
-    }
   }
 
   &--empty {

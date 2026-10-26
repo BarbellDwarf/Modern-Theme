@@ -125,19 +125,23 @@
 // ancestors never matched.  These global rules ensure styling applies.
 
 // Post card header — avatar + name row
+.stream-entry-header .media-object,
+.wall-entry-header .media-object {
+  // HumHub 1.19 headers use .stream-entry-header, which the older rule missed.
+  width: 40px;
+  height: 40px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex: 0 0 40px;
+}
+
 .wall-entry-header {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: 0 !important;
   margin-bottom: var(--space-3) !important;
-
-  .media-object {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
-    object-fit: cover;
-  }
 
   .media-heading {
     font-weight: $font-weight-semibold;

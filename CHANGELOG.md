@@ -6,6 +6,12 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 
 ## [Unreleased]
 
+### Changed
+- Dashboard composer is now a link, not a form. It points at the chosen space's stream with `?compose=1`, and `composerFocus.js` scrolls to HumHub's own composer and focuses ProseMirror (the flag is dropped from the URL afterwards). The embedded copy of the wall form lost 3 of 5 submits and once reposted a restored draft; the space stream composer does not.
+- Admin on phones: panel headings and their action buttons stack (actions get their own 44px row), sub-menu tabs scroll in a single row with snap points, and panel tables scroll sideways instead of wrapping cell text.
+- Top navigation keeps a visible focus ring on every link. `Directory` and `Usermap` were losing it to core `:focus { outline: none }` specificity.
+- Post author avatars, the profile photo and the composer avatar have explicit boxes (`aspect-ratio`, fixed dimensions) to cut layout shift.
+
 ### Fixed
 - HumHub 1.19: `humhub\libs\Html` was replaced with `humhub\helpers\Html` (still valid on 1.18) so the theme layout no longer fatals with `Class "humhub\libs\Html" not found`.
 - HumHub 1.19: published theme paths are now relative to the assets filesystem mount, so the theme CSS health check and rebuild use the asset filesystem instead of native file calls. This stops the `Detected invalid theme.css, rebuilding` loop.
@@ -20,6 +26,7 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - Performance: the compiled theme stylesheet is no longer loaded twice, dead CSS rules were removed, and static panels no longer lift on hover.
 
 ### Removed
+- `resources/js/dashboardComposer.js` and the SCSS for the embedded composer body: the form they expanded no longer exists.
 - Deleted the stale pre-1.19 compiled stylesheet `themes/ModernTheme2026/dist/theme.css`. Nothing loads it (the theme layout serves the published `resources/css/theme.css`), and it still referenced a `select_arrow.png` that the shipped theme does not contain. `compile-css.php` keeps writing a fresh `dist/theme.css` for standalone builds.
 
 ## [1.1.1] - 2026-07-30

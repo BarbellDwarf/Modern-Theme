@@ -2,7 +2,7 @@
 
 namespace humhub\modules\modernTheme2026\widgets;
 
-use humhub\modules\content\widgets\WallCreateContentFormContainer;
+use humhub\modules\content\permissions\CreatePost;
 use humhub\modules\modernTheme2026\controllers\ConfigController;
 use humhub\modules\space\models\Membership;
 use humhub\modules\space\models\Space;
@@ -13,44 +13,40 @@ use yii\helpers\Url;
 /**
  * Dashboard composer card.
  *
- * Picks a space the current user may post to, then renders HumHub's own post
- * form so validation, files and permissions behave exactly like a space post.
+ * Picks a space the current user may post to and links to that space's stream,
+ * where HumHub renders its own post form. The inline form is not embedded here:
+ * a second copy of the wall form submitted unreliably (lost requests, restored
+ * drafts), while the space stream form is reliable.
  * Renders an empty state when no suitable space exists.
  */
 class DashboardComposer extends Widget
 {
-    private const CREATE_FORM_CLASS = WallCreateContentFormContainer::class;
-
     public function run()
     {
-        if (Yii::$app->user->isGuest || !class_exists(self::CREATE_FORM_CLASS)) {
+        if (Yii::$app->user->isGuest) {
             return '';
         }
 
         try {
-            $result = $this->resolveComposerSpace();
+            $space = $this->resolveComposerSpace();
         } catch (\Throwable $e) {
             Yii::error('DashboardComposer: failed to resolve space: ' . $e->getMessage(), 'modern-theme-2026');
             return '';
         }
 
-        if ($result === null) {
+        if ($space === null) {
             return $this->render('dashboardComposerEmpty', [
                 'spacesUrl' => Url::to(['/space/spaces']),
             ]);
         }
 
         return $this->render('dashboardComposer', [
-            'space' => $result['space'],
-            'formHtml' => $result['formHtml'],
+            'composerUrl' => $this->getComposerUrl($space),
             'avatarUrl' => $this->getAvatarUrl(),
         ]);
     }
 
-    /**
-     * @return array{space: Space, formHtml: string}|null
-     */
-    private function resolveComposerSpace(): ?array
+    private function resolveComposerSpace(): ?Space
     {
         $userId = (int)Yii::$app->user->id;
         $configuredId = ConfigController::getDashboardComposerSpaceId();
@@ -74,19 +70,27 @@ class DashboardComposer extends Widget
         }
 
         foreach ($candidates as $space) {
-            if (!$this->isMember($space, $userId) || !$this->isPostEnabled($space)) {
-                continue;
-            }
-
-            // The container renders the same #contentFormBody wrapper and
-            // content menu that a space stream binds its create-form JS to.
-            $formHtml = call_user_func([self::CREATE_FORM_CLASS, 'widget'], ['contentContainer' => $space]);
-            if (trim($formHtml) !== '') {
-                return ['space' => $space, 'formHtml' => $formHtml];
+            if ($this->isMember($space, $userId) && $this->isPostEnabled($space) && $this->canPost($space)) {
+                return $space;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Space stream URL with the flag that tells composerFocus.js to open the
+     * form. HumHub only renders the form when the user may post there.
+     */
+    private function getComposerUrl(Space $space): string
+    {
+        $url = $space->getUrl();
+
+        if (!is_array($url)) {
+            return $url . (strpos($url, '?') === false ? '?' : '&') . 'compose=1';
+        }
+
+        return Url::to(array_merge($url, ['compose' => 1]));
     }
 
     /**
@@ -127,7 +131,24 @@ class DashboardComposer extends Widget
 
             return (bool)$space->moduleManager->isEnabled('post');
         } catch (\Throwable $e) {
-            // Fall through to the post form's own permission check.
+            // Fall through to the permission check below.
+            return true;
+        }
+    }
+
+    /**
+     * Membership does not imply the create-post permission. Without this the
+     * card could link to a stream that has no composer.
+     */
+    private function canPost(Space $space): bool
+    {
+        if (!class_exists(CreatePost::class)) {
+            return true; // shortcut: unknown permission API, let the target page decide
+        }
+
+        try {
+            return (bool)$space->getPermissionManager()->can(new CreatePost());
+        } catch (\Throwable $e) {
             return true;
         }
     }

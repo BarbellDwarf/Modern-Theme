@@ -33,14 +33,21 @@
         }
     }
 
-    // Avatar / space logo: restore natural sizing
+    // Avatar / space logo: fixed box so it cannot shift the header on load
     .profile-user-photo-container .img-profile-header-background,
     .profile-user-photo {
-        width: auto;
-        height: auto;
+        width: 140px;
+        height: 140px;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
         max-height: none;
         object-fit: cover;
         object-position: center center;
+
+        @media (max-width: 767px) {
+            width: 100px;
+            height: 100px;
+        }
     }
 }
 
