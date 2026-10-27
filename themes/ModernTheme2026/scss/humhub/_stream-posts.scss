@@ -203,6 +203,9 @@
     // name ellipsizes instead of pushing the icons out of the card.
     > a:has(.time) {
       flex: 0 0 auto;
+      min-height: 20px;
+      line-height: 20px;
+      padding: 6px 2px;
       color: var(--color-text-muted);
 
       &:hover {
@@ -217,6 +220,7 @@
     > .wall-entry-container-link {
       flex: 0 1 auto;
       min-width: 44px; // never collapse the name to an invisible link
+      max-width: 220px; // long space names ellipsize instead of eating the row
       color: var(--color-text-muted) !important;
 
       &:hover {
@@ -258,6 +262,25 @@
   // Core reserves 30px for it; reserve the full control plus a gap.
   @media (max-width: 767px) {
     padding-right: 52px !important;
+
+    // The space name is already in the page header, or is the space tab the
+    // reader is on. At 390px it survived only as "Grace Ba…", and a truncated
+    // proper noun reads worse than none.
+    > h5 {
+      // Core puts bare `·` text nodes between the links. They become anonymous
+      // flex items, so zero their glyphs and let the margins below set spacing.
+      gap: 0;
+      font-size: 0;
+    }
+
+    > h5 > .wall-entry-container-link {
+      display: none !important;
+    }
+
+    > h5 .wall-entry-icons {
+      margin-left: 4px;
+      font-size: 12px;
+    }
   }
 }
 
