@@ -219,19 +219,41 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
 .richtext-create-buttons .btn-comment-submit {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-1);
   margin-left: auto;
+  flex: 0 0 auto;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 44px;
+  min-height: 44px !important;
+  overflow: visible;
+  padding: var(--space-2) var(--space-4) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.2;
+  white-space: nowrap;
   font-weight: 600;
+
+  // The label is JS-injected; keep it visible whatever an outer theme does to spans/buttons.
+  .mt2026-comment-submit-label {
+    display: inline-block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    text-indent: 0 !important;
+    white-space: nowrap;
+  }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-}
-
-@media (max-width: 991px) {
-  .richtext-create-buttons .btn-comment-submit {
-    min-height: 44px;
   }
 }
 

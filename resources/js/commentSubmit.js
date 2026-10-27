@@ -1,12 +1,12 @@
 humhub.module('modernTheme.commentSubmit', function(module, require, $) {
 
-    var ENHANCED = 'mt2026CommentSubmitEnhanced';
     var observer = null;
     var debounceTimer = null;
 
-    var getScope = function($button) {
-        var $form = $button.closest('form');
-        return $form.length ? $form : $button.closest('.comment_create, .content_edit');
+    var getScope = function(element) {
+        var $element = $(element);
+        var $form = $element.closest('form');
+        return $form.length ? $form : $element.closest('.comment_create, .comment-form, .comment-container, .content_edit');
     };
 
     var hasContent = function($button) {
@@ -32,13 +32,18 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
 
     var enhance = function(button) {
         var $button = $(button);
+        var label = $button.attr('data-action-click') === 'editSubmit' ? 'Save' : 'Comment';
+        var $label = $button.find('.mt2026-comment-submit-label');
+        var text = $label.text();
 
-        if (!$button.data(ENHANCED)) {
-            var label = $button.attr('data-action-click') === 'editSubmit' ? 'Save' : 'Comment';
+        // Self-healing: HumHub's button loader restores cached markup and can drop the span.
+        if (!$label.length) {
             $button.append($('<span>').addClass('mt2026-comment-submit-label').text(label));
-            $button.attr('aria-label', label);
-            $button.data(ENHANCED, true);
+        } else if (text !== label) {
+            $label.text(label);
         }
+
+        $button.attr('aria-label', label);
 
         updateButton($button);
     };
@@ -50,7 +55,7 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
     };
 
     var updateScope = function(target) {
-        var $scope = getScope($(target));
+        var $scope = getScope(target);
         $scope.find('.btn-comment-submit').each(function() {
             enhance(this);
         });
@@ -63,6 +68,80 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
         debounceTimer = setTimeout(enhanceAll, 120);
     };
 
+    // The editor only writes into the hidden field on focusout, so a direct click on
+    // the submit button serialises an empty message and the server answers with 400.
+    var serializeScope = function(scope) {
+        var $scope = $(scope);
+        var $input = $scope.find('[name$="[message]"]').first();
+        var $editor = $scope.find('.ProseMirror').first();
+
+        if (!$input.length || !$editor.length) {
+            return;
+        }
+
+        var value = null;
+        var widget = null;
+
+        try {
+            var Widget = require('ui.widget').Widget;
+            widget = Widget.instance($scope.find('.humhub-ui-richtext').first());
+        } catch (err) {
+            widget = null;
+        }
+
+        if (widget && widget.editor && typeof widget.editor.serialize === 'function') {
+            try {
+                value = widget.editor.serialize();
+            } catch (err) {
+                value = null;
+            }
+        }
+
+        if (value === null) {
+            // Let core's own focusout handler serialise into the hidden field.
+            try {
+                $editor[0].dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+            } catch (err) {}
+
+            value = $input.val();
+
+            // short-cut: markdown is lost if the widget API is gone, the server has the final say
+            if (!value && $.trim($editor.text()) !== '') {
+                value = $editor[0].innerHTML;
+            }
+        }
+
+        if (value == null) {
+            return;
+        }
+
+        if ($input.val() !== value) {
+            $input.val(value).trigger('input').trigger('change');
+        }
+    };
+
+    // Capture phase: runs before HumHub's delegated click/submit handlers read the form.
+    var onDocumentClick = function(e) {
+        var button = e.target && e.target.closest ? e.target.closest('.btn-comment-submit') : null;
+        if (!button) {
+            return;
+        }
+
+        var scope = button.closest('form') || button.closest('.comment_create, .comment-form, .comment-container');
+        if (scope) {
+            serializeScope(scope);
+        }
+    };
+
+    var onDocumentSubmit = function(e) {
+        var form = e.target;
+        if (!form || form.nodeName !== 'FORM' || !form.querySelector('.btn-comment-submit')) {
+            return;
+        }
+
+        serializeScope(form);
+    };
+
     var init = function() {
         $(document)
             .off('.mt2026CommentSubmit')
@@ -71,6 +150,11 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
                 function() {
                     updateScope(this);
                 });
+
+        document.removeEventListener('click', onDocumentClick, true);
+        document.addEventListener('click', onDocumentClick, true);
+        document.removeEventListener('submit', onDocumentSubmit, true);
+        document.addEventListener('submit', onDocumentSubmit, true);
 
         if (observer) {
             observer.disconnect();
@@ -84,6 +168,8 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
 
     var unload = function() {
         $(document).off('.mt2026CommentSubmit');
+        document.removeEventListener('click', onDocumentClick, true);
+        document.removeEventListener('submit', onDocumentSubmit, true);
 
         if (observer) {
             observer.disconnect();
