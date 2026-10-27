@@ -12,16 +12,25 @@
 
         .nav-item,
         .mobile-nav-item {
-            color: var(--color-text-muted);
+            color: var(--color-text-muted, #6b7280) !important;
+
+            .nav-icon,
+            .nav-label {
+                color: inherit !important;
+            }
 
             &.active,
             &:active {
-                color: var(--color-primary);
-                background: var(--color-primary-lightest);
+                color: var(--color-primary-light, #5a8eeb) !important;
+
+                .nav-icon,
+                .nav-label {
+                    color: var(--color-primary-light, #5a8eeb) !important;
+                }
             }
 
             &:hover {
-                color: var(--color-text-primary);
+                color: var(--color-text-primary, #f3f4f6) !important;
             }
         }
 

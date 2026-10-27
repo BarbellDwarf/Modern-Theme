@@ -255,51 +255,55 @@
     }
 }
 
-// ── Mobile space/profile header: compact identity block (<768px) ─────────────
-// Desktop paints the name and subtitle as an overlay on the cover image, with
-// the avatar hanging off its bottom edge. On a phone the cover is hidden
-// entirely and the header becomes a two-column identity block:
+// ── Mobile space/profile header: compact identity card (<768px) ─────────────
+// Desktop overlays the title on the cover image. On a phone the cover is gone
+// and the card itself becomes one grid:
 //
-//   [avatar 60px]  title (2 lines) + subtitle
-//   stats + join/follow + gear on a wrapping row underneath
+//   [avatar 56]  title + subtitle           [join/follow + gear]
+//                stats
 //
-// display:contents removes the banner wrapper's box so the title block and
-// the avatar become grid children of the header. The cover image, its upload
-// controls and the loader live inside that wrapper, so they are hidden here.
+// display:contents removes the wrapper boxes (banner wrapper, panel body,
+// controls, bootstrap row) so their children place directly on this grid.
+// The card owns the padding, so nothing reserves space for the hidden banner.
 
 @media (max-width: 767px) {
     .panel-profile {
-        padding: 0 !important;
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr) auto;
+        column-gap: 12px;
+        row-gap: 8px;
+        align-items: center;
+        padding: 12px !important;
         overflow: visible;
     }
 
-    .panel-profile .panel-profile-header {
-        display: grid;
-        grid-template-columns: 60px minmax(0, 1fr);
-        column-gap: 12px;
-        row-gap: 4px;
-        align-items: center;
-        padding: 12px !important;
-        border: 0 !important;
-        background: transparent;
+    .panel-profile .panel-profile-header,
+    .panel-profile > .panel-body,
+    .panel-profile .panel-profile-controls,
+    .panel-profile .panel-profile-controls .container,
+    .panel-profile .panel-profile-controls .row,
+    .panel-profile .panel-profile-controls .col-lg-12 {
+        display: contents !important;
     }
 
+    // No cover image on phones. Removing its children also removes the grey
+    // fallback block, the scrim and the upload overlay.
     .panel-profile .panel-profile-header .profile-banner-image-container {
         display: contents !important;
     }
 
-    // No cover image on phones. Removing it also removes the grey fallback
-    // block, the scrim and the upload overlay that sat on top of it.
     .panel-profile .panel-profile-header .profile-banner-image-container > .img-profile-header-background,
     .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-buttons,
     .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-loader {
         display: none !important;
     }
 
-    // Circular 60px avatar in the first column. Core writes width, height and
-    // a 4px radius inline, so each dimension needs !important. Never set
-    // display on the image itself: core hides the unused avatar layer with
-    // .d-none-space-image and a later display would resurrect the duplicate.
+    // Circular 56px avatar in the first row. Keeping it on row 1 (not spanning
+    // row 2) is what pins the header to ~104px: the avatar sets that row's
+    // height, and stats hang below it. Core writes width, height and radius
+    // inline, so each dimension needs !important. Never set display on the
+    // image itself: core hides the unused avatar layer with .d-none-space-image
+    // and a later display would resurrect the duplicate.
     .panel-profile .panel-profile-header .profile-user-photo-container {
         grid-column: 1;
         grid-row: 1;
@@ -309,12 +313,13 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 60px !important;
-        height: 60px !important;
-        min-width: 60px !important;
-        min-height: 60px !important;
-        max-width: 60px !important;
-        max-height: 60px !important;
+        align-self: center;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        min-height: 56px !important;
+        max-width: 56px !important;
+        max-height: 56px !important;
         margin: 0 !important;
         overflow: hidden;
         border: 0 !important;
@@ -331,13 +336,13 @@
 
     .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym,
     .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo {
-        flex: 0 0 60px !important;
-        width: 60px !important;
-        height: 60px !important;
-        min-width: 60px !important;
-        min-height: 60px !important;
-        max-width: 60px !important;
-        max-height: 60px !important;
+        flex: 0 0 56px !important;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        min-height: 56px !important;
+        max-width: 56px !important;
+        max-height: 56px !important;
         border: 0 !important;
         border-radius: 50% !important;
         object-fit: cover;
@@ -350,10 +355,11 @@
         line-height: 1 !important;
     }
 
-    // Title + subtitle in the second column, static and dark.
+    // Title + subtitle share the first row with the controls.
     .panel-profile .panel-profile-header .img-profile-data {
         grid-column: 2;
         grid-row: 1;
+        min-width: 0;
         position: static !important;
         bottom: auto !important;
         left: auto !important;
@@ -390,89 +396,33 @@
 
         h2,
         h2.space {
+            display: -webkit-box;
             max-width: 100% !important;
             margin: 0 !important;
+            overflow: hidden !important;
             color: var(--color-text-muted, #6b7280) !important;
             font-size: 14px !important;
             font-weight: 400 !important;
             line-height: 1.4 !important;
             white-space: normal !important;
-            overflow: visible !important;
             text-overflow: clip !important;
             text-shadow: none !important;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
         }
     }
 
-    // Controls: stats + join/follow + gear on their own wrapping row.
-    .panel-profile > .panel-body {
-        padding: 0 12px 12px !important;
-        border-radius: 0 0 var(--radius-md, 10px) var(--radius-md, 10px);
-    }
-
-    .panel-profile .panel-profile-controls {
-        padding: 0 !important;
-    }
-
-    .panel-profile .panel-profile-controls .container {
-        width: 100% !important;
-        max-width: none !important;
-        padding: 0 !important;
-    }
-
-    .panel-profile .panel-profile-controls .row,
-    .panel-profile .panel-profile-controls .col-lg-12 {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px 12px;
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        float: none !important;
-    }
-
-    .panel-profile .statistics {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0 12px;
-        float: none !important;
-    }
-
-    .panel-profile .statistics .entry {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        min-height: 44px;
-        margin: 0 !important;
-        float: none !important;
-        line-height: 1.15;
-
-        br {
-            display: none;
-        }
-    }
-
-    .panel-profile .statistics .entry .count {
-        color: var(--color-text-primary, #111827);
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .panel-profile .statistics .entry .title {
-        color: var(--color-text-muted, #6b7280);
-        font-size: 12px;
-    }
-
+    // Join/follow and the gear sit on the title row, right-aligned.
     .panel-profile .controls.controls-header {
+        grid-column: 3;
+        grid-row: 1;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
+        justify-content: flex-end;
         gap: 8px;
         width: auto;
-        margin-left: auto;
+        margin: 0 !important;
         float: none !important;
     }
 
@@ -492,5 +442,43 @@
         min-width: 44px;
         min-height: 44px;
         padding: 0 8px;
+    }
+
+    // Stats sit directly under the title, one line, with an 8px row gap.
+    .panel-profile .statistics {
+        grid-column: 2 / span 2;
+        grid-row: 2;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 12px;
+        margin: 0 !important;
+        float: none !important;
+    }
+
+    .panel-profile .statistics .entry {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 4px;
+        min-height: 0;
+        margin: 0 !important;
+        float: none !important;
+        line-height: 1.2;
+
+        br {
+            display: none;
+        }
+    }
+
+    .panel-profile .statistics .entry .count {
+        color: var(--color-text-primary, #111827);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .panel-profile .statistics .entry .title {
+        color: var(--color-text-muted, #6b7280);
+        font-size: 13px;
     }
 }

@@ -22,7 +22,8 @@ use humhub\helpers\Html;
         <?php endif; ?>
         <span class="mt2026-dashboard-composer__field">
             <span class="mt2026-dashboard-composer__placeholder">
-                <?= Yii::t('ModernTheme2026.base', 'Share something with the church…') ?>
+                <span class="mt2026-dashboard-composer__placeholder-short"><?= Yii::t('ModernTheme2026.base', 'Share something…') ?></span>
+                <span class="mt2026-dashboard-composer__placeholder-full"><?= Yii::t('ModernTheme2026.base', 'Share something with the church…') ?></span>
             </span>
         </span>
         <span class="mt2026-dashboard-composer__action" aria-hidden="true">

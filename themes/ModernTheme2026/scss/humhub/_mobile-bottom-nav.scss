@@ -34,10 +34,17 @@
             position: relative;
             cursor: pointer;
             text-decoration: none;
-            color: var(--color-text-secondary, #4b5563);
+            // !important: base theme link colours would otherwise win on the
+            // anchor items and leave Home blue while another item is active.
+            color: var(--color-text-muted, #6b7280) !important;
             transition: color $transition-fast;
             background: none;
             border: none;
+
+            .nav-icon,
+            .nav-label {
+                color: inherit !important;
+            }
 
             .nav-icon {
                 font-size: 22px;
@@ -94,7 +101,12 @@
 
             // Active state: color + top indicator line (no background fill)
             &.active {
-                color: var(--color-primary, #1e6ad6);
+                color: var(--color-primary, #1e6ad6) !important;
+
+                .nav-icon,
+                .nav-label {
+                    color: var(--color-primary, #1e6ad6) !important;
+                }
 
                 &::after {
                     content: '';

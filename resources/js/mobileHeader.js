@@ -131,8 +131,16 @@ humhub.module('modernTheme.mobileHeader', function(module, require, $) {
         });
     };
 
+    var fixMissingAlt = function() {
+        // Decorative header/profile avatars: the name is always adjacent text.
+        // One core-rendered image ships without an alt attribute.
+        $('#topbar img:not([alt]), .panel-profile img:not([alt]), .mobile-bottom-nav img:not([alt])')
+            .attr('alt', '');
+    };
+
     var init = function() {
         fixBannerAttribute();
+        fixMissingAlt();
 
         var extras = markHeaderExtras();
         addAccountExtras(extras);

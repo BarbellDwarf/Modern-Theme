@@ -75,6 +75,16 @@
   .fc,
   .calendar,
   [class*="calendar"] {
+    // FullCalendar inherits ~10.5px here. 12px is the floor for the view
+    // switcher; targets stay 44px because padding is untouched.
+    .fc-button,
+    .fc-dayGridMonth-button,
+    .fc-timeGridWeek-button,
+    .fc-timeGridDay-button,
+    .fc-listWeek-button {
+      font-size: 12px;
+    }
+
     .fc-toolbar-title {
       font-size: 1rem;
       line-height: 1.3;

@@ -10,7 +10,10 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - `Mobile header title` theme setting. When set, the phone header shows it instead of the full site name, at 15px on one line with an ellipsis. Empty falls back to the site name.
 
 ### Changed
-- Phone space and profile headers drop the cover image and become a compact identity block: 60px circular avatar with a surface ring, an 18px title clamped to two lines, a 14px subtitle, then stats and actions on their own row with 44px targets. The old full-bleed mobile banner rules are gone.
+- Phone space and profile headers collapse into one grid card: 56px avatar, title and subtitle beside it, join/follow and gear on the title row, stats 8px below. Card padding is 12px and the card measures about 104px at 390px; the banner wrapper, scrim and reserved cover height are gone.
+- Bottom navigation: every inactive item is `--color-text-muted`, and only the active item takes the brand colour on its icon, label and top indicator. Dark mode drops the filled pill behind the active item.
+- Dashboard composer: the Write pill is now a filled primary button (white on `--color-primary-strong`) instead of orange on peach, and its prompt shortens to "Share something…" below 768px.
+- Phone stream timestamps and meta are 13px, and calendar view buttons are 12px with their 44px targets intact.
 - A subtitle that only repeats the title is hidden. A stream post authored by its own space no longer prints the space name twice in the byline.
 - Comment pills read "Comments (4)" and "Comment" below two. The mobile pill uses a non-breaking space so the count stays attached to the word. Post timestamps keep relative text but use one fixed `Jul 5, 2026, 4:32 PM` format in the tooltip and accessible label, and dates never wrap mid-phrase.
 - Non-members see Join only. Follow stays for members, where it belongs; the explanatory hint under the controls is gone.

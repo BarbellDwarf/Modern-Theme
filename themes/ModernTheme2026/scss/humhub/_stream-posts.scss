@@ -390,3 +390,15 @@
     margin-top: var(--space-3);
   }
 }
+
+// Meta text is the smallest type on the card and measured 11px at 390px.
+@media (max-width: 767px) {
+  .wall-entry .timestamp,
+  .wall-entry .time,
+  .wall-entry-meta,
+  .stream-entry .timestamp,
+  .stream-entry .time,
+  .stream-entry-meta {
+    font-size: 13px;
+  }
+}
