@@ -178,7 +178,7 @@
       h4 {
         width: 100%;
         overflow-wrap: normal;
-        word-break: keep-all;
+        word-break: normal;
       }
 
       > .btn-group,
@@ -341,16 +341,20 @@
 // Admin headings & tables (mobile)
 // ============================================================
 @media (max-width: 767px) {
+  // Page title: 18px is enough to read as a heading without wrapping the
+  // second word onto its own line at 390px.
   .mt2026-admin-content .panel-body h4 {
-    font-size: 20px;
-    line-height: 1.25;
-    margin: 6px 0 10px;
+    font-size: 18px;
+    line-height: 1.3;
+    margin: 4px 0 8px;
+    text-wrap: balance;
   }
 
   // Intro copy (module descriptions) was set large enough to eat ~120px.
-  .mt2026-admin-content .panel-body > p {
+  .mt2026-admin-content .panel-body > p,
+  .mt2026-admin-content .panel-body > .text-body-secondary {
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.45;
     margin-bottom: 10px;
   }
 
@@ -361,10 +365,11 @@
 }
 
 // Scroll affordance shared by the chip row, tab strip and admin tables.
-// adminPolish.js sets data-fade to the edges that still have content, so the
-// fade disappears once the user reaches the end.
+// adminPolish.js sets data-fade="right" only while more content hides to the
+// right; reaching the end removes the fade so the last chip ends clean.
 .mt2026-admin-sidebar #admin-menu .list-group,
 .mt2026-admin-content .tab-menu,
+.mt2026-admin-content .tab-menu .nav-tabs,
 .mt2026-admin-content .table-responsive,
 .mt2026-admin-content .grid-view {
   scrollbar-width: none;
@@ -374,18 +379,102 @@
   }
 
   &[data-fade='right'] {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+  }
+}
+
+// ============================================================
+// Module list rows (mobile)
+// ============================================================
+// Core lays the row out as icon | name | description | actions on one line.
+// At 390px the description keeps 50% and hyphenates ("up-coming"), and the
+// actions float mid-card. Give description and actions a full row each.
+@media (max-width: 767px) {
+  .mt2026-admin-content .modules-group .module-row {
+    > div.col-6:not(.module-actions) {
+      flex: 0 0 100%;
+      max-width: 100%;
+      font-size: 13px;
+      line-height: 1.45;
+      hyphens: none;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    > .module-actions {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding-right: 0;
+      white-space: normal;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .btn {
+        min-height: 40px;
+        margin-left: 0;
+      }
+
+      // Gear only: square 40px target, label comes from adminPolish.js.
+      .btn.dropdown-toggle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+// Intro paragraph: three lines plus a More/Less toggle, added by
+// adminPolish.js. Only the descriptive lead clamps; the data-loss warning is
+// split into its own paragraph so it stays visible while collapsed.
+.mt2026-intro-toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mt2026-intro-lead {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+
+    &.is-open {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
   }
 
-  &[data-fade='left'] {
-    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 16px), transparent);
-    mask-image: linear-gradient(to left, #000 calc(100% - 16px), transparent);
+  .mt2026-intro-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-2);
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
   }
 
-  &[data-fade='both'] {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
-    mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  .mt2026-intro-warning {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
   }
 }
 
