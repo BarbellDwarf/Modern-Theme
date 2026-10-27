@@ -218,12 +218,12 @@ class ConfigController extends Controller
         $module = Yii::$app->getModule('modern-theme-2026');
         $stored = $module ? $module->settings->get('mobileHeaderTitle') : null;
 
-        if ($stored !== null) {
-            return trim((string)$stored);
+        // Values saved before the scope fix live in HumHub's global "base" scope.
+        if ($stored === null || trim((string)$stored) === '') {
+            $stored = Yii::$app->settings->get('mobileHeaderTitle', '');
         }
 
-        // Values saved before the scope fix live in HumHub's global "base" scope.
-        return trim((string)Yii::$app->settings->get('mobileHeaderTitle', ''));
+        return trim((string)$stored);
     }
 
     public static function getMobileMoreHiddenModuleIds(): array
