@@ -1,0 +1,25 @@
+- generic [ref=f20e3]:
+  - heading "Grace Baptist Church of Van" [level=1] [ref=f20e4]
+  - generic [ref=f20e5]:
+    - generic [ref=f20e6]:
+      - strong [ref=f20e7]: Please
+      - text: sign in
+    - generic [ref=f20e8]:
+      - paragraph [ref=f20e9]: Please login with your username/email and password.
+      - generic [ref=f20e10]:
+        - textbox "Username or Email" [active] [ref=f20e12]: rook-qa
+        - generic [ref=f20e13]:
+          - generic [ref=f20e14] [cursor=pointer]: 
+          - textbox "Password" [invalid] [ref=f20e16]
+          - generic [ref=f20e17]: User or Password incorrect.
+        - generic [ref=f20e19]:
+          - checkbox "Remember me" [checked] [ref=f20e20] [cursor=pointer]: 
+          - generic [ref=f20e21] [cursor=pointer]: Remember me
+        - generic [ref=f20e22]:
+          - button "Sign in" [ref=f20e24] [cursor=pointer]
+          - link "Forgot your password?" [ref=f20e27] [cursor=pointer]:
+            - /url: /user/password-recovery
+  - generic [ref=f20e31]:
+    - combobox [aria-hidden] [ref=f20e32]
+    - combobox [ref=f20e35] [cursor=pointer]:
+      - textbox "English (US)" [ref=f20e36]

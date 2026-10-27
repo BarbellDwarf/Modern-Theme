@@ -1,0 +1,18 @@
+- generic [ref=f25e6]:
+  - generic [ref=f25e7]:
+    - generic [ref=f25e9]:
+      - heading [level=4] [ref=f25e10]:
+        - link "Daniel Rivera" [ref=f25e11] [cursor=pointer]:
+          - /url: "#"
+      - heading [level=5] [ref=f25e12]:
+        - link "Grace Baptist Church of Van" [ref=f25e13] [cursor=pointer]:
+          - /url: "#"
+        - text: ·
+        - link [ref=f25e14] [cursor=pointer]:
+          - /url: "#"
+          - time [ref=f25e15]: 34 minutes ago
+        - text: ·
+        - generic [aria-hidden] [ref=f25e17]: 
+    - link "" [ref=f25e19] [cursor=pointer]:
+      - /url: "#"
+  - paragraph [ref=f25e23]: Body copy for the card.

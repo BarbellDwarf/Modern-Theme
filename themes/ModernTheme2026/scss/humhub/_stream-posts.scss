@@ -545,3 +545,19 @@
   }
 }
 
+
+// Mobile post meta: core leaves bare  text nodes between the space link,
+// time and privacy icons. With the space link hidden they surface as orphan
+// dots. Zero the h5 text size (text nodes only) and restore it on real children.
+@media (max-width: 767px) {
+  .wall-entry-header-info h5 {
+    font-size: 0 !important;
+  }
+
+  .wall-entry-header-info h5 > a,
+  .wall-entry-header-info h5 time,
+  .wall-entry-header-info h5 .wall-entry-icons,
+  .wall-entry-header-info h5 .wall-entry-icons i {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,6 @@
+- generic [ref=f15e5]:
+  - generic [ref=f15e6]: Post
+  - generic [ref=f15e7]:
+    - generic [ref=f15e8]: Author name
+    - paragraph [ref=f15e10]: Post body text that wraps across the card width.
+    - generic [ref=f15e11]: Like · Comment

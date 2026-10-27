@@ -1,0 +1,16 @@
+- generic [ref=f26e6]:
+  - generic [ref=f26e7]:
+    - generic [ref=f26e9]:
+      - heading [level=4] [ref=f26e10]:
+        - link "Daniel Rivera" [ref=f26e11] [cursor=pointer]:
+          - /url: "#"
+      - heading [level=5] [ref=f26e12]:
+        - text: ·
+        - link [ref=f26e13] [cursor=pointer]:
+          - /url: "#"
+          - time [ref=f26e14]: 34 minutes ago
+        - text: ·
+        - generic [aria-hidden] [ref=f26e16]: 
+    - link "" [ref=f26e18] [cursor=pointer]:
+      - /url: "#"
+  - paragraph [ref=f26e22]: Body copy for the card.
