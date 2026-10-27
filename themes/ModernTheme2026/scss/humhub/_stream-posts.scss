@@ -296,12 +296,12 @@
 }
 
 // Ensure the comment icon (::before pseudo-element) is visible.
-// Only apply display:inline-flex when the link is NOT hidden by .d-none.
+// Only apply display:inline-block when the link is NOT hidden by .d-none.
 .wall-entry-controls a[data-action-click="comment.toggleComment"]:not(.d-none) {
-  display: inline-flex !important;
-  align-items: center;
+  display: inline-block !important;
   min-height: 32px;
   min-width: 32px;
+  white-space: nowrap;
   opacity: 1 !important;
   visibility: visible !important;
 
@@ -392,13 +392,28 @@
 }
 
 // Meta text is the smallest type on the card and measured 11px at 390px.
+// Core sets 11px via `.wall-entry .wall-entry-header h4 .time`, so the theme
+// has to match that depth to win.
 @media (max-width: 767px) {
+  .wall-entry .wall-entry-header h4 .time,
+  .wall-entry .wall-entry-header h4 .tt.time,
+  .wall-entry .wall-entry-header h5 .time,
   .wall-entry .timestamp,
   .wall-entry .time,
   .wall-entry-meta,
+  .stream-entry .wall-entry-header h4 .time,
+  .stream-entry .wall-entry-header h4 .tt.time,
   .stream-entry .timestamp,
   .stream-entry .time,
   .stream-entry-meta {
     font-size: 13px;
+    line-height: 1.4;
+  }
+
+  // Icons in the same meta row stay at 12px so the row still fits one line.
+  .wall-entry .wall-entry-header h4 .time i,
+  .wall-entry .wall-entry-header h4 .time span {
+    font-size: 12px;
   }
 }
+

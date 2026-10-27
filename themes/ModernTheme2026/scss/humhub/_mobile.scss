@@ -286,10 +286,11 @@ body.mt2026-keyboard-open {
         a[data-action-click="comment.toggleComment"]:not(.d-none),
         .comment-link,
         .content-addon-link {
-            display: inline-flex !important;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 14px;
+            // Inline block, not flex: the label and " (N)" must stay one text
+            // flow so the pill can never break between the word and the count.
+            display: inline-block !important;
+            padding: 12px 14px;
+            line-height: 20px;
             border-radius: 22px;
             border: 1px solid var(--color-border, #e5e7eb);
             color: var(--color-text-secondary, #4b5563) !important;
@@ -317,9 +318,11 @@ body.mt2026-keyboard-open {
         // Prepend comment icon via pseudo-element
         a[data-action-click="comment.toggleComment"]::before {
             content: '\f0e5';
+            display: inline-block;
             font-family: FontAwesome;
             margin-right: 4px;
             font-size: 14px !important;
+            vertical-align: -2px;
         }
     }
 

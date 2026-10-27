@@ -271,7 +271,7 @@
         display: grid;
         grid-template-columns: 56px minmax(0, 1fr) auto;
         column-gap: 12px;
-        row-gap: 8px;
+        row-gap: 4px;
         align-items: center;
         align-content: start;
         padding: 12px !important;
@@ -285,6 +285,33 @@
     .panel-profile .panel-profile-controls .row,
     .panel-profile .panel-profile-controls .col-lg-12 {
         display: contents !important;
+    }
+
+    // Bootstrap 3 clearfixes use ::before/::after { content:" "; display:table }.
+    // display:contents promotes those boxes to grid items, which land on their
+    // own implicit rows and spend ~40px of row gap plus line boxes. Killing the
+    // pseudos is what actually removes the dead space.
+    .panel-profile .panel-profile-header,
+    .panel-profile > .panel-body,
+    .panel-profile .panel-profile-controls,
+    .panel-profile .panel-profile-controls .container,
+    .panel-profile .panel-profile-controls .row,
+    .panel-profile .panel-profile-controls .col-lg-12 {
+        &::before,
+        &::after {
+            content: none !important;
+            display: none !important;
+        }
+    }
+
+    // The banner block is superseded on phones. Keep every box that used to
+    // reserve height for it at zero, so no core min-height can leak back in.
+    .panel-profile .panel-profile-header {
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
     }
 
     // No cover image on phones. The wrapper becomes pure structure so its title
@@ -447,7 +474,8 @@
         padding: 0 8px;
     }
 
-    // Stats sit directly under the title, one line, with an 8px row gap.
+    // Stats sit directly under the title, one line, sharing the title's left
+    // edge (column 2). Row gap above them is 4px.
     .panel-profile .statistics {
         grid-column: 2 / span 2;
         grid-row: 2;

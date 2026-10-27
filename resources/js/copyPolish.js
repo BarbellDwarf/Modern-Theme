@@ -16,9 +16,9 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
             });
 
             if (count > 1) {
-                // The mobile pill lays the link out as inline-flex, which
-                // swallows the leading space core puts inside the span.
-                $count.text('\u00a0(' + count + ')').show();
+                // Plain space: the pill is inline-block, so a normal space
+                // collapses into the label and still cannot wrap.
+                $count.text(' (' + count + ')').show();
             } else {
                 $count.hide();
             }
