@@ -851,10 +851,12 @@ body.mt2026-keyboard-open {
     }
 }
 
-// ── Fix #7: "Read more" truncation for long stream entries on mobile ──────────
+// ── Fix #7: opt-in clamp for genuinely long stream entries on mobile ─────────
+// mobileContentToggle.js adds .mt2026-clamped only when content exceeds 600px
+// and inserts the .mt2026-read-more button below it.
 @media (max-width: 991px) {
-    .wall-entry-content.content {
-        max-height: 50vh;
+    .wall-entry-content.content.mt2026-clamped {
+        max-height: 600px;
         overflow: hidden;
         position: relative;
 
@@ -867,10 +869,9 @@ body.mt2026-keyboard-open {
             height: 80px;
             background: linear-gradient(to bottom, transparent, var(--color-bg-primary));
             pointer-events: none;
-            cursor: pointer;
         }
 
-        &.expanded {
+        &.mt2026-expanded {
             max-height: none;
             overflow: visible;
 
@@ -880,8 +881,25 @@ body.mt2026-keyboard-open {
         }
     }
 
-    [data-bs-theme="dark"] .wall-entry-content.content::after {
+    [data-bs-theme="dark"] .wall-entry-content.content.mt2026-clamped::after {
         background: linear-gradient(to bottom, transparent, var(--color-bg-secondary));
+    }
+
+    .mt2026-read-more {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        min-height: 44px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-primary);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
     }
 }
 

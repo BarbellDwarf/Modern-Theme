@@ -24,6 +24,8 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 - Admin on phones: panel headings and their action buttons stack (actions get their own 44px row), sub-menu tabs scroll in a single row with snap points, and panel tables scroll sideways instead of wrapping cell text.
 - Top navigation keeps a visible focus ring on every link. `Directory` and `Usermap` were losing it to core `:focus { outline: none }` specificity.
 - Post author avatars, the profile photo and the composer avatar have explicit boxes (`aspect-ratio`, fixed dimensions) to cut layout shift.
+- Phone stream posts show their full text by default. Content only clamps past 600px, with a 44px `Read more` / `Show less` button and a fade that ends above it. Tapping the post body no longer expands anything.
+- Phone top bar is now brand, search and avatar. The notification bell is hidden below 992px and the bottom nav badge carries the unread count. Mail and appearance stay reachable from the avatar menu, and search plus avatar are 44x44.
 
 ### Fixed
 - Phone space and profile headers: the 40px dead band under the identity row came from Bootstrap 3 clearfix pseudo-elements, which `display: contents` promoted to grid rows. The header now also zeroes its own `min-height`, padding and border so no cover-image rule can reserve space again.

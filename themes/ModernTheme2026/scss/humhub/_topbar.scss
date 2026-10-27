@@ -601,8 +601,8 @@ body[data-bs-theme="light"] {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         margin-left: auto;
         padding: 0;
         border: 0;
@@ -616,10 +616,11 @@ body[data-bs-theme="light"] {
         display: none !important;
     }
 
+    // Notifications, mail and appearance all have mobile destinations (bottom
+    // nav bell, More sheet, account dropdown). Keep the bar to brand + search +
+    // avatar and keep the core dropdown markup for desktop.
     #topbar .notifications {
-        height: 100%;
-        margin-left: 2px;
-        gap: 4px;
+        display: none !important;
     }
 
     #topbar .topbar-actions {
@@ -630,10 +631,10 @@ body[data-bs-theme="light"] {
     #topbar .notifications .btn-group > a,
     #topbar .notifications .dropdown-toggle,
     #topbar .topbar-actions .dropdown-toggle {
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
-        min-height: 40px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
         font-size: 20px;
     }
 
@@ -652,8 +653,8 @@ body[data-bs-theme="light"] {
     }
 
     #topbar .topbar-actions .dropdown.account .dropdown-toggle {
-        width: 40px;
-        min-width: 40px;
+        width: 44px;
+        min-width: 44px;
         padding: 0;
         justify-content: center;
     }
@@ -666,11 +667,22 @@ body[data-bs-theme="light"] {
         width: 30px;
         height: 30px;
     }
+
+    // Mail and appearance stay reachable from the avatar menu on phones.
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra {
+        display: block;
+    }
+
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+    }
 }
 
 // ── Narrow phones: declutter the top bar ────────────────────────────────────
-// Keep brand + search + notifications + avatar. Mail and the appearance
-// switcher move into the account dropdown; the avatar loses its caret.
+// Keep brand + search + avatar. The avatar loses its caret.
 .mt2026-account-extra {
     display: none;
 }
@@ -681,14 +693,12 @@ body[data-bs-theme="light"] {
         gap: 8px;
     }
 
-    #topbar .notifications,
     #topbar .topbar-actions {
         margin-left: 0;
         gap: 8px;
     }
 
     #mt2026-mobile-search,
-    #topbar .notifications .btn-group > a,
     #topbar .topbar-actions .dropdown-toggle {
         width: 44px;
         min-width: 44px;
@@ -708,22 +718,6 @@ body[data-bs-theme="light"] {
 
     #account-dropdown-link::after {
         display: none !important;
-    }
-
-    // Mail and appearance live in the account dropdown at this width.
-    #topbar .notifications .mt2026-header-extra {
-        display: none !important;
-    }
-
-    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra {
-        display: block;
-    }
-
-    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra .dropdown-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 44px;
     }
 }
 
