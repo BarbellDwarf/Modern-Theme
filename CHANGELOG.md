@@ -6,13 +6,24 @@ The format follows Keep a Changelog and this project uses Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+- `Mobile header title` theme setting. When set, the phone header shows it instead of the full site name, at 15px on one line with an ellipsis. Empty falls back to the site name.
+
 ### Changed
+- Phone space and profile headers drop the cover image and become a compact identity block: 60px circular avatar with a surface ring, an 18px title clamped to two lines, a 14px subtitle, then stats and actions on their own row with 44px targets. The old full-bleed mobile banner rules are gone.
+- A subtitle that only repeats the title is hidden. A stream post authored by its own space no longer prints the space name twice in the byline.
+- Comment pills read "Comments (4)" and "Comment" below two. The mobile pill uses a non-breaking space so the count stays attached to the word. Post timestamps keep relative text but use one fixed `Jul 5, 2026, 4:32 PM` format in the tooltip and accessible label, and dates never wrap mid-phrase.
+- Non-members see Join only. Follow stays for members, where it belongs; the explanatory hint under the controls is gone.
+- Calendar months with no events show a quiet muted line above the grid, with no tinted alert box and no dismiss button.
+- Notification overview with nothing in it shows the centred "You're all caught up." state and hides the panel heading and filter sidebar.
+- Embedded media inherits the card radius and clips provider corners.
 - Dashboard composer is now a link, not a form. It points at the chosen space's stream with `?compose=1`, and `composerFocus.js` scrolls to HumHub's own composer and focuses ProseMirror (the flag is dropped from the URL afterwards). The embedded copy of the wall form lost 3 of 5 submits and once reposted a restored draft; the space stream composer does not.
 - Admin on phones: panel headings and their action buttons stack (actions get their own 44px row), sub-menu tabs scroll in a single row with snap points, and panel tables scroll sideways instead of wrapping cell text.
 - Top navigation keeps a visible focus ring on every link. `Directory` and `Usermap` were losing it to core `:focus { outline: none }` specificity.
 - Post author avatars, the profile photo and the composer avatar have explicit boxes (`aspect-ratio`, fixed dimensions) to cut layout shift.
 
 ### Fixed
+- The unsaved-changes prompt no longer fires after touching a search or filter field. `unsavedGuard.js` disarms core's acknowledged forms unless they hold an editor with text or a file, so only a real draft prompts on leave.
 - HumHub 1.19: `humhub\libs\Html` was replaced with `humhub\helpers\Html` (still valid on 1.18) so the theme layout no longer fatals with `Class "humhub\libs\Html" not found`.
 - HumHub 1.19: published theme paths are now relative to the assets filesystem mount, so the theme CSS health check and rebuild use the asset filesystem instead of native file calls. This stops the `Detected invalid theme.css, rebuilding` loop.
 - HumHub 1.19: `compile-css.php` detects core SCSS in `protected/humhub/resources/scss` (1.19) or `static/scss` (1.18), and the parent theme in `protected/humhub/themes/HumHub` (1.19) or `themes/HumHub` (1.18).

@@ -182,6 +182,24 @@
   }
 }
 
+// Dates and timestamps read as one unit. "Jul 5, 2026" must not break at
+// a space inside the phrase.
+.wall-entry time,
+.wall-entry .timestamp,
+.stream-entry time,
+.stream-entry .timestamp {
+  white-space: nowrap;
+}
+
+// Embedded media (oEmbed): match the card radius and clip provider corners.
+// The provider iframe paints its own background, so the radius has to live on
+// the snippet wrapper as well as the frame.
+.richtext-oembed-container .oembed_snippet,
+.richtext-oembed-container .oembed_snippet iframe {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
 // ── Single-box stream posts (all screen sizes) ───────────────────────────────
 // Real DOM: .layout-content-container > .dashboard-wall-stream > .s2_stream >
 //           .s2_streamContent > .wall-entry > .panel

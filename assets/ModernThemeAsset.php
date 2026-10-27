@@ -31,6 +31,7 @@ class ModernThemeAsset extends AssetBundle
         'js/commentSubmit.js',
         'js/spacePolish.js',
         'js/copyPolish.js',
+        'js/unsavedGuard.js',
         'js/profileInitials.js',
         'js/calendarPolish.js',
         'js/mobileHeader.js',

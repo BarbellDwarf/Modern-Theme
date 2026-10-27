@@ -16,7 +16,9 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
             });
 
             if (count > 1) {
-                $count.show();
+                // The mobile pill lays the link out as inline-flex, which
+                // swallows the leading space core puts inside the span.
+                $count.text('\u00a0(' + count + ')').show();
             } else {
                 $count.hide();
             }
@@ -53,9 +55,64 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
         });
     };
 
+    // A subtitle that only repeats the title ("Test" / "TEST - Grace") is noise.
+    var normaliseIdentity = function() {
+        $('.panel-profile .img-profile-data').each(function() {
+            var $data = $(this);
+            var title = $.trim($data.find('h1').first().text()).toLowerCase();
+            var $subtitle = $data.find('h2').first();
+
+            if (!title || !$subtitle.length) {
+                return;
+            }
+
+            if ($.trim($subtitle.text()).toLowerCase().indexOf(title) === 0) {
+                $subtitle.hide();
+            }
+        });
+    };
+
+    // When a post is authored by the space itself, the byline repeats the name.
+    var normaliseBylines = function() {
+        $('.wall-entry h4 .viaLink').each(function() {
+            var $via = $(this);
+            var author = $.trim($via.parent().find('a').first().text()).toLowerCase();
+            var space = $.trim($via.text()).toLowerCase();
+
+            if (author && space && author === space) {
+                $via.hide();
+            }
+        });
+    };
+
+    // Core prints a short date in the title with a dash separator. Use one
+    // fixed format for the tooltip and the accessible label.
+    var normaliseTimes = function() {
+        $('time.timeago[datetime]').each(function() {
+            var date = new Date(this.getAttribute('datetime'));
+            if (isNaN(date.getTime())) {
+                return;
+            }
+
+            var label = date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+
+            this.setAttribute('title', label);
+            this.setAttribute('aria-label', label);
+        });
+    };
+
     var run = function() {
         normaliseComments();
         normaliseCounters();
+        normaliseIdentity();
+        normaliseBylines();
+        normaliseTimes();
     };
 
     var schedule = function() {

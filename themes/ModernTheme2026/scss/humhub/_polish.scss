@@ -1,14 +1,6 @@
 // Modern Theme 2026 - State clarity and copy polish
 // Join cards, empty states, initials avatar and calendar notice.
 
-.mt2026-space-controls-hint {
-  clear: both;
-  margin: var(--space-2) 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  text-align: right;
-}
-
 .mt2026-join-card {
   padding: var(--space-6);
   text-align: center;
@@ -86,37 +78,34 @@
   letter-spacing: 0.02em;
   line-height: 1;
 
-  // Phone header shrinks the avatar to 72px.
+  // Phone header shrinks the avatar to 60px.
   @media (max-width: 767px) {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
   }
 }
 
-// Calendar empty-month notice.
+// Calendar empty-month notice. A quiet line above the grid: no tinted alert
+// box, no border, no dismiss button.
 .mt2026-calendar-empty {
-  display: flex;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: space-between;
-  margin: var(--space-3) var(--space-4) 0;
-  padding: var(--space-2) var(--space-3);
-  color: var(--color-text-secondary);
-  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
-  border-left: 3px solid var(--color-primary);
-  border-radius: var(--radius);
-  font-size: var(--font-size-sm);
-}
-
-.mt2026-calendar-empty__dismiss {
-  padding: 0 var(--space-2);
+  margin: 0 0 var(--space-2);
+  padding: 0;
   color: var(--color-text-muted);
   background: transparent;
   border: 0;
-  font-size: var(--font-size-lg);
-  line-height: 1;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
 
-  &:hover,
-  &:focus {
-    color: var(--color-text-primary);
-  }
+.mt2026-calendar-empty__dismiss {
+  display: none;
+}
+
+// Notification overview with nothing in it: the empty state replaces both the
+// table header and the filter sidebar.
+.panel:has(.mt2026-empty-state[data-mt2026-empty-state="notifications"]) > .panel-heading {
+  display: none;
+}
+
+.layout-content-container:has(.mt2026-empty-state[data-mt2026-empty-state="notifications"]) ~ .layout-sidebar-container {
+  display: none;
 }

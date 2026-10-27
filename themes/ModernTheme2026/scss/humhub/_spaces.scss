@@ -48,17 +48,6 @@
         max-height: none;
         object-fit: cover;
         object-position: center center;
-
-        @media (max-width: 767px) {
-            width: 100px;
-            height: 100px;
-        }
-    }
-}
-
-@media (max-width: 575px) {
-    .panel-profile-header .profile-banner-image-container .img-profile-header-background {
-        height: 140px;
     }
 }
 
@@ -266,20 +255,17 @@
     }
 }
 
-// ── Mobile space/profile header: stacked card (<768px) ───────────────────────
-// Desktop paints the name and subtitle as an absolute overlay on the banner,
-// with the avatar hanging off its bottom edge. That layout collapses on a
-// phone: the title is clipped, white text lands on a light banner and the
-// controls are pushed out of the card. Rebuild it as a vertical stack:
+// ── Mobile space/profile header: compact identity block (<768px) ─────────────
+// Desktop paints the name and subtitle as an overlay on the cover image, with
+// the avatar hanging off its bottom edge. On a phone the cover is hidden
+// entirely and the header becomes a two-column identity block:
 //
-//   banner (full bleed)
-//   avatar (overlaps the banner bottom-left)
-//   title + subtitle (static, dark, full width)
-//   stats + join/follow + gear (wrapping row, 44px targets)
+//   [avatar 60px]  title (2 lines) + subtitle
+//   stats + join/follow + gear on a wrapping row underneath
 //
-// display:contents removes the banner wrapper's box so the image, title and
-// avatar become children of the header and can be reordered. The wrapper's
-// absolute-positioned upload controls are re-pinned to the banner area.
+// display:contents removes the banner wrapper's box so the title block and
+// the avatar become grid children of the header. The cover image, its upload
+// controls and the loader live inside that wrapper, so they are hidden here.
 
 @media (max-width: 767px) {
     .panel-profile {
@@ -288,93 +274,70 @@
     }
 
     .panel-profile .panel-profile-header {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        padding: 0 !important;
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr);
+        column-gap: 12px;
+        row-gap: 4px;
+        align-items: center;
+        padding: 12px !important;
         border: 0 !important;
         background: transparent;
     }
 
-    // Unwrap the banner container. Its background/overflow move to the image.
     .panel-profile .panel-profile-header .profile-banner-image-container {
         display: contents !important;
     }
 
-    .panel-profile .panel-profile-header .profile-banner-image-container > .img-profile-header-background {
-        order: 1;
-        width: 100% !important;
-        height: 140px !important;
-        min-height: 140px !important;
-        max-height: 140px !important;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-        background-color: #334155;
-        border-radius: var(--radius-md, 10px) var(--radius-md, 10px) 0 0;
-    }
-
-    // Banner upload controls: keep them over the banner, not the whole card.
-    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-buttons {
-        top: 8px;
-        right: 8px;
-        bottom: auto;
-        z-index: 4;
-    }
-
+    // No cover image on phones. Removing it also removes the grey fallback
+    // block, the scrim and the upload overlay that sat on top of it.
+    .panel-profile .panel-profile-header .profile-banner-image-container > .img-profile-header-background,
+    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-buttons,
     .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-loader {
-        top: 0;
-        height: 140px;
+        display: none !important;
     }
 
-    // Square, circular 72px avatar overlapping the banner by 20px. Core
-    // writes 140px width/height and a 4px radius inline, so every dimension
-    // needs !important; flex-shrink must also be off or the box squashes.
+    // Circular 60px avatar in the first column. Core writes width, height and
+    // a 4px radius inline, so each dimension needs !important. Never set
+    // display on the image itself: core hides the unused avatar layer with
+    // .d-none-space-image and a later display would resurrect the duplicate.
     .panel-profile .panel-profile-header .profile-user-photo-container {
-        order: 2;
-        position: relative !important;
+        grid-column: 1;
+        grid-row: 1;
+        position: static !important;
         bottom: auto !important;
         left: auto !important;
         display: flex !important;
-        flex: 0 0 72px !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 72px !important;
-        height: 72px !important;
-        min-width: 72px !important;
-        min-height: 72px !important;
-        max-width: 72px !important;
-        max-height: 72px !important;
-        margin: -20px 0 0 12px !important;
-        z-index: 2;
+        width: 60px !important;
+        height: 60px !important;
+        min-width: 60px !important;
+        min-height: 60px !important;
+        max-width: 60px !important;
+        max-height: 60px !important;
+        margin: 0 !important;
         overflow: hidden;
         border: 0 !important;
         border-radius: 50% !important;
         background: var(--color-primary-strong, #1e6ad6);
-        // 2px surface ring so the avatar reads as separate from the banner.
         box-shadow:
             0 0 0 2px var(--color-bg-primary, #fff),
             var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
     }
 
-    // One avatar layer only: flatten the link wrapper so the core initials
-    // block (or the space image) is the single flex child of the container.
     .panel-profile .panel-profile-header .profile-user-photo-container > a {
         display: contents !important;
     }
 
-    // Dimensions only. Never set display here: core hides the unused layer
-    // with .d-none-space-image (display:none !important) and a later
-    // !important display would resurrect the duplicate avatar.
     .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym,
     .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo {
-        flex: 0 0 72px !important;
-        width: 72px !important;
-        height: 72px !important;
-        min-width: 72px !important;
-        min-height: 72px !important;
-        max-width: 72px !important;
-        max-height: 72px !important;
+        flex: 0 0 60px !important;
+        width: 60px !important;
+        height: 60px !important;
+        min-width: 60px !important;
+        min-height: 60px !important;
+        max-width: 60px !important;
+        max-height: 60px !important;
         border: 0 !important;
         border-radius: 50% !important;
         object-fit: cover;
@@ -382,15 +345,15 @@
         line-height: 1 !important;
     }
 
-    // Core sizes initials as 50cqw; pin them at phone scale.
     .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym span {
-        font-size: 22px !important;
+        font-size: 18px !important;
         line-height: 1 !important;
     }
 
-    // Title block: static, dark, directly under the avatar.
+    // Title + subtitle in the second column, static and dark.
     .panel-profile .panel-profile-header .img-profile-data {
-        order: 3;
+        grid-column: 2;
+        grid-row: 1;
         position: static !important;
         bottom: auto !important;
         left: auto !important;
@@ -398,14 +361,14 @@
         max-width: none !important;
         height: auto !important;
         margin: 0 !important;
-        padding: 8px 12px 0 !important;
+        padding: 0 !important;
         background: none !important;
         color: var(--color-text-primary, #111827);
 
         h1 {
             max-width: 100% !important;
             margin: 0 0 2px !important;
-            font-size: 20px !important;
+            font-size: 18px !important;
             line-height: 1.3 !important;
             white-space: normal !important;
             overflow: hidden !important;
@@ -416,7 +379,7 @@
             display: -webkit-box;
             overflow: hidden;
             color: var(--color-text-primary, #111827) !important;
-            font-size: 20px !important;
+            font-size: 18px !important;
             font-weight: 700 !important;
             line-height: 1.3 !important;
             text-shadow: none !important;
@@ -442,7 +405,7 @@
 
     // Controls: stats + join/follow + gear on their own wrapping row.
     .panel-profile > .panel-body {
-        padding: 8px 12px 12px !important;
+        padding: 0 12px 12px !important;
         border-radius: 0 0 var(--radius-md, 10px) var(--radius-md, 10px);
     }
 
@@ -529,10 +492,5 @@
         min-width: 44px;
         min-height: 44px;
         padding: 0 8px;
-    }
-
-    // The join/follow hint is desktop-only reassurance; it is noise on a phone.
-    .panel-profile .mt2026-space-controls-hint {
-        display: none !important;
     }
 }

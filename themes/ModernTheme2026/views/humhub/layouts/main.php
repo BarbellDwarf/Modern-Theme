@@ -6,6 +6,7 @@ use humhub\assets\AppAsset;
 use humhub\components\View;
 use humhub\helpers\DeviceDetectorHelper;
 use humhub\helpers\Html;
+use humhub\modules\modernTheme2026\controllers\ConfigController;
 use humhub\modules\modernTheme2026\widgets\ContextSwitcher;
 use humhub\modules\user\widgets\AccountTopMenu;
 use humhub\widgets\NotificationArea;
@@ -45,7 +46,7 @@ $bodyClasses[] = 'modern-theme-2026';
             <div class="container flex-nowrap">
                 <div class="topbar-brand d-flex text-nowrap overflow-hidden">
                     <?= SiteLogo::widget() ?>
-                    <a class="mt2026-mobile-brand" href="<?= Url::home() ?>"><?= Html::encode(Yii::$app->name) ?></a>
+                    <a class="mt2026-mobile-brand" href="<?= Url::home() ?>"><?= Html::encode(ConfigController::getMobileHeaderTitle() ?: Yii::$app->name) ?></a>
                 </div>
 
                 <ul id="top-menu-nav" class="flex-grow-1 nav">

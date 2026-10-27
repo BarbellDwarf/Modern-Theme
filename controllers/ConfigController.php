@@ -49,6 +49,7 @@ class ConfigController extends Controller
                 $settings->set('mobileNavLabels', json_encode($labels));
                 $settings->set('mobileMoreAutoModules', Yii::$app->request->post('mobileMoreAutoModules') ? 1 : 0);
                 $settings->set('mobileMoreHiddenModuleIds', trim((string)Yii::$app->request->post('mobileMoreHiddenModuleIds', '')));
+                $settings->set('mobileHeaderTitle', trim((string)Yii::$app->request->post('mobileHeaderTitle', '')));
 
                 // Flush entire cache — Yii2 Cache::delete() doesn't support wildcard patterns.
                 // Short TTLs (60s/300s) mean minimal impact on config-save (rare operation).
@@ -129,6 +130,7 @@ class ConfigController extends Controller
             'mobileNavLabels' => self::getMobileNavLabels(),
             'mobileMoreAutoModules' => self::isMobileMoreAutoModulesEnabled(),
             'mobileMoreHiddenModuleIds' => self::getMobileMoreHiddenModuleIdsRaw(),
+            'mobileHeaderTitle' => self::getMobileHeaderTitle(),
             'dashboardComposerSpaceId' => self::getDashboardComposerSpaceId(),
             'composerSpaces' => Space::find()
                 ->where(['status' => Space::STATUS_ENABLED])
@@ -205,6 +207,14 @@ class ConfigController extends Controller
     public static function getMobileMoreHiddenModuleIdsRaw(): string
     {
         return (string)Yii::$app->settings->get('mobileMoreHiddenModuleIds', '');
+    }
+
+    /**
+     * Title shown in the mobile header. Empty means use the site name.
+     */
+    public static function getMobileHeaderTitle(): string
+    {
+        return trim((string)Yii::$app->settings->get('mobileHeaderTitle', ''));
     }
 
     public static function getMobileMoreHiddenModuleIds(): array

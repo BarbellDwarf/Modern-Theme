@@ -176,6 +176,16 @@ $previewKeys = ['primary', 'accent', 'secondary', 'success', 'danger'];
 
             <hr>
 
+            <div class="form-group" style="max-width:520px;">
+                <label for="mobileHeaderTitle"><?= Yii::t('ModernTheme2026.config', 'Mobile header title') ?></label>
+                <input type="text" id="mobileHeaderTitle" name="mobileHeaderTitle" class="form-control"
+                       value="<?= Html::encode($mobileHeaderTitle) ?>" maxlength="40"
+                       placeholder="<?= Html::encode(Yii::$app->name) ?>">
+                <p class="help-block">
+                    Shown in the mobile header instead of the site name. Leave empty to use the site name.
+                </p>
+            </div>
+
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="mobileMoreAutoModules" value="1" <?= $mobileMoreAutoModules ? 'checked' : '' ?>>
