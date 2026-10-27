@@ -173,7 +173,7 @@
 
 // Destructive account action: keep it in the settings tab row but mark it red
 // and separate it from the routine tabs so it is not tapped by accident.
-.nav-tabs .nav-link[href$=/user/account/delete] {
+.nav-tabs .nav-link[href$="/user/account/delete"] {
   margin-left: auto;
   color: #dc2626 !important;
 
