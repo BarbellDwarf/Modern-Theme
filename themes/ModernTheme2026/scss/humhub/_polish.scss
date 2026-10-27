@@ -109,3 +109,58 @@
 .layout-content-container:has(.mt2026-empty-state[data-mt2026-empty-state="notifications"]) ~ .layout-sidebar-container {
   display: none;
 }
+
+// ── 12px type floor ──────────────────────────────────────────────────────────
+// Core and the default theme drop meta text to 10.5–11px through `!important`
+// and em inheritance. At phone width that is below a comfortable reading size,
+// so every text leaf in a content card gets an explicit 12px floor.
+#layout-content {
+  .tt.timeago,
+  time.tt,
+  .time {
+    font-size: 12px !important;
+  }
+
+  .comment-count {
+    font-size: 12px !important;
+  }
+
+  .badge {
+    font-size: 12px !important;
+    padding: 3px 8px; // larger type without pushing a tab past 44px
+  }
+
+  .btn-outline-accent b,
+  .btn-sm b {
+    font-size: 12px !important;
+  }
+
+  small {
+    font-size: 12px !important;
+  }
+
+  // Small button variants, plus the accent/warning defaults on admin pages,
+  // inherit a 10.5px size from the core button scale.
+  .btn-sm,
+  .btn-accent,
+  .btn-warning,
+  .btn-outline-accent {
+    font-size: 12px !important;
+  }
+
+  // Mail conversation list uses bare <time>; calendar uses bare spans in the
+  // FullCalendar day header. Neither carries a class the rules above can catch.
+  time,
+  .fc-day-header span {
+    font-size: 12px !important;
+  }
+
+  .modules-updates-info {
+    font-size: 12px !important;
+  }
+}
+
+.card small,
+.panel small {
+  font-size: 12px !important;
+}
