@@ -144,6 +144,10 @@ $space-16: 4rem !default;     // 64px
 $space-20: 5rem !default;     // 80px
 $space-24: 6rem !default;     // 96px
 
+// Phone content inset. px on purpose so it stays 16px regardless of the
+// root font size HumHub or the browser applies to rem tokens.
+$content-inset-mobile: 16px !default;
+
 // Spacing function: space(N) maps N to the 4px-based scale (N * 0.25rem)
 @function space($n) {
   @return $n * 0.25rem;

@@ -1007,3 +1007,130 @@ body.mt2026-keyboard-open {
         height: 0;
     }
 }
+
+// ── Mobile content inset (16px) ─────────────────────────────────────────────
+// One rule for the whole app: inside a card, content starts 16px from the
+// card edge on phones. The page gutter (12px) and the desktop insets (32px)
+// are not touched. Before this block the post card used 8px, which put body
+// text 8px from the edge and the action row another 4px further right.
+@media (max-width: 767px) {
+    // Post card: the inner panel is the visible card on mobile. Cover the
+    // extra-wrapper markup HumHub also emits, matching the 8px rule above.
+    .s2_streamContent .wall-entry > .panel,
+    .s2_streamContent .wall-entry > div > .panel,
+    .s2_streamContent .stream-entry > .panel,
+    .s2_streamContent .stream-entry > div > .panel {
+        padding-left: $content-inset-mobile !important;
+        padding-right: $content-inset-mobile !important;
+    }
+
+    // Action row: drop the extra 4px so it lines up with the body text.
+    .stream-entry-addons {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    // Comments: the panel already provides the 16px, so the container adds
+    // none. Replies indent one step per level, capped at two steps.
+    .s2_streamContent .wall-entry .comment-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .comment .nested-comments-root .single-comment {
+        margin-left: 8px;
+    }
+
+    .comment .nested-comments-root .nested-comments-root .single-comment {
+        margin-left: 8px;
+    }
+
+    .comment .nested-comments-root .nested-comments-root .nested-comments-root .single-comment {
+        margin-left: 0;
+    }
+
+    // Composer (dashboard card). Card padding moves into the trigger so the
+    // editor, avatar and Write button all share the same 16px edge.
+    .mt2026-dashboard-composer {
+        padding: 0;
+
+        &__trigger {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+
+        &__empty-link {
+            display: block;
+            padding: $content-inset-mobile;
+        }
+    }
+
+    // Post form editor and its action row.
+    .post-form,
+    .wall-entry-form {
+        .ProseMirror {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+
+        .contentForm_options,
+        .post-actions {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+    }
+
+    // Notification rows: 16px row inset, 12px between avatar and text.
+    .hh-list > a.d-flex {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+
+        .me-3 {
+            margin-right: 12px !important;
+        }
+    }
+
+    // Mail conversation rows.
+    .messagePreviewEntry {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+        column-gap: 12px;
+    }
+
+    // Admin list rows and table edge cells.
+    .mt2026-admin-content .list-group-item {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+
+        // Keep the 3px hover / 2px active text shift from _list-group.scss.
+        &:hover {
+            padding-left: calc(#{$content-inset-mobile} - 3px);
+        }
+
+        &:active {
+            padding-left: calc(#{$content-inset-mobile} - 2px);
+        }
+    }
+
+    .mt2026-admin-content .table {
+        > :not(caption) > * > *:first-child {
+            padding-left: $content-inset-mobile;
+        }
+
+        > :not(caption) > * > *:last-child {
+            padding-right: $content-inset-mobile;
+        }
+    }
+
+    // Calendar chips keep the cell padding, but the chip itself gets 8px.
+    .fc .fc-daygrid-event,
+    .fc .fc-timegrid-event {
+        padding: 8px !important;
+    }
+
+    // Profile list rows.
+    #user-profile-about .profile-item {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+    }
+}
