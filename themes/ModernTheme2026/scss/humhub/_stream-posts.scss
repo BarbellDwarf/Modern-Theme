@@ -153,11 +153,13 @@
   padding: 0 !important;
   margin-bottom: var(--space-3) !important;
 
-  .media-heading {
+  .media-heading,
+  .wall-entry-header-info > h4 {
     font-weight: $font-weight-semibold;
     color: var(--color-text-primary);
-    font-size: var(--font-size-base);
-    margin-bottom: 2px;
+    font-size: 14.5px;
+    line-height: 1.3;
+    margin: 0 0 2px;
   }
 
   .timestamp {
@@ -166,39 +168,82 @@
   }
 }
 
-// Meta line inside the header: author · time · privacy icon, with the overflow
-// menu pinned right by core. Core renders it as inline text in a table-cell, so
-// the icons wrapped onto a second line at 390px. One nowrap flex row instead;
-// only the author shrinks, and it ellipsizes rather than overflowing the card.
+// Meta line inside the header: space · time · privacy icons, with the overflow
+// menu pinned right by core. It is secondary context, so it reads quiet and
+// small; the space name shrinks and ellipsizes instead of wrapping the row.
+// Core gives every link a 44px touch floor, which alone made this row 44 tall
+// and pushed the header to 78px. 24px keeps the WCAG 2.2 AA target size.
 .wall-entry-header-info {
   min-width: 0 !important;
 
   > h5 {
     display: flex;
-    flex-wrap: nowrap;
     align-items: center;
+    flex-wrap: nowrap;
     gap: 6px;
     min-width: 0;
+    margin: 2px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--color-text-muted);
 
     > a {
       min-width: 0;
+      min-height: 24px;
+      line-height: 24px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 12px;
+      font-weight: 500;
     }
 
-    // Links share the shrink; the timestamp keeps its full width so a long
+    // The space name yields first; the timestamp keeps its full width so a long
     // name ellipsizes instead of pushing the icons out of the card.
     > a:has(.time) {
       flex: 0 0 auto;
+      color: var(--color-text-muted);
+
+      &:hover {
+        color: var(--color-text-primary);
+      }
 
       .time {
         white-space: nowrap;
       }
     }
 
+    > .wall-entry-container-link {
+      flex: 0 1 auto;
+      min-width: 44px; // never collapse the name to an invisible link
+      color: var(--color-text-muted) !important;
+
+      &:hover {
+        color: var(--color-text-primary) !important;
+      }
+    }
+
+    time.tt.timeago {
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    // At 320px the name plus a long timeago ("about an hour ago") exceed the
+    // row. Let the time ellipsize too rather than starve the name.
+    @media (max-width: 359px) {
+      gap: 4px;
+
+      > a:has(.time) {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+    }
+
     .wall-entry-icons {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       flex: 0 0 auto;
       gap: 4px;
