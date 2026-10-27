@@ -184,6 +184,64 @@ select.form-control {
   padding-right: $space-8;
 }
 
+// Bootstrap's .form-select kept its own chrome and looked unboxed next to
+// .form-control. Give it the same frame and arrow.
+.form-select {
+  @include input-base;
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 12px;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-border-dark);
+  }
+}
+
+// Select2 replaces the native select with a span; match the same frame so
+// language/timezone pickers do not read as static text.
+.select2-container .select2-selection--single {
+  height: 39px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-bg-primary);
+  @include transition(border-color, var(--transition-fast));
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  line-height: 37px;
+  padding-left: 12px;
+  padding-right: 32px;
+  color: var(--color-text-primary);
+}
+
+.select2-container .select2-selection--single .select2-selection__arrow {
+  top: 0;
+  right: 10px;
+  width: 16px;
+  height: 37px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 12px;
+
+  b {
+    display: none;
+  }
+}
+
+.select2-container:hover .select2-selection--single {
+  border-color: var(--color-border-dark);
+}
+
+.select2-container.select2-container--focus .select2-selection--single,
+.select2-container.select2-container--open .select2-selection--single {
+  border-color: var(--color-primary);
+  box-shadow: $input-focus-shadow;
+}
+
 // File input
 input[type="file"] {
   display: block;

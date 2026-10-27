@@ -465,3 +465,19 @@
     display: none;
   }
 }
+
+// "Choose target calendar" modal: header and body padding stacked into a 50px
+// gap between the title and the picker.
+#globalModal.mt2026-calendar-target {
+  .modal-header {
+    padding-bottom: 0;
+  }
+
+  .modal-title {
+    margin-bottom: 12px;
+  }
+
+  .modal-body {
+    padding-top: 0;
+  }
+}

@@ -286,22 +286,24 @@ body.mt2026-keyboard-open {
         a[data-action-click="comment.toggleComment"]:not(.d-none),
         .comment-link,
         .content-addon-link {
-            // Inline block, not flex: the label and " (N)" must stay one text
-            // flow so the pill can never break between the word and the count.
-            display: inline-block !important;
-            padding: 12px 14px;
-            line-height: 20px;
-            border-radius: 22px;
+            // Inline flex keeps the label and " (N)" on one line, so the pill
+            // can never break between the word and the count.
+            display: inline-flex !important;
+            align-items: center;
+            padding: 8px 12px;
+            line-height: 1.2;
+            border-radius: 18px;
             border: 1px solid var(--color-border, #e5e7eb);
             color: var(--color-text-secondary, #4b5563) !important;
-            font-size: 14px !important;
+            font-size: 12px !important;
             font-weight: 500;
             text-decoration: none;
             background: transparent;
             margin-right: 6px;
-            min-height: 44px;
+            min-height: 36px;
             vertical-align: middle;
             white-space: nowrap;
+            flex: 0 0 auto;
 
             &:hover,
             &:active {
@@ -311,7 +313,7 @@ body.mt2026-keyboard-open {
 
             .comment-count {
                 color: var(--color-primary, #1e6ad6);
-                font-size: 13px !important;
+                font-size: 12px !important;
             }
         }
 

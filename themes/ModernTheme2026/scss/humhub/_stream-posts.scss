@@ -399,6 +399,18 @@
   }
 }
 
+// Interactive rows stay thumb-sized on phones; 11px links were untappable.
+.wall-entry-controls a:not(.mt2026-reaction-trigger),
+.wall-entry-footer a:not(.mt2026-reaction-trigger) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
 // Make .wall-entry-controls links always visible with readable color.
 // Override margin-top:10px which breaks flex centering.
 .wall-entry-controls a {
@@ -426,9 +438,10 @@
 // Ensure the comment icon (::before pseudo-element) is visible.
 // Only apply display:inline-block when the link is NOT hidden by .d-none.
 .wall-entry-controls a[data-action-click="comment.toggleComment"]:not(.d-none) {
-  display: inline-block !important;
-  min-height: 32px;
-  min-width: 32px;
+  display: inline-flex !important;
+  align-items: center;
+  min-height: 36px;
+  min-width: 36px;
   white-space: nowrap;
   opacity: 1 !important;
   visibility: visible !important;
@@ -456,7 +469,7 @@
 }
 
 .stream-entry-addons .wall-entry-controls.wall-entry-links > * {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 // The like/unlike anchor links are REPLACED by our emoji trigger visually.
@@ -466,8 +479,8 @@
 .wall-entry-controls a[data-action-click="like.toggleLike"]:not(.d-none) {
   display: inline-flex !important;
   align-items: center;
-  min-height: 28px;
-  min-width: 28px;
+  min-height: 36px;
+  min-width: 36px;
   opacity: 1 !important;
   visibility: visible !important;
 
@@ -484,6 +497,34 @@
 // Once picker is attached, hide native like/unlike links in both stream and comment addons.
 .wall-entry-controls .likeLinkContainer[data-mt2026-reactions] a.likeAnchor {
   display: none !important;
+}
+
+.wall-entry-controls .likeCount {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+// Dashboard single-stream return control.
+.back_button_holder .btn {
+  min-height: 36px;
+  font-size: 12px;
+}
+
+// Space feed filter was a 70x19 target with a 10.5px label.
+.wall-stream-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .wallFilterPanel {
+    margin-bottom: 8px;
+  }
 }
 
 // ── Calendar event styling in stream ──────────────────────────────────────────

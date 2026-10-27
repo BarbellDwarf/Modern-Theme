@@ -10,7 +10,7 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
     };
 
     // Scroll containers that get a fade on the right while content hides there.
-    var SCROLLERS = '#admin-menu .list-group, .tab-menu, .tab-menu .nav-tabs, .table-responsive, .grid-view';
+    var SCROLLERS = '#admin-menu .list-group, .tab-menu, .tab-menu .nav-tabs, .nav-tabs.tab-sub-menu, .table-responsive, .grid-view';
 
     var isMobile = function() {
         return window.matchMedia('(max-width: 767px)').matches;
@@ -128,29 +128,30 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
 
     var run = function() {
         var $admin = $('.mt2026-admin-layout');
-        if (!$admin.length) {
-            return;
+
+        if ($admin.length) {
+            // Split export button: chevron only, no visible text.
+            label($admin.find('.btn-group .btn-icon-only'), 'Export options');
+
+            // Module gear: core says only "Actions", which is ambiguous in a list.
+            label($admin.find('.module-actions .dropdown-toggle'), 'Module actions');
+
+            // Marketplace entry: say where it goes.
+            $admin.find('a[href*="/marketplace/browse"]').each(function() {
+                var $link = $(this);
+                if (!$link.attr('title')) {
+                    $link.attr('title', 'Open the HumHub Marketplace');
+                }
+            });
+
+            splitIntro($admin);
+            syncIntroDisclosure($admin, false);
+            syncSearchPlaceholder($admin);
         }
 
-        // Split export button: chevron only, no visible text.
-        label($admin.find('.btn-group .btn-icon-only'), 'Export options');
-
-        // Module gear: core says only "Actions", which is ambiguous in a list.
-        label($admin.find('.module-actions .dropdown-toggle'), 'Module actions');
-
-        // Marketplace entry: say where it goes.
-        $admin.find('a[href*="/marketplace/browse"]').each(function() {
-            var $link = $(this);
-            if (!$link.attr('title')) {
-                $link.attr('title', 'Open the HumHub Marketplace');
-            }
-        });
-
-        splitIntro($admin);
-        syncIntroDisclosure($admin, false);
-        syncSearchPlaceholder($admin);
-
-        var $scrollers = $admin.find(SCROLLERS);
+        // Tab strips also exist outside admin (account settings), so the
+        // scroller helpers run on every page.
+        var $scrollers = $admin.length ? $admin.find(SCROLLERS) : $(SCROLLERS);
         syncScrollers($scrollers, true);
         $scrollers.off('scroll.mt2026fade').on('scroll.mt2026fade', function() {
             updateFade($(this));
@@ -162,8 +163,10 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
             // width change should collapse the intro or yank the chip row
             // back to the active chip.
             var widthChanged = window.innerWidth !== lastWidth;
-            syncIntroDisclosure($admin, widthChanged);
-            syncSearchPlaceholder($admin);
+            if ($admin.length) {
+                syncIntroDisclosure($admin, widthChanged);
+                syncSearchPlaceholder($admin);
+            }
             if (widthChanged) {
                 lastWidth = window.innerWidth;
                 syncScrollers($scrollers, true);

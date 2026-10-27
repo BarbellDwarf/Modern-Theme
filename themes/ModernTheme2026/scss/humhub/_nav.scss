@@ -58,6 +58,84 @@
   }
 }
 
+// Active rows already read as selected; a second focus ring on top of the
+// fill muddies it. Keyboard focus still gets the global :focus-visible ring.
+.list-group-item.active,
+.nav-link.active,
+.nav-pills .active > a {
+  &:focus:not(:focus-visible),
+  &:active:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// Tabs stay on one line on phones and scroll instead of wrapping into a
+// second row. adminPolish.js sets data-fade while more tabs hide to the right.
+@media (max-width: 767px) {
+  .tab-menu,
+  .nav-tabs.tab-sub-menu {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &[data-fade='right'] {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    }
+  }
+
+  .tab-menu > .nav-tabs {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .tab-menu .nav-tabs,
+  .nav-tabs.tab-sub-menu {
+    flex-wrap: nowrap;
+    scroll-snap-type: x proximity;
+
+    .nav-item {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+}
+
+// Destructive account action reads as destructive without a filled red block
+// that invites accidental taps.
+.nav-tabs .nav-link[href$="/user/account/delete"] {
+  margin-left: 12px;
+  color: #b91c1c;
+
+  &:hover,
+  &:focus-visible {
+    color: #b91c1c;
+    border-bottom-color: #b91c1c;
+    background: transparent;
+  }
+
+  [data-bs-theme='dark'] & {
+    color: var(--color-danger-light);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-danger-light);
+      border-bottom-color: var(--color-danger-light);
+    }
+  }
+}
+
 // Breadcrumbs
 .breadcrumb {
   display: flex;

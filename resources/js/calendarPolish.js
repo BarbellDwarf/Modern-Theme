@@ -134,6 +134,29 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
         $newNotice.insertAfter($toolbar);
     };
 
+    // "Choose target calendar" opens with Next enabled and an empty picker.
+    var setupTargetModal = function() {
+        var $modal = $('#globalModal');
+        var $form = $modal.find('form[action*="/calendar/global/select"]');
+
+        $modal.toggleClass('mt2026-calendar-target', $form.length > 0);
+        if (!$form.length) {
+            return;
+        }
+
+        var $select = $form.find('select[name="contentContainerId"]');
+        var $next = $modal.find('[data-action-click="ui.modal.submit"]').first();
+
+        var sync = function() {
+            var chosen = !!($select.val() || '');
+            $next.prop('disabled', !chosen).attr('aria-disabled', chosen ? 'false' : 'true');
+        };
+
+        $form.off('change.mt2026Target', 'select[name="contentContainerId"]')
+            .on('change.mt2026Target', 'select[name="contentContainerId"]', sync);
+        sync();
+    };
+
     var run = function() {
         setPressed();
         setupFilters();
@@ -173,9 +196,11 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
                     .find('.mt2026-calendar-filters__toggle').attr('aria-expanded', 'false');
             })
             .on('click.mt2026Calendar', '.calendar-filter-reset', schedule)
-            .on('click.mt2026Calendar', VIEW_BUTTONS, schedule);
+            .on('click.mt2026Calendar', VIEW_BUTTONS, schedule)
+            .on('shown.bs.modal.mt2026Calendar', '#globalModal', setupTargetModal);
 
         if (!calendar) {
+            setupTargetModal();
             return;
         }
 
@@ -185,10 +210,12 @@ humhub.module('modernTheme.calendarPolish', function(module, require, $) {
         }
 
         run();
+        setupTargetModal();
     };
 
     var unload = function() {
         $(document).off('.mt2026Calendar');
+        $('#globalModal').removeClass('mt2026-calendar-target');
         if (observer) {
             observer.disconnect();
             observer = null;
