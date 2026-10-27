@@ -952,6 +952,8 @@ body.mt2026-keyboard-open {
 // resolved to 14px here and the post text read thin at 390px. Sizes are px on
 // purpose: a rem value would inherit the same 14px root. The !important beats
 // .s2_streamContent > .wall-entry .wall-entry-body, which is more specific.
+// Core paints the body #555 (7.46:1); the primary token is 12.6:1 and reads
+// better at 16px on a phone. Metadata and action labels keep their colour.
 @media (max-width: 767px) {
     .wall-entry .wall-entry-body,
     .wall-entry .wall-entry-content,
@@ -967,6 +969,7 @@ body.mt2026-keyboard-open {
     .s-wall-entry .wall-entry-content li {
         font-size: 16px !important;
         line-height: 1.55 !important;
+        color: var(--color-text-primary, #111827) !important;
     }
 }
 
