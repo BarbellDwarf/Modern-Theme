@@ -948,6 +948,28 @@ body.mt2026-keyboard-open {
     }
 }
 
+// Post body on phones. The root font size is 14px, so var(--font-size-base)
+// resolved to 14px here and the post text read thin at 390px. Sizes are px on
+// purpose: a rem value would inherit the same 14px root. The !important beats
+// .s2_streamContent > .wall-entry .wall-entry-body, which is more specific.
+@media (max-width: 767px) {
+    .wall-entry .wall-entry-body,
+    .wall-entry .wall-entry-content,
+    .s-wall-entry .wall-entry-body,
+    .s-wall-entry .wall-entry-content,
+    .wall-entry .wall-entry-body p,
+    .wall-entry .wall-entry-body li,
+    .wall-entry .wall-entry-content p,
+    .wall-entry .wall-entry-content li,
+    .s-wall-entry .wall-entry-body p,
+    .s-wall-entry .wall-entry-body li,
+    .s-wall-entry .wall-entry-content p,
+    .s-wall-entry .wall-entry-content li {
+        font-size: 16px !important;
+        line-height: 1.55 !important;
+    }
+}
+
 // ── Page scrollbar on mobile/tablet ─────────────────────────────────────────
 // The 12px desktop scrollbar eats width on phones. Hide it below 992px while
 // leaving scrolling and keyboard focus untouched.

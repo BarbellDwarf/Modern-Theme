@@ -82,6 +82,11 @@
   }
 
   @media (max-width: 767px) {
+    &__placeholder {
+      // 15px keeps the prompt legible without forcing the ellipsis on 320px.
+      font-size: 15px;
+    }
+
     &__placeholder-short {
       display: inline !important;
     }
