@@ -185,6 +185,7 @@
       > .float-end {
         float: none !important;
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         width: 100%;
         margin-top: 8px;
@@ -195,19 +196,20 @@
         flex: 1 1 auto;
         min-height: 44px;
       }
+
+      // Create comes first even if the markup orders it differently.
+      > .btn-group .btn-primary,
+      > .float-end .btn-primary {
+        order: -1;
+      }
     }
 
     // Tabs live inside a .tab-menu wrapper; scroll them instead of wrapping.
+    // The edge fade is applied by the shared rule below once adminPolish.js
+    // reports which edges still have content.
     .tab-menu {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
-      mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
 
       .nav-tabs {
         flex-wrap: nowrap;
@@ -257,12 +259,10 @@
         margin: 0;
         padding: 0 0 var(--space-1);
         overflow-x: auto;
-        scrollbar-width: none;
-        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
-        mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+        scroll-snap-type: x proximity;
 
-        &::-webkit-scrollbar {
-          display: none;
+        > .list-group-item {
+          scroll-snap-align: start;
         }
       }
 
@@ -344,13 +344,48 @@
   .mt2026-admin-content .panel-body h4 {
     font-size: 20px;
     line-height: 1.25;
-    margin: 8px 0;
+    margin: 6px 0 10px;
   }
 
-  // Horizontal scroll stays, but a right-edge fade shows there is more table.
-  .mt2026-admin-content .table-responsive {
+  // Intro copy (module descriptions) was set large enough to eat ~120px.
+  .mt2026-admin-content .panel-body > p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  // Long emails stay whole instead of being cut at the column edge.
+  .mt2026-admin-content .table td {
+    overflow-wrap: anywhere;
+  }
+}
+
+// Scroll affordance shared by the chip row, tab strip and admin tables.
+// adminPolish.js sets data-fade to the edges that still have content, so the
+// fade disappears once the user reaches the end.
+.mt2026-admin-sidebar #admin-menu .list-group,
+.mt2026-admin-content .tab-menu,
+.mt2026-admin-content .table-responsive,
+.mt2026-admin-content .grid-view {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &[data-fade='right'] {
     -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
     mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+  }
+
+  &[data-fade='left'] {
+    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to left, #000 calc(100% - 16px), transparent);
+  }
+
+  &[data-fade='both'] {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
   }
 }
 
