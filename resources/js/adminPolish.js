@@ -53,10 +53,10 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
         });
     };
 
-    // Split a long admin intro at its last sentence: the descriptive lead gets
-    // a three-line clamp with a More/Less toggle, the closing warning sentence
-    // stays visible. Only runs where core renders intro copy as one block.
-    var clampIntro = function($admin) {
+    // Split a long admin intro at its last sentence: the descriptive lead goes
+    // behind a native disclosure (collapsed on phones, open on desktop), the
+    // closing data-loss warning stays outside and always visible.
+    var splitIntro = function($admin) {
         $admin.find('.panel-body').has('.module-row').children('.text-body-secondary').each(function() {
             var el = this;
             if (el.getAttribute('data-mt2026-intro')) {
@@ -78,43 +78,37 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
             el.setAttribute('data-mt2026-intro', 'done');
             el.textContent = '';
 
-            var leadEl = document.createElement('span');
-            leadEl.className = 'mt2026-intro-lead';
+            var details = document.createElement('details');
+            details.className = 'mt2026-admin-about';
+            details.open = !isMobile();
+
+            var summary = document.createElement('summary');
+            summary.textContent = 'About modules';
+
+            var leadEl = document.createElement('p');
             leadEl.textContent = lead;
 
-            var toggle = document.createElement('button');
-            toggle.type = 'button';
-            toggle.className = 'mt2026-intro-toggle';
-            toggle.textContent = 'More';
-            toggle.setAttribute('aria-expanded', 'false');
+            details.appendChild(summary);
+            details.appendChild(leadEl);
 
             var warningEl = document.createElement('p');
             warningEl.className = 'mt2026-intro-warning';
             warningEl.textContent = warning;
 
-            el.appendChild(leadEl);
-            el.appendChild(toggle);
+            el.appendChild(details);
             el.appendChild(warningEl);
-
-            $(toggle).on('click', function() {
-                var open = !$(leadEl).hasClass('is-open');
-                $(leadEl).toggleClass('is-open', open);
-                $(toggle).attr('aria-expanded', open ? 'true' : 'false').text(open ? 'Less' : 'More');
-            });
         });
     };
 
-    // Hide the toggle when nothing is actually clamped (wide phones, desktop).
-    var syncIntroToggles = function($admin) {
-        $admin.find('.mt2026-intro-lead').each(function() {
-            var lead = this;
-            var toggle = $(lead).next('.mt2026-intro-toggle')[0];
-            if (!toggle) {
-                return;
+    // Desktop always shows the intro; a phone starts collapsed and keeps
+    // whatever the reader chose until the width really changes.
+    var syncIntroDisclosure = function($admin, force) {
+        $admin.find('.mt2026-admin-about').each(function() {
+            if (!isMobile()) {
+                this.open = true;
+            } else if (force) {
+                this.open = false;
             }
-            var open = $(lead).hasClass('is-open');
-            var clamped = lead.scrollHeight > lead.clientHeight + 2;
-            toggle.style.display = (isMobile() && (open || clamped)) ? '' : 'none';
         });
     };
 
@@ -152,8 +146,8 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
             }
         });
 
-        clampIntro($admin);
-        syncIntroToggles($admin);
+        splitIntro($admin);
+        syncIntroDisclosure($admin, false);
         syncSearchPlaceholder($admin);
 
         var $scrollers = $admin.find(SCROLLERS);
@@ -164,11 +158,13 @@ humhub.module('modernTheme.adminPolish', function(module, require, $) {
 
         lastWidth = window.innerWidth;
         $(window).off('resize.mt2026admin').on('resize.mt2026admin', function() {
-            syncIntroToggles($admin);
-            syncSearchPlaceholder($admin);
             // Mobile keyboards resize without changing width; only a real
-            // width change should yank the chip row back to the active chip.
-            if (window.innerWidth !== lastWidth) {
+            // width change should collapse the intro or yank the chip row
+            // back to the active chip.
+            var widthChanged = window.innerWidth !== lastWidth;
+            syncIntroDisclosure($admin, widthChanged);
+            syncSearchPlaceholder($admin);
+            if (widthChanged) {
                 lastWidth = window.innerWidth;
                 syncScrollers($scrollers, true);
             }

@@ -166,6 +166,56 @@
   }
 }
 
+// Meta line inside the header: author · time · privacy icon, with the overflow
+// menu pinned right by core. Core renders it as inline text in a table-cell, so
+// the icons wrapped onto a second line at 390px. One nowrap flex row instead;
+// only the author shrinks, and it ellipsizes rather than overflowing the card.
+.wall-entry-header-info {
+  min-width: 0 !important;
+
+  > h5 {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+
+    > a {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    // Links share the shrink; the timestamp keeps its full width so a long
+    // name ellipsizes instead of pushing the icons out of the card.
+    > a:has(.time) {
+      flex: 0 0 auto;
+
+      .time {
+        white-space: nowrap;
+      }
+    }
+
+    .wall-entry-icons {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 4px;
+
+      i {
+        margin: 0;
+      }
+    }
+  }
+
+  // Below 768px every link is a 44x44 target, so the ⋯ control is 44 wide.
+  // Core reserves 30px for it; reserve the full control plus a gap.
+  @media (max-width: 767px) {
+    padding-right: 52px !important;
+  }
+}
+
 // Post content body — text area
 .wall-entry .wall-entry-body,
 .wall-entry .wall-entry-content {

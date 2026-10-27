@@ -119,10 +119,13 @@
 // the heading until words break mid-word at 390px. Stack them instead.
 @media (max-width: 767px) {
   .mt2026-admin-content > .panel > .panel-heading {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-2);
+    // Block, not flex: the title is bare text next to a floated action, so a
+    // flex column let the action squeeze it onto two lines.
+    display: block;
+    width: 100%;
+    max-width: none;
+    font-size: 18px;
+    letter-spacing: -0.01em;
 
     // Heading first, at full width, free to wrap between words.
     h1, h2, h3, h4 {
@@ -142,6 +145,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: var(--space-2);
+      margin-top: 8px;
     }
 
     .btn {
@@ -379,8 +383,18 @@
   }
 
   &[data-fade='right'] {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
+}
+
+// Tabs also snap, so a swipe lands on a tab edge instead of mid-word.
+.mt2026-admin-content .tab-menu,
+.mt2026-admin-content .tab-menu .nav-tabs {
+  scroll-snap-type: x proximity;
+
+  .nav-item {
+    scroll-snap-align: start;
   }
 }
 
@@ -432,37 +446,20 @@
   }
 }
 
-// Intro paragraph: three lines plus a More/Less toggle, added by
-// adminPolish.js. Only the descriptive lead clamps; the data-loss warning is
-// split into its own paragraph so it stays visible while collapsed.
-.mt2026-intro-toggle {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  .mt2026-intro-lead {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-
-    &.is-open {
-      display: block;
-      -webkit-line-clamp: unset;
-      overflow: visible;
-    }
-  }
-
-  .mt2026-intro-toggle {
-    display: inline-flex;
-    align-items: center;
+// Intro paragraph: a native disclosure, added by adminPolish.js. The
+// descriptive lead lives inside it; the data-loss warning is split into its own
+// paragraph so it stays visible while the disclosure is closed. The summary is
+// hidden from tablet up, where the intro is always open.
+.mt2026-admin-about {
+  > summary {
+    display: list-item;
     min-height: 44px;
-    padding: 0 var(--space-2);
-    border: 0;
-    background: none;
-    color: var(--color-primary);
+    padding: 12px 0;
     font-size: 13px;
+    line-height: 20px;
     font-weight: 600;
+    color: var(--color-primary);
+    cursor: pointer;
 
     &:focus-visible {
       outline: 2px solid var(--color-primary);
@@ -470,11 +467,104 @@
     }
   }
 
+  > p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  // Tablet and up: the intro is always open, so the summary row is not shown.
+  // Guarded by [open] so a closed disclosure still offers its summary.
+  @media (min-width: 768px) {
+    &[open] > summary {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 767px) {
   .mt2026-intro-warning {
     margin: 0 0 10px;
     font-size: 13px;
     line-height: 1.45;
     color: var(--color-text-secondary);
+  }
+}
+
+// ── Module update notice & permission alerts (mobile) ────────────────────────
+// Core floats the "Install updates" button beside the copy; at 390px the two
+// fight over one line. Text first, then a full-width 44px button.
+@media (max-width: 767px) {
+  .mt2026-admin-content .modules-updates-info,
+  .mt2026-admin-content .alert {
+    > .btn,
+    .btn {
+      float: none !important;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      margin-top: 8px;
+    }
+  }
+
+  // Core renders the button before the copy; keep the copy first.
+  .mt2026-admin-content .modules-updates-info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    > .btn {
+      order: 1;
+    }
+  }
+}
+
+// ── Users table (mobile) ────────────────────────────────────────────────────
+// The name and email columns are wider than a phone, so the table scrolls.
+// Core's first column is the avatar, so the name cell is pinned beside it and
+// the pair stays visible while scrolling to the last column. Scoped with :has
+// to the users page, the admin table with the search field above it.
+@media (max-width: 767px) {
+  .mt2026-admin-content .panel:has(input[name="UserSearch[freeText]"]) .table {
+    // The rounded-corner clip makes the table the sticky containing block and
+    // kills the pinned column, so drop it on phones.
+    border-radius: 0;
+    overflow: visible;
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      width: 58px;
+      min-width: 58px;
+      padding-right: 6px;
+      background: var(--color-bg-secondary);
+      z-index: 1;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      position: sticky;
+      left: 58px;
+      background: var(--color-bg-secondary);
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    th:last-child,
+    td:last-child {
+      white-space: nowrap;
+      padding-right: 12px;
+    }
+
+    // Long addresses break anywhere instead of hyphenating across lines.
+    td {
+      font-size: 12.5px;
+      overflow-wrap: anywhere;
+      hyphens: none;
+    }
   }
 }
 
