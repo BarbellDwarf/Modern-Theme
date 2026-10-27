@@ -273,6 +273,7 @@
         column-gap: 12px;
         row-gap: 8px;
         align-items: center;
+        align-content: start;
         padding: 12px !important;
         overflow: visible;
     }
@@ -286,15 +287,17 @@
         display: contents !important;
     }
 
-    // No cover image on phones. Removing its children also removes the grey
-    // fallback block, the scrim and the upload overlay.
+    // No cover image on phones. The wrapper becomes pure structure so its title
+    // joins the grid, and its own box is gone: no 140px min-height, no grey
+    // backdrop. Everything but the title is dropped (cover, upload overlay,
+    // loader, menu) in one rule so no future core child reintroduces a band.
     .panel-profile .panel-profile-header .profile-banner-image-container {
         display: contents !important;
+        min-height: 0 !important;
+        background: none !important;
     }
 
-    .panel-profile .panel-profile-header .profile-banner-image-container > .img-profile-header-background,
-    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-buttons,
-    .panel-profile .panel-profile-header .profile-banner-image-container > .image-upload-loader {
+    .panel-profile .panel-profile-header .profile-banner-image-container > :not(.img-profile-data) {
         display: none !important;
     }
 

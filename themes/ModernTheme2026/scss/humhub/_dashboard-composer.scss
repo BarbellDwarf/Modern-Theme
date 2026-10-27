@@ -75,18 +75,29 @@
     white-space: nowrap;
   }
 
-  // The full prompt clips at 390px; the short one fits.
+  // The full prompt clips at 390px; the short one fits. Both halves are pinned
+  // on mobile as well as desktop so the choice cannot be lost to source order.
   &__placeholder-full {
     display: none;
   }
 
-  @media (min-width: 768px) {
+  @media (max-width: 767px) {
     &__placeholder-short {
-      display: none;
+      display: inline !important;
     }
 
     &__placeholder-full {
-      display: inline;
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    &__placeholder-short {
+      display: none !important;
+    }
+
+    &__placeholder-full {
+      display: inline !important;
     }
   }
 

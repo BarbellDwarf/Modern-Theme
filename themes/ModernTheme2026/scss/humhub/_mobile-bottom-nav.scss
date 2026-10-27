@@ -36,14 +36,19 @@
             text-decoration: none;
             // !important: base theme link colours would otherwise win on the
             // anchor items and leave Home blue while another item is active.
+            // Pin the icon glyph too: any base rule colouring `i`/`svg` would
+            // otherwise detach the icon from its label.
             color: var(--color-text-muted, #6b7280) !important;
             transition: color $transition-fast;
             background: none;
             border: none;
 
             .nav-icon,
+            .nav-icon i,
+            .nav-icon svg,
             .nav-label {
                 color: inherit !important;
+                fill: currentColor;
             }
 
             .nav-icon {
@@ -104,8 +109,11 @@
                 color: var(--color-primary, #1e6ad6) !important;
 
                 .nav-icon,
+                .nav-icon i,
+                .nav-icon svg,
                 .nav-label {
                     color: var(--color-primary, #1e6ad6) !important;
+                    fill: currentColor;
                 }
 
                 &::after {
