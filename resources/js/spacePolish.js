@@ -34,6 +34,14 @@ humhub.module('modernTheme.spacePolish', function(module, require, $) {
     };
 
     var setLabels = function() {
+        // Core renders the space/profile banner through Html::img with no alt.
+        // It is a decorative backdrop, so an empty alt is the correct label.
+        $('img.img-profile-header-background').each(function() {
+            if (!this.hasAttribute('alt')) {
+                this.setAttribute('alt', '');
+            }
+        });
+
         $('.preferences .dropdown-toggle').each(function() {
             var $toggle = $(this);
             if ($toggle.attr('aria-label') !== 'Toggle stream entry menu') {

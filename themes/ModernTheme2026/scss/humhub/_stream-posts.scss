@@ -136,6 +136,16 @@
   flex: 0 0 40px;
 }
 
+// Post media: core renders a bare <img> with no width/height, so the card
+// grew as each preview decoded (dashboard CLS 0.108). Reserve a 4:3 box.
+.post-files-images img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
 .wall-entry-header {
   display: flex;
   align-items: center;
