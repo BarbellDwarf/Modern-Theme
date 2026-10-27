@@ -582,3 +582,15 @@ button.mobile-switch-network-btn.mobile-more-item {
   line-height: inherit;
   color: var(--color-text-primary);
 }
+
+// Active label must match its icon. "More" is a <button>, and the base theme's
+// button colour can reach the label, leaving an orange icon with dark text.
+.mobile-bottom-nav .nav-item.active .nav-label,
+.mobile-bottom-nav .mobile-nav-item.active .nav-label {
+  color: var(--color-primary, #1e6ad6) !important;
+}
+
+[data-bs-theme="dark"] .mobile-bottom-nav .nav-item.active .nav-label,
+[data-bs-theme="dark"] .mobile-bottom-nav .mobile-nav-item.active .nav-label {
+  color: var(--color-primary-light, #5a8eeb) !important;
+}

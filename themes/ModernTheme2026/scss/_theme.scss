@@ -64,7 +64,9 @@ a {
     text-decoration: none;
   }
   
-  &:focus {
+  // :focus-visible, not :focus — a mouse click focuses the link and used to
+  // paint a ring on the row you just selected (reads as a second selection).
+  &:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }

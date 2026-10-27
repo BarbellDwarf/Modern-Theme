@@ -201,6 +201,13 @@
     .tab-menu {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .nav-tabs {
         flex-wrap: nowrap;
@@ -210,6 +217,146 @@
         flex: 0 0 auto;
         white-space: nowrap;
       }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+      }
     }
   }
+}
+
+// ============================================================
+// Admin menu as a chip row (mobile)
+// ============================================================
+// Six stacked rows of card-styled links ate ~300px above the fold at 390px.
+// Below the desktop breakpoint the same links become one scrollable chip row
+// with no card chrome. Covers 768-991 too: the sidebar column only exists at
+// >=992, so that band has the same stacked-menu problem.
+@media (max-width: 991px) {
+  .mt2026-admin-sidebar {
+    margin-bottom: var(--space-2);
+
+    #admin-menu,
+    .left-navigation {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+
+      > .panel-heading {
+        display: none;
+      }
+
+      .list-group {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: var(--space-2);
+        margin: 0;
+        padding: 0 0 var(--space-1);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+        mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      .list-group-item {
+        flex: 0 0 auto;
+        height: 44px;
+        min-height: 44px;
+        padding: 0 var(--space-4);
+        border-radius: var(--radius-full);
+        background: var(--color-bg-secondary);
+        color: var(--color-text-secondary);
+        box-shadow: none;
+        white-space: nowrap;
+
+        i,
+        .fa {
+          margin-right: var(--space-2);
+          color: inherit;
+        }
+
+        &.active {
+          background: var(--color-primary-strong);
+          border-color: var(--color-primary-strong);
+          color: #fff !important;
+          box-shadow: var(--shadow-md);
+
+          &::before {
+            display: none; // the 4px bar belongs to the stacked card layout
+          }
+
+          i,
+          .fa {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  // Maintenance action, not a navigation peer: last chip, greyed, divider
+  // before it. Source order already puts it last.
+  #admin-menu .list-group-item[href*="update"] {
+    position: relative;
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--space-2) + 3px);
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: var(--color-border);
+    }
+  }
+
+  // Secondary copy (module warnings, hints) needs 13px and readable contrast
+  // on phones; theme muted grey drops below 4.5:1 at small sizes.
+  .mt2026-admin-content {
+    .text-muted,
+    .help-block,
+    .invalid-feedback,
+    small {
+      font-size: 13px;
+    }
+
+    .text-muted {
+      color: var(--color-text-secondary) !important;
+    }
+  }
+}
+
+// ============================================================
+// Admin headings & tables (mobile)
+// ============================================================
+@media (max-width: 767px) {
+  .mt2026-admin-content .panel-body h4 {
+    font-size: 20px;
+    line-height: 1.25;
+    margin: 8px 0;
+  }
+
+  // Horizontal scroll stays, but a right-edge fade shows there is more table.
+  .mt2026-admin-content .table-responsive {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+  }
+}
+
+// Selection is not focus: an active row or menu entry shows a ring only for
+// keyboard users. Mouse clicks used to leave a blue ring on the orange row.
+#admin-menu .list-group-item.active:not(:focus-visible),
+.mt2026-admin-content .table tbody tr.active:not(:focus-visible) {
+  outline: none;
 }
