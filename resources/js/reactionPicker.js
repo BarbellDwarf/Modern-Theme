@@ -180,6 +180,10 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
 
     // ── Per-container state ───────────────────────────────────────────────────
 
+    // The reaction summary (emoji + count) is the single place the chosen
+    // reaction is shown. Keeping the same emoji on the trigger as well made the
+    // selected reaction appear twice on the same card, so the trigger stays the
+    // neutral picker afforded by its color state only.
     function setTrigger($container, reactionType) {
         var $btn = $container.find('.mt2026-reaction-trigger');
         if (!reactionType) {
@@ -190,13 +194,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             var r = getReactionByType(reactionType);
             $btn.addClass('reacted').attr('data-active', reactionType);
             $btn.attr('aria-label', 'Reacted with ' + r.label);
-            // Comments show the chosen emoji in place of the smiley (CSS scopes
-            // the span to comments; post triggers keep their icon).
-            var $emoji = $btn.find('.mt2026-trigger-emoji');
-            if (!$emoji.length) {
-                $emoji = $('<span class="mt2026-trigger-emoji" aria-hidden="true"></span>').appendTo($btn);
-            }
-            $emoji.text(r.emoji);
+            $btn.find('.mt2026-trigger-emoji').remove();
         }
     }
 
