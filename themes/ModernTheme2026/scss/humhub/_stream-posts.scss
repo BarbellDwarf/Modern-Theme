@@ -602,3 +602,19 @@
     font-size: 12px;
   }
 }
+
+// The inline post-edit submit is core icon-only markup (fa-send, aria-label Save).
+// Give it a visible label so editors are not guessing which icon persists changes.
+.wall-entry [data-action-click="editSubmit"] {
+  width: auto !important;
+  min-width: 88px;
+  padding-left: 12px !important;
+  padding-right: 14px !important;
+
+  &::after {
+    content: "Save";
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+}
