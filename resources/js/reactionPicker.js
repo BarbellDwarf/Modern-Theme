@@ -22,10 +22,24 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     function getUrlParams($container) {
-        var $like = $container.find('a.likeAnchor').first();
-        var actionUrl = ($like.attr('data-action-url') || $like.data('action-url') || $like.attr('href') || '').toString();
+        // On a content detail page the like anchor can be href="#" with no
+        // data-action-url (already-reacted state), so scan both anchors and fall
+        // back to the container id: likeLinkContainer_like_<recordId>.
+        var actionUrl = '';
+        $container.find('a.likeAnchor, a.unlikeAnchor').each(function () {
+            var $a = $(this);
+            var candidate = ($a.attr('data-action-url') || $a.data('action-url') || $a.attr('href') || '').toString();
+            if (candidate && candidate !== '#' && candidate.indexOf('recordId=') > -1) {
+                actionUrl = candidate;
+                return false;
+            }
+        });
         var query = (actionUrl.split('?')[1] || '').replace(/&amp;/g, '&');
         if (!query) {
+            var idMatch = String($container.attr('id') || '').match(/likeLinkContainer_like_(\d+)/);
+            if (idMatch) {
+                return { recordId: idMatch[1], contentModel: null, contentId: null };
+            }
             return { recordId: null, contentModel: null, contentId: null };
         }
 
