@@ -1,5 +1,6 @@
 /* Inline post editor: visible Save label + Cancel button.
  * Self-starting: HumHub may inject theme JS after DOMContentLoaded and before
+    window.__seaRan = (window.__seaRan || 0) + 1;
  * jQuery is ready, so poll briefly for both instead of relying on the module
  * registry or a ready event.
  */
