@@ -1,5 +1,10 @@
-(function ($) {
+document.addEventListener('DOMContentLoaded', function () {
     'use strict';
+    var $ = window.jQuery;
+
+    if (!$) {
+        return;
+    }
 
     var observer = null;
     var timer = null;
@@ -84,4 +89,4 @@
             schedule();
         }
     }, 400);
-})(window.jQuery);
+});
