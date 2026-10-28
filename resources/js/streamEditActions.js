@@ -6,7 +6,6 @@
 (function () {
     'use strict';
 
-    window.__seaRan = (window.__seaRan || 0) + 1;
 
     var observer = null;
     var timer = null;
