@@ -1,0 +1,166 @@
+// Modern Theme - State clarity and copy polish
+// Join cards, empty states, initials avatar and calendar notice.
+
+.mt2026-join-card {
+  padding: var(--space-6);
+  text-align: center;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.streamMessage .panel-body .mt2026-join-card {
+  border: 0;
+  background: transparent;
+}
+
+.mt2026-join-card__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.mt2026-join-card__text {
+  max-width: 440px;
+  margin: 0 auto var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+.mt2026-join-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+}
+
+.mt2026-join-cta {
+  margin-top: var(--space-4);
+}
+
+.mt2026-empty-state {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.mt2026-empty-state__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.mt2026-empty-state__text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+// Initials avatar for profiles without a photo.
+.profile-user-photo-container.mt2026-has-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-primary-strong);
+  border-radius: 9999px;
+
+  > a,
+  > img {
+    display: none !important;
+  }
+}
+
+.mt2026-profile-initials {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+
+  // Phone header shrinks the avatar to 60px.
+  @media (max-width: 767px) {
+    font-size: 1.25rem;
+  }
+}
+
+// Calendar empty-month notice. A quiet line above the grid: no tinted alert
+// box, no border, no dismiss button.
+.mt2026-calendar-empty {
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.mt2026-calendar-empty__dismiss {
+  display: none;
+}
+
+// Notification overview with nothing in it: the empty state replaces both the
+// table header and the filter sidebar.
+.panel:has(.mt2026-empty-state[data-mt2026-empty-state="notifications"]) > .panel-heading {
+  display: none;
+}
+
+.layout-content-container:has(.mt2026-empty-state[data-mt2026-empty-state="notifications"]) ~ .layout-sidebar-container {
+  display: none;
+}
+
+// ── 12px type floor ──────────────────────────────────────────────────────────
+// Core and the default theme drop meta text to 10.5–11px through `!important`
+// and em inheritance. At phone width that is below a comfortable reading size,
+// so every text leaf in a content card gets an explicit 12px floor.
+#layout-content {
+  .tt.timeago,
+  time.tt,
+  .time {
+    font-size: 12px !important;
+  }
+
+  .comment-count {
+    font-size: 12px !important;
+  }
+
+  .badge {
+    font-size: 12px !important;
+    padding: 3px 8px; // larger type without pushing a tab past 44px
+  }
+
+  .btn-outline-accent b,
+  .btn-sm b {
+    font-size: 12px !important;
+  }
+
+  small {
+    font-size: 12px !important;
+  }
+
+  // Small button variants, plus the accent/warning defaults on admin pages,
+  // inherit a 10.5px size from the core button scale.
+  .btn-sm,
+  .btn-accent,
+  .btn-warning,
+  .btn-outline-accent {
+    font-size: 12px !important;
+  }
+
+  // Mail conversation list uses bare <time>; calendar uses bare spans in the
+  // FullCalendar day header. Neither carries a class the rules above can catch.
+  time,
+  .fc-day-header span {
+    font-size: 12px !important;
+  }
+
+  .modules-updates-info {
+    font-size: 12px !important;
+  }
+}
+
+.card small,
+.panel small {
+  font-size: 12px !important;
+}

@@ -1,0 +1,483 @@
+// Modern Theme - Calendar hardening
+// Keep event/list cards readable in tablet and mobile ranges.
+
+// Toolbar states: FullCalendar v6 renders view buttons as
+// .fc-dayGridMonth-button etc. with `active` on the selected view. Bootstrap
+// classes on those buttons make the inactive state look like a primary action,
+// so neutralise it and keep only the selected view filled.
+.fc {
+  .fc-dayGridMonth-button:not(.active),
+  .fc-timeGridWeek-button:not(.active),
+  .fc-timeGridDay-button:not(.active),
+  .fc-listWeek-button:not(.active) {
+    background-color: var(--color-bg-secondary) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-bg-tertiary) !important;
+      border-color: var(--color-border-dark) !important;
+      color: var(--color-text-primary) !important;
+    }
+  }
+
+  .fc-dayGridMonth-button.active,
+  .fc-timeGridWeek-button.active,
+  .fc-timeGridDay-button.active,
+  .fc-listWeek-button.active {
+    background-color: var(--color-primary-strong) !important;
+    border-color: var(--color-primary-strong) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-primary-strong-hover) !important;
+      border-color: var(--color-primary-strong-hover) !important;
+      color: #fff !important;
+    }
+  }
+
+  .fc-prev-button,
+  .fc-next-button,
+  .fc-today-button {
+    background-color: var(--color-bg-secondary) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-bg-tertiary) !important;
+      border-color: var(--color-border-dark) !important;
+      color: var(--color-text-primary) !important;
+    }
+  }
+
+  .fc button:disabled {
+    opacity: 0.55;
+  }
+}
+
+.fc,
+.calendar,
+[class*="calendar"] {
+  .fc-toolbar,
+  .fc-header-toolbar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+
+@media (max-width: 991px) {
+  .fc,
+  .calendar,
+  [class*="calendar"] {
+    // FullCalendar inherits ~10.5px here. 12px is the floor for the view
+    // switcher; targets stay 44px because padding is untouched.
+    .fc-button,
+    .fc-dayGridMonth-button,
+    .fc-timeGridWeek-button,
+    .fc-timeGridDay-button,
+    .fc-listWeek-button {
+      font-size: 12px;
+    }
+
+    .fc-toolbar-title {
+      font-size: 1rem;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .fc-event-title,
+    .event-title {
+      line-height: 1.35;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .fc-event-time,
+    .event-date,
+    .event-time {
+      display: inline-block;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+  }
+}
+
+// Calendar entry modal
+// Scope these overrides tightly to the event editor so generic form widgets in
+// other modules keep their existing behavior.
+#calendar-entry-form {
+  #event-color-field {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    background: transparent;
+
+    > .form-group,
+    > .mb-3,
+    > [class*="field-"] {
+      margin-bottom: 0;
+    }
+
+    .field-calendarentry-color {
+      flex: 0 0 44px;
+      max-width: 44px;
+    }
+
+    .field-calendarentry-title {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    input[type="color"] {
+      width: 44px;
+      min-width: 44px;
+      height: 40px;
+      padding: 3px;
+      border-radius: var(--radius);
+      background: transparent;
+    }
+  }
+
+  .calendar-entry-form-tabs {
+    .nav-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-2);
+      padding: 0;
+      margin: 0 0 var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      background: transparent;
+    }
+
+    .nav-item,
+    li {
+      margin-bottom: 0;
+    }
+
+    .nav-link {
+      min-height: auto;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-weight: $font-weight-medium;
+
+      &:hover,
+      &:focus {
+        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+        color: var(--color-text-primary);
+      }
+
+      &.active,
+      &[aria-selected="true"] {
+        background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-primary));
+        border-color: var(--color-border);
+        color: var(--color-text-primary);
+        box-shadow: none;
+      }
+    }
+  }
+
+  .field-calendarentry-all_day,
+  .field-calendarentryform-recurring,
+  .field-calendarentryform-reminder,
+  .field-calendarentryform-hidden,
+  .field-calendarentryform-is_public,
+  .field-calendarentryform-sendupdatenotification {
+    .checkbox {
+      display: block;
+      margin-bottom: 0;
+
+      > input[type="hidden"] {
+        display: none;
+      }
+
+      > label {
+        display: inline-flex;
+        align-items: flex-start;
+        gap: var(--space-2);
+        width: auto;
+        max-width: 100%;
+        min-height: 0;
+        margin: 0;
+        cursor: pointer;
+        font-weight: $font-weight-medium;
+        color: var(--color-text-primary);
+        line-height: 1.45;
+        white-space: normal;
+      }
+
+      > label > input[type="checkbox"] {
+        flex: 0 0 16px !important;
+        float: none !important;
+        position: static !important;
+        display: inline-block !important;
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        min-height: 16px !important;
+        max-height: 16px !important;
+        padding: 0 !important;
+        margin: 0.2rem 0 0 !important;
+        box-shadow: none !important;
+        border-radius: 3px !important;
+        background: transparent !important;
+        -webkit-appearance: checkbox !important;
+        appearance: auto !important;
+      }
+
+      > label > br {
+        display: none;
+      }
+
+      > .text-body-secondary,
+      > .help-block {
+        margin: var(--space-1) 0 0 calc(18px + var(--space-2));
+        line-height: 1.45;
+      }
+    }
+
+    .form-check {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      min-height: 0;
+      margin: 0;
+      padding-left: 0;
+    }
+
+    .form-check .form-check-input {
+      float: none !important;
+      flex: 0 0 16px !important;
+      width: 16px !important;
+      min-width: 16px !important;
+      max-width: 16px !important;
+      height: 16px !important;
+      min-height: 16px !important;
+      max-height: 16px !important;
+      margin: 0.2rem 0 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      border-radius: 3px !important;
+      background: transparent !important;
+      background-image: none !important;
+      -webkit-appearance: checkbox !important;
+      appearance: auto !important;
+    }
+
+    .form-check .form-check-label {
+      margin: 0;
+      line-height: 1.45;
+      color: var(--color-text-primary);
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .ProseMirror-menubar-wrapper {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-primary);
+  }
+
+  .ProseMirror-menubar {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg-secondary) 92%, var(--color-primary) 8%);
+  }
+
+  .ProseMirror {
+    min-height: 132px;
+    background: transparent;
+  }
+}
+
+[data-bs-theme="dark"] {
+  #calendar-entry-form {
+    .calendar-entry-form-tabs {
+      .nav-tabs {
+        border-bottom-color: color-mix(in srgb, var(--color-border) 82%, var(--color-primary) 18%);
+      }
+
+      .nav-link {
+        color: var(--color-text-muted);
+
+        &:hover,
+        &:focus {
+          background: var(--color-bg-tertiary);
+          color: var(--color-text-primary);
+        }
+
+        &.active,
+        &[aria-selected="true"] {
+          background: var(--color-bg-tertiary);
+          border-color: color-mix(in srgb, var(--color-border) 76%, var(--color-primary) 24%);
+        }
+      }
+    }
+
+    .ProseMirror-menubar-wrapper {
+      background: transparent;
+      border-color: color-mix(in srgb, var(--color-border) 78%, var(--color-primary) 22%);
+    }
+
+    .ProseMirror-menubar {
+      background: var(--color-bg-tertiary);
+      border-bottom-color: color-mix(in srgb, var(--color-border) 78%, var(--color-primary) 22%);
+    }
+
+    .field-calendarentry-all_day,
+    .field-calendarentryform-recurring,
+    .field-calendarentryform-reminder,
+    .field-calendarentryform-hidden,
+    .field-calendarentryform-is_public,
+    .field-calendarentryform-sendupdatenotification {
+      .checkbox {
+        > label {
+          color: var(--color-text-secondary);
+        }
+
+        > .text-body-secondary,
+        > .help-block {
+          color: var(--color-text-muted);
+        }
+      }
+    }
+  }
+}
+
+// Phone layout: collapse the calendar filter bar into a single "Filters" row so
+// the month grid stays above the fold. Desktop keeps the four controls inline.
+.mt2026-calendar-filters__toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mt2026-calendar-filters__toggle {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-weight: $font-weight-semibold;
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      border-color: var(--color-border-dark);
+    }
+
+    &[aria-expanded="true"] {
+      border-color: var(--color-primary);
+    }
+  }
+
+  .mt2026-calendar-filters__icon::before {
+    content: '\f0b0'; // fa-filter
+    font-family: FontAwesome, 'Font Awesome 5 Free';
+    font-size: var(--font-size-base);
+    line-height: 1;
+  }
+
+  .mt2026-calendar-filters__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: auto;
+    color: #fff;
+    background: var(--color-primary-strong);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .mt2026-calendar-filters:not(.mt2026-calendar-filters--open) > .form-search > .mt2026-calendar-filters__panel {
+    display: none !important;
+  }
+
+  .mt2026-calendar-filters__panel {
+    flex-direction: column;
+    gap: var(--space-3) !important;
+    margin-top: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  // Compact "today" button: icon only, translated label kept as accessible name.
+  .fc .fc-today-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 0;
+
+    &::before {
+      content: '\f133'; // fa-calendar
+      font-family: FontAwesome, 'Font Awesome 5 Free';
+      font-size: var(--font-size-base);
+      line-height: 1;
+    }
+  }
+
+  .fc .fc-toolbar {
+    margin-bottom: var(--space-2) !important;
+  }
+
+  // Quiet one-line hint instead of the tinted alert box.
+  .mt2026-calendar-empty {
+    display: block;
+    margin: 0 var(--space-4) var(--space-2);
+    padding: 0;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mt2026-calendar-empty__dismiss {
+    display: none;
+  }
+}
+
+// "Choose target calendar" modal: header and body padding stacked into a 50px
+// gap between the title and the picker.
+#globalModal.mt2026-calendar-target {
+  .modal-header {
+    padding-bottom: 0;
+  }
+
+  .modal-title {
+    margin-bottom: 12px;
+  }
+
+  .modal-body {
+    padding-top: 0;
+  }
+}

@@ -1,0 +1,185 @@
+// Modern Theme - Navigation Components
+// Tabs, pills, and navigation lists
+
+.nav-tabs {
+  border-bottom: 2px solid var(--color-border);
+  display: flex;
+  gap: var(--space-1);
+  
+  .nav-item {
+    .nav-link {
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--color-text-secondary);
+      font-weight: $font-weight-medium;
+      @include transition(all, var(--transition-fast));
+      border-radius: var(--radius) var(--radius) 0 0;
+      margin-bottom: -2px;
+      
+      &:hover {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+      }
+      
+      &.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+        background: transparent;
+      }
+    }
+  }
+}
+
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  
+  .nav-item {
+    .nav-link {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      color: var(--color-text-secondary);
+      font-weight: $font-weight-medium;
+      @include transition(all, var(--transition-fast));
+      
+      &:hover {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+      }
+      
+      &.active {
+        background: var(--color-primary-strong);
+        color: white;
+        @include shadow('sm');
+      }
+    }
+  }
+}
+
+// Active rows already read as selected; a second focus ring on top of the
+// fill muddies it. Keyboard focus still gets the global :focus-visible ring.
+.list-group-item.active,
+.nav-link.active,
+.nav-pills .active > a {
+  &:focus:not(:focus-visible),
+  &:active:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// Tabs stay on one line on phones and scroll instead of wrapping into a
+// second row. adminPolish.js sets data-fade while more tabs hide to the right.
+@media (max-width: 767px) {
+  .tab-menu,
+  .nav-tabs.tab-sub-menu {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &[data-fade='right'] {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    }
+  }
+
+  .tab-menu > .nav-tabs {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .tab-menu .nav-tabs,
+  .nav-tabs.tab-sub-menu {
+    flex-wrap: nowrap;
+    scroll-snap-type: x proximity;
+
+    .nav-item {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      scroll-snap-align: start;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+}
+
+// Destructive account action reads as destructive without a filled red block
+// that invites accidental taps.
+.nav-tabs .nav-link[href$="/user/account/delete"] {
+  margin-left: 12px;
+  color: #b91c1c;
+
+  &:hover,
+  &:focus-visible {
+    color: #b91c1c;
+    border-bottom-color: #b91c1c;
+    background: transparent;
+  }
+
+  [data-bs-theme='dark'] & {
+    color: var(--color-danger-light);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-danger-light);
+      border-bottom-color: var(--color-danger-light);
+    }
+  }
+}
+
+// Breadcrumbs
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-4);
+  list-style: none;
+  background: transparent;
+  border-radius: 0;
+  
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    
+    + .breadcrumb-item::before {
+      content: "/";
+      padding: 0 var(--space-2);
+      color: var(--color-text-muted);
+    }
+    
+    a {
+      color: var(--color-text-secondary);
+      
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+    
+    &.active {
+      color: var(--color-text-primary);
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// Destructive account action: keep it in the settings tab row but mark it red
+// and separate it from the routine tabs so it is not tapped by accident.
+.nav-tabs .nav-link[href$="/user/account/delete"] {
+  margin-left: auto;
+  color: #dc2626 !important;
+
+  &:hover,
+  &:focus-visible {
+    color: #b91c1c !important;
+    border-bottom-color: #dc2626 !important;
+  }
+}

@@ -1,0 +1,576 @@
+// Modern Theme - Admin Section: Layout, columns, spacing, sidebar
+// Extracted from _admin.scss
+
+// ============================================================
+// Admin Layout — outer container & column structure
+// ============================================================
+
+// Add comfortable top margin so the fixed topbars don't overlap
+.mt2026-admin-layout {
+  overflow: hidden;
+  margin-top: var(--space-6);
+  padding-bottom: var(--space-10);
+}
+
+// Admin sidebar column — remove default Bootstrap column padding on desktop
+@media (min-width: 992px) {
+  .mt2026-admin-sidebar {
+    padding-right: var(--space-4);
+  }
+
+  .mt2026-admin-content {
+    padding-left: var(--space-4);
+  }
+}
+
+// ============================================================
+// Admin panels — fix double-padding
+// ============================================================
+// The global .panel gets padding: var(--space-6) from _cards.scss @include card.
+// Admin sub-layouts wrap content in .panel.panel-default THEN views add .panel-body.
+// That creates 24px (panel) + 24px (panel-body) = 48px each side — too much.
+// Fix: admin panels get 0 body-padding; panel-heading/body/footer handle their own.
+
+.mt2026-admin-content {
+
+  // Top-level admin panel (the outer card wrapping each sub-section)
+  > .panel {
+    padding: 0;                    // No body padding — let children handle it
+    overflow: hidden;              // Keep border-radius clipping
+
+    // Reset negative margins from _cards.scss (which compensate for card padding)
+    .panel-heading {
+      padding: var(--space-4) var(--space-5);
+      margin: 0;                   // No negative margin needed (panel has no padding)
+      border-bottom: 1px solid var(--color-border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      font-weight: $font-weight-semibold;
+      background: var(--color-bg-secondary);
+    }
+
+    // Sub-menu tab bars (UserMenu, SettingsMenu, SpaceMenu, InformationMenu)
+    // These sit between panel-heading and panel-body — give them proper spacing
+    .nav-tabs {
+      padding: 0 var(--space-4);
+      background: var(--color-bg-secondary);
+      border-bottom: 2px solid var(--color-border);
+      flex-wrap: wrap;             // Allow tabs to wrap on small screens
+      gap: 0;
+    }
+
+    // Panel body — moderate padding (no doubling)
+    .panel-body {
+      padding: var(--space-5) var(--space-6);
+
+      @media (max-width: 767px) {
+        padding: var(--space-4);
+      }
+    }
+  }
+}
+
+// ============================================================
+// Admin sidebar — fix list-group-vertical-lg
+// ============================================================
+
+// On mobile, add spacing between stacked admin sidebar and content
+@media (max-width: 991px) {
+  .mt2026-admin-sidebar {
+    margin-bottom: var(--space-4);
+
+    // On mobile, the AdminMenu renders as a horizontal scrollable row
+    #admin-menu,
+    .left-navigation {
+      .list-group {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: var(--space-2); // Space for scrollbar
+      }
+    }
+  }
+}
+
+// Define list-group-vertical-lg used in HumHub's left-navigation template:
+// The template renders: class="list-group list-group-horizontal list-group-vertical-lg"
+// Intended: horizontal on small screens, vertical (column) sidebar on lg+ screens.
+// Without this definition, list-group-horizontal's flex-direction:row wins on all
+// breakpoints, squishing items sideways inside the narrow col-lg-3 admin sidebar.
+@media (min-width: 768px) {
+  .list-group-vertical-lg {
+    flex-direction: column !important;
+    flex-wrap: nowrap;
+  }
+}
+
+// Ensure the admin panel sidebar list items display correctly as a vertical nav
+#admin-menu,
+.left-navigation {
+  @media (min-width: 768px) {
+    .list-group {
+      flex-direction: column;
+    }
+  }
+}
+
+// ============================================================
+// Admin on phones (< 768px)
+// ============================================================
+// Heading and its action buttons share one line on desktop, which squeezes
+// the heading until words break mid-word at 390px. Stack them instead.
+@media (max-width: 767px) {
+  .mt2026-admin-content > .panel > .panel-heading {
+    // Block, not flex: the title is bare text next to a floated action, so a
+    // flex column let the action squeeze it onto two lines.
+    display: block;
+    width: 100%;
+    max-width: none;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+
+    // Heading first, at full width, free to wrap between words.
+    h1, h2, h3, h4 {
+      width: 100%;
+      margin: 0;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    // Actions get their own row with 44px touch targets.
+    > .pull-right,
+    > .pull-left,
+    > .float-end,
+    > .float-start {
+      float: none !important;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  // Sub-menu tabs: one scrollable row instead of wrapping onto extra lines.
+  .mt2026-admin-content > .panel > .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0;
+
+    > li {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      white-space: nowrap;
+    }
+  }
+}
+
+// ============================================================
+// Admin on phones — measured DOM
+// ============================================================
+// The Users page heading is a bare H4 inside .panel-body, sharing its row with
+// the action buttons. Stack the actions under the heading.
+@media (max-width: 767px) {
+  .mt2026-admin-content {
+    .panel-body {
+      h4 {
+        width: 100%;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      > .btn-group,
+      > .float-end {
+        float: none !important;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      > .btn-group .btn,
+      > .float-end .btn {
+        flex: 1 1 auto;
+        min-height: 44px;
+      }
+
+      // Create comes first even if the markup orders it differently.
+      > .btn-group .btn-primary,
+      > .float-end .btn-primary {
+        order: -1;
+      }
+    }
+
+    // Tabs live inside a .tab-menu wrapper; scroll them instead of wrapping.
+    // The edge fade is applied by the shared rule below once adminPolish.js
+    // reports which edges still have content.
+    .tab-menu {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      .nav-tabs {
+        flex-wrap: nowrap;
+      }
+
+      .nav-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+      }
+    }
+  }
+}
+
+// ============================================================
+// Admin menu as a chip row (mobile)
+// ============================================================
+// Six stacked rows of card-styled links ate ~300px above the fold at 390px.
+// Below the desktop breakpoint the same links become one scrollable chip row
+// with no card chrome. Covers 768-991 too: the sidebar column only exists at
+// >=992, so that band has the same stacked-menu problem.
+@media (max-width: 991px) {
+  .mt2026-admin-sidebar {
+    margin-bottom: var(--space-2);
+
+    #admin-menu,
+    .left-navigation {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+
+      > .panel-heading {
+        display: none;
+      }
+
+      .list-group {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: var(--space-2);
+        margin: 0;
+        padding: 0 0 var(--space-1);
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+
+        > .list-group-item {
+          scroll-snap-align: start;
+        }
+      }
+
+      .list-group-item {
+        flex: 0 0 auto;
+        height: 44px;
+        min-height: 44px;
+        padding: 0 var(--space-4);
+        border-radius: var(--radius-full);
+        background: var(--color-bg-secondary);
+        color: var(--color-text-secondary);
+        box-shadow: none;
+        white-space: nowrap;
+
+        i,
+        .fa {
+          margin-right: var(--space-2);
+          color: inherit;
+        }
+
+        &.active {
+          background: var(--color-primary-strong);
+          border-color: var(--color-primary-strong);
+          color: #fff !important;
+          box-shadow: var(--shadow-md);
+
+          &::before {
+            display: none; // the 4px bar belongs to the stacked card layout
+          }
+
+          i,
+          .fa {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  // Maintenance action, not a navigation peer: last chip, greyed, divider
+  // before it. Source order already puts it last.
+  #admin-menu .list-group-item[href*="update"] {
+    position: relative;
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--space-2) + 3px);
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: var(--color-border);
+    }
+  }
+
+  // Secondary copy (module warnings, hints) needs 13px and readable contrast
+  // on phones; theme muted grey drops below 4.5:1 at small sizes.
+  .mt2026-admin-content {
+    .text-muted,
+    .help-block,
+    .invalid-feedback,
+    small {
+      font-size: 13px;
+    }
+
+    .text-muted {
+      color: var(--color-text-secondary) !important;
+    }
+  }
+}
+
+// ============================================================
+// Admin headings & tables (mobile)
+// ============================================================
+@media (max-width: 767px) {
+  // Page title: 18px is enough to read as a heading without wrapping the
+  // second word onto its own line at 390px.
+  .mt2026-admin-content .panel-body h4 {
+    font-size: 18px;
+    line-height: 1.3;
+    margin: 4px 0 8px;
+    text-wrap: balance;
+  }
+
+  // Intro copy (module descriptions) was set large enough to eat ~120px.
+  .mt2026-admin-content .panel-body > p,
+  .mt2026-admin-content .panel-body > .text-body-secondary {
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+
+  // Long emails stay whole instead of being cut at the column edge.
+  .mt2026-admin-content .table td {
+    overflow-wrap: anywhere;
+  }
+}
+
+// Scroll affordance shared by the chip row, tab strip and admin tables.
+// adminPolish.js sets data-fade="right" only while more content hides to the
+// right; reaching the end removes the fade so the last chip ends clean.
+.mt2026-admin-sidebar #admin-menu .list-group,
+.mt2026-admin-content .tab-menu,
+.mt2026-admin-content .tab-menu .nav-tabs,
+.mt2026-admin-content .table-responsive,
+.mt2026-admin-content .grid-view {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &[data-fade='right'] {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
+}
+
+// Tabs also snap, so a swipe lands on a tab edge instead of mid-word.
+.mt2026-admin-content .tab-menu,
+.mt2026-admin-content .tab-menu .nav-tabs {
+  scroll-snap-type: x proximity;
+
+  .nav-item {
+    scroll-snap-align: start;
+  }
+}
+
+// ============================================================
+// Module list rows (mobile)
+// ============================================================
+// Core lays the row out as icon | name | description | actions on one line.
+// At 390px the description keeps 50% and hyphenates ("up-coming"), and the
+// actions float mid-card. Give description and actions a full row each.
+@media (max-width: 767px) {
+  .mt2026-admin-content .modules-group .module-row {
+    > div.col-6:not(.module-actions) {
+      flex: 0 0 100%;
+      max-width: 100%;
+      font-size: 13px;
+      line-height: 1.45;
+      hyphens: none;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    > .module-actions {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding-right: 0;
+      white-space: normal;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .btn {
+        min-height: 40px;
+        margin-left: 0;
+      }
+
+      // Gear only: square 40px target, label comes from adminPolish.js.
+      .btn.dropdown-toggle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+// Intro paragraph: a native disclosure, added by adminPolish.js. The
+// descriptive lead lives inside it; the data-loss warning is split into its own
+// paragraph so it stays visible while the disclosure is closed. The summary is
+// hidden from tablet up, where the intro is always open.
+.mt2026-admin-about {
+  > summary {
+    display: list-item;
+    min-height: 44px;
+    padding: 12px 0;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--color-primary);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  > p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  // Tablet and up: the intro is always open, so the summary row is not shown.
+  // Guarded by [open] so a closed disclosure still offers its summary.
+  @media (min-width: 768px) {
+    &[open] > summary {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .mt2026-intro-warning {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ── Module update notice & permission alerts (mobile) ────────────────────────
+// Core floats the "Install updates" button beside the copy; at 390px the two
+// fight over one line. Text first, then a full-width 44px button.
+@media (max-width: 767px) {
+  .mt2026-admin-content .modules-updates-info,
+  .mt2026-admin-content .alert {
+    > .btn,
+    .btn {
+      float: none !important;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      margin-top: 8px;
+    }
+  }
+
+  // Core renders the button before the copy; keep the copy first.
+  .mt2026-admin-content .modules-updates-info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    > .btn {
+      order: 1;
+    }
+  }
+}
+
+// ── Users table (mobile) ────────────────────────────────────────────────────
+// The name and email columns are wider than a phone, so the table scrolls.
+// Core's first column is the avatar, so the name cell is pinned beside it and
+// the pair stays visible while scrolling to the last column. Scoped with :has
+// to the users page, the admin table with the search field above it.
+@media (max-width: 767px) {
+  .mt2026-admin-content .panel:has(input[name="UserSearch[freeText]"]) .table {
+    // The rounded-corner clip makes the table the sticky containing block and
+    // kills the pinned column, so drop it on phones.
+    border-radius: 0;
+    overflow: visible;
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      width: 58px;
+      min-width: 58px;
+      padding-right: 6px;
+      background: var(--color-bg-secondary);
+      z-index: 1;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      position: sticky;
+      left: 58px;
+      background: var(--color-bg-secondary);
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    th:last-child,
+    td:last-child {
+      white-space: nowrap;
+      padding-right: 12px;
+    }
+
+    // Long addresses break anywhere instead of hyphenating across lines.
+    td {
+      font-size: 12.5px;
+      overflow-wrap: anywhere;
+      hyphens: none;
+    }
+  }
+}
+
+// Selection is not focus: an active row or menu entry shows a ring only for
+// keyboard users. Mouse clicks used to leave a blue ring on the orange row.
+#admin-menu .list-group-item.active:not(:focus-visible),
+.mt2026-admin-content .table tbody tr.active:not(:focus-visible) {
+  outline: none;
+}

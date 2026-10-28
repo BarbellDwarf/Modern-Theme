@@ -1,0 +1,322 @@
+// Modern Theme - Dropdowns
+// Modern dropdown menus with smooth animations
+
+.dropdown-menu {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  @include shadow('lg');
+  padding: var(--space-2);
+  min-width: 200px;
+  // Explicit z-index ensures the menu floats above panels, stream entries, etc.
+  z-index: $z-dropdown;
+  position: absolute;
+  @include fade-in(var(--transition-fast));
+  
+  // .hh-list inside a dropdown is a list container (e.g. notifications) — must not be flex
+  .dropdown-item.hh-list {
+    display: block;
+    padding: 0;
+    background: transparent;
+    &:hover { background: transparent; }
+  }
+
+  .dropdown-item {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    color: var(--color-text-secondary);
+    @include transition(all, var(--transition-fast));
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    
+    &:hover {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+    
+    &:active {
+      background: var(--color-primary-lightest);
+      color: var(--color-primary);
+    }
+    
+    &.active {
+      background: var(--color-primary-strong);
+      color: white;
+    }
+    
+    i {
+      width: 20px;
+      text-align: center;
+    }
+  }
+  
+  .dropdown-divider {
+    margin: var(--space-2) 0;
+    border-top: 1px solid var(--color-border-light);
+  }
+  
+  .dropdown-header {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+    font-weight: $font-weight-semibold;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
+  }
+}
+
+// Ensure panels/cards that contain dropdowns allow menus to visually overflow.
+// This overrides any Bootstrap overflow:hidden on ancestor containers.
+// .nav-item.dropdown is the structure used by HumHub's wallEntryControls,
+// commentControls, and the composer gear menu.
+.dropdown,
+.btn-group,
+.dropup,
+.nav-item.dropdown {
+  overflow: visible !important;
+
+  &.open,
+  &.show {
+    // When a dropdown is open, its direct parent needs overflow:visible
+    // so the .dropdown-menu is not clipped by a containing block.
+    overflow: visible;
+  }
+}
+
+// Ensure the ancestor chain of wall-entry and comment controls never clips.
+.wall-entry-controls,
+.stream-entry-controls,
+.comment-controls {
+  overflow: visible !important;
+}
+
+// Space/user profile header: prevent the panel and its ancestors from
+// clipping the settings dropdown menu.
+// Ancestor chain: .panel-profile > .panel-body > .panel-profile-controls > … > .dropdown-menu
+// .panel-profile is the outer wrapper class set by ContainerProfileHeader (panel panel-default panel-profile).
+.panel-profile,
+.panel-profile .panel-body,
+.panel-profile-controls {
+  overflow: visible !important;
+}
+
+// Ensure the controls wrapper floats above surrounding content and never clips.
+.controls.controls-header,
+.controls-header {
+  position: relative;
+  z-index: $z-dropdown;
+  overflow: visible;
+}
+
+// Keep the dropdown toggle and menu in the stacking context above panel content.
+#space-header-controls-menu,
+.profile-header-controls {
+  position: relative;
+  z-index: $z-dropdown;
+}
+
+// -----------------------------------------------------------------------
+// Space page layout stacking fix
+//
+// Layout HTML:
+//   .space-layout-container
+//     .row                          ← header row  (z-index: 100)
+//       .col-lg-12
+//         .panel-profile (dropdown lives here)
+//     .row.space-content            ← content row (z-index: 1, isolated)
+//       .layout-content-container
+//         .wall-entry / .stream-entry  (transform on hover → new stacking ctx)
+//
+// Problem: stream entries use transform:translateY on hover which creates a
+// new stacking context. Because both rows are siblings in normal flow, and
+// the content row's entries appear later in the DOM, their stacking context
+// can paint on top of the header's dropdown even when the dropdown has a
+// high z-index — because the dropdown is a child of the *earlier* row's
+// stacking context.
+//
+// Fix:
+//  1. Give the header row position:relative + high z-index (100) so its
+//     entire stacking context — including the dropdown — is ordered above
+//     the content row.
+//  2. Give .space-content (content row) position:relative + z-index:1 and
+//     isolation:isolate so stream-entry stacking contexts are confined
+//     within it and cannot escape to paint over the header.
+// -----------------------------------------------------------------------
+
+.space-layout-container > .row:first-child {
+  position: relative;
+  z-index: 100;
+}
+
+.space-content {
+  isolation: isolate;
+}
+
+// Prevent the profile panel's hover transform from creating a stacking
+// context that traps the dropdown inside a lower z-index layer.
+.panel-profile,
+.panel-default.panel-profile {
+  &:hover {
+    transform: none !important;
+  }
+}
+
+// Ensure the dropdown-menu always floats at the very top of the page stack.
+.dropdown-menu {
+  z-index: $z-dropdown !important;
+}
+
+// Comment composer attachment menu can be rendered inside nested comment wrappers
+// with overflow/stacking contexts. Force this chain to allow visible overflow.
+.comment-container,
+.comment-container .comment,
+.comment-entry,
+.comment-entry-form,
+.comment-controls,
+.comment-controls .dropdown,
+.comment-controls .nav-item.dropdown,
+.comment-controls .dropdown-menu {
+  overflow: visible !important;
+}
+
+.comment-controls .dropdown-menu {
+  z-index: $z-dropdown !important;
+}
+
+// While a comment attachment/controls dropdown is open, raise the whole stream
+// entry above sibling entries so the menu cannot be covered by the next card.
+.wall-entry.mt2026-dropdown-open,
+.stream-entry.mt2026-dropdown-open {
+  transform: translateZ(0);
+  z-index: $z-dropdown;
+}
+
+.comment_create .btn-group.show .dropdown-menu,
+.comment-controls .nav-item.dropdown.show .dropdown-menu {
+  z-index: $z-dropdown !important;
+}
+
+// Wall/stream entry controls (the "…" three-dot menu on each post) must overflow
+// and sit above sibling cards while open.
+.wall-entry-controls .nav-item.dropdown,
+.stream-entry-controls .nav-item.dropdown {
+  overflow: visible !important;
+}
+
+.wall-entry-controls .nav-item.dropdown.show .dropdown-menu,
+.stream-entry-controls .nav-item.dropdown.show .dropdown-menu {
+  z-index: $z-dropdown !important;
+}
+
+// Stream post composer settings dropdown ("gear") can be inside wrappers that clip.
+// Overflow handled by JS (Task 3d). Keep menu lifted above stream cards.
+.wall-entry-form .btn-group > .dropdown-menu,
+.post-form .btn-group > .dropdown-menu,
+.content-form-body .btn-group > .dropdown-menu,
+.content-form-body .dropdown-menu,
+.contentForm_options .nav-item.dropdown .dropdown-menu {
+  z-index: $z-dropdown !important;
+}
+
+// When composer settings menu is open, lift the whole composer above next stream card.
+.mt2026-composer-dropdown-open {
+  position: relative;
+  z-index: $z-dropdown !important;
+}
+
+.s-wall-entry.mt2026-composer-dropdown-open,
+.wall-entry.mt2026-composer-dropdown-open,
+.stream-entry.mt2026-composer-dropdown-open,
+.panel.mt2026-composer-dropdown-open,
+#contentFormBody.mt2026-composer-dropdown-open,
+#contentFormBodyModal.mt2026-composer-dropdown-open,
+.content-form-body.mt2026-composer-dropdown-open {
+  z-index: $z-dropdown !important;
+}
+
+// ── MAIL COMPOSER DROPDOWNS ──────────────────────────────────────────────────────
+// Ensure mail composer dropdowns (upload, attachment menu) render above bottom nav
+// and aren't clipped by overflow-hidden containers
+.mt2026-mail-composer-dock,
+.mt2026-mail-composer-dock .mail-message-form,
+.mt2026-mail-composer-dock .richtext-create-buttons,
+.mt2026-mail-composer-dock .richtext-create-input-group,
+.mt2026-mail-composer-dock .btn-group,
+.mt2026-mail-composer-dock .dropdown {
+  overflow: visible !important;
+}
+
+// Mail composer attachment/upload buttons and menus
+.mt2026-mail-composer-dock .dropdown-menu,
+.mt2026-mail-composer-dock .btn-group > .dropdown-menu,
+.mail-message-form .dropdown-menu,
+.mail-message-form .btn-group > .dropdown-menu {
+  z-index: 1051 !important;
+  position: absolute !important;
+}
+
+// When mail composer menu is open, lift the composer above bottom nav and other content
+.mt2026-mail-composer-dock.show,
+.mt2026-mail-composer-dock .dropdown.show {
+  z-index: $z-mt2026-dropdown !important;
+}
+
+// Desktop stream card overlap: when composer menu is open, lift parent panel/layout too.
+.panel.mt2026-composer-panel-open,
+.layout-content-container.mt2026-composer-layout-open,
+.space-layout-container.mt2026-composer-layout-open,
+.space-content.mt2026-composer-layout-open {
+  position: relative;
+  z-index: $z-dropdown !important;
+  overflow: visible !important;
+}
+
+// Keep stream posts beneath the composer menu while it is open.
+.layout-content-container.mt2026-composer-layout-open .stream-entry,
+.layout-content-container.mt2026-composer-layout-open .wall-entry,
+.space-layout-container.mt2026-composer-layout-open .stream-entry,
+.space-layout-container.mt2026-composer-layout-open .wall-entry,
+.space-content.mt2026-composer-layout-open .stream-entry,
+.space-content.mt2026-composer-layout-open .wall-entry {
+  position: relative;
+  z-index: 1 !important;
+  transform: none !important;
+}
+
+.layout-content-container.mt2026-composer-layout-open .content-form-body,
+.space-layout-container.mt2026-composer-layout-open .content-form-body,
+.space-content.mt2026-composer-layout-open .content-form-body {
+  position: relative;
+  z-index: $z-dropdown !important;
+}
+
+// Global guard: while composer settings dropdown is open, ensure stream cards never overlay it.
+body.mt2026-composer-dropdown-open-global .layout-content-container .stream-entry,
+body.mt2026-composer-dropdown-open-global .layout-content-container .wall-entry,
+body.mt2026-composer-dropdown-open-global .space-layout-container .stream-entry,
+body.mt2026-composer-dropdown-open-global .space-layout-container .wall-entry {
+  position: relative;
+  z-index: 1 !important;
+}
+
+body.mt2026-composer-dropdown-open-global .content-form-body,
+body.mt2026-composer-dropdown-open-global #contentFormBody,
+body.mt2026-composer-dropdown-open-global #contentFormBodyModal,
+body.mt2026-composer-dropdown-open-global .contentForm_options,
+body.mt2026-composer-dropdown-open-global .contentForm_options .dropdown-menu {
+  position: relative;
+  z-index: $z-dropdown !important;
+}
+
+// Applied by dropdownManager.js to ensure dropdown menus layer above content
+.mt2026-dropdown-menu-front {
+  z-index: 1000;
+}
+
+// Ensure the layout container itself doesn't clip the overflowed dropdown.
+.layout-content-container,
+.space-layout-container,
+.space-content {
+  overflow: visible !important;
+}

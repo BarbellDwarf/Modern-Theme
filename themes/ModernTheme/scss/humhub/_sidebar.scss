@@ -1,0 +1,137 @@
+// Modern Theme - Sidebar Navigation
+// Improved left sidebar with better hierarchy
+
+.layout-nav-container {
+  width: $sidebar-width;
+  @include transition(width, var(--transition-base));
+}
+
+#left-navigation {
+  .panel {
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-lg);
+    @include shadow('sm');
+    
+    .panel-heading {
+      font-size: var(--font-size-base);
+      font-weight: $font-weight-semibold;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .panel-body {
+      padding: var(--space-2);
+    }
+  }
+  
+  .list-group {
+    .list-group-item {
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      border-radius: var(--radius);
+      margin-bottom: var(--space-1);
+      color: var(--color-text-secondary);
+      @include transition(all, var(--transition-fast));
+      
+      &:hover {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+        transform: translateX(4px);
+      }
+      
+      &.active {
+        background: var(--color-primary-strong);
+        color: #fff;
+        font-weight: $font-weight-semibold;
+        
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 3px;
+          height: 60%;
+          background: rgba(255, 255, 255, 0.85);
+          border-radius: 0 var(--radius) var(--radius) 0;
+        }
+      }
+      
+      i {
+        margin-right: var(--space-2);
+        width: 20px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Collapsible sidebar
+.layout-nav-container.collapsed {
+  width: $sidebar-collapsed-width;
+  
+  #left-navigation {
+    .panel-heading span {
+      display: none;
+    }
+    
+    .list-group-item span {
+      display: none;
+    }
+  }
+}
+
+// Tablet / small-desktop (as requested): keep space menu readable and avoid
+// cramped horizontal scrolling between 768px and 991px.
+@media (min-width: 768px) and (max-width: 991px) {
+  .space-layout-container .space-content {
+    .layout-nav-container,
+    .layout-content-container,
+    .layout-sidebar-container {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .layout-nav-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-bottom: 12px;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  // Use a horizontal pill row in this range to avoid cramped stacked sidebars.
+  .space-layout-container #space-main-menu {
+    width: 100%;
+
+    .list-group,
+    &.left-navigation .list-group,
+    .list-group.list-group-horizontal,
+    .list-group.list-group-vertical-lg {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      width: 100%;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scrollbar-width: none;
+      gap: 6px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .list-group > .list-group-item {
+      display: inline-flex;
+      align-items: center;
+      width: auto;
+      min-height: 44px;
+      min-width: max-content;
+      white-space: nowrap;
+      margin-bottom: 0;
+      flex: 0 0 auto;
+    }
+  }
+}

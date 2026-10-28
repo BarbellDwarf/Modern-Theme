@@ -1,0 +1,1264 @@
+// Modern Theme - Mobile Overrides
+// Mobile-specific styles and responsive adjustments
+
+// -----------------------------------------------------------------------
+// Virtual keyboard open state
+// -----------------------------------------------------------------------
+// When the virtual keyboard is open, mobileKeyboardFix.js:
+//   1. Adds .mt2026-keyboard-open to <body>
+//   2. Sets --vvh on :root to the visual viewport height (window.visualViewport.height)
+// CSS rules below respond to that state so modals shrink to the visible area
+// and inputs remain reachable above the keyboard.
+// -----------------------------------------------------------------------
+
+// Make modal content shrink to the visible viewport when the keyboard is open.
+// --vvh is set dynamically by JS; fall back to 100dvh if not yet available.
+body.mt2026-keyboard-open {
+    @media (max-width: 991px) {
+        // Shrink modal to the visual viewport height (keyboard-excluded area)
+        .modal-content {
+            max-height: calc(var(--vvh, 100dvh) - 60px) !important;
+            overflow-y: auto !important;
+        }
+
+        // Allow modal body to scroll independently so the focused input stays visible
+        .modal-body {
+            overflow-y: auto !important;
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        // Keep modal footer always visible above the keyboard
+        .modal-footer {
+            flex-shrink: 0;
+        }
+
+        // Keep modal header always visible at the top
+        .modal-header {
+            flex-shrink: 0;
+        }
+
+        // Prevent bottom nav from showing behind the keyboard
+        .mobile-bottom-nav {
+            display: none !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------
+// Mobile-specific enhancements for Modern Theme
+@media (max-width: 991px) {
+    // Space/profile nav: attached full-width tab row under the header card.
+    // Scoped to the content layouts so unrelated .layout-nav-container widgets
+    // (dashboard etc.) keep their own styling.
+    .space-content .layout-nav-container,
+    .profile-content .layout-nav-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        padding: 0 12px !important;
+        margin: 0 0 12px !important;
+        overflow: visible !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+
+        // Strip any card chrome between the aside and the tab list.
+        > .panel,
+        > .panel-body,
+        .panel {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .panel-heading {
+            display: none !important;
+        }
+
+        // Handle both .list-group (LeftNavigation widget) and .nav/.nav-pills
+        .list-group,
+        .nav,
+        ul {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: flex-start !important;
+            width: 100%;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            gap: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            list-style: none;
+            border-bottom: 1px solid var(--color-border, #e5e7eb);
+            scrollbar-width: none; // Firefox
+
+            &::-webkit-scrollbar { display: none; } // Chrome/Safari
+
+            .list-group-item,
+            > li,
+            .nav-item {
+                flex: 1 1 0 !important;
+                width: auto !important;
+                min-width: 72px;
+                float: none !important;
+                margin: 0 !important;
+                overflow: visible !important;
+
+                > a,
+                > .nav-link,
+                &.list-group-item {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    width: 100%;
+                    min-height: 44px;
+                    padding: 0 10px !important;
+                    border: 0 !important;
+                    border-bottom: 3px solid transparent !important;
+                    border-radius: 0 !important;
+                    background: transparent !important;
+                    color: var(--color-text-muted, #6b7280) !important;
+                    font-size: 14px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    text-decoration: none;
+                    margin: 0 !important;
+
+                    i,
+                    .fa,
+                    .glyphicon {
+                        font-size: 14px;
+                        line-height: 1;
+                    }
+
+                    &:hover,
+                    &:focus {
+                        background: var(--color-bg-secondary, #f3f4f6) !important;
+                        color: var(--color-text-primary, #111827) !important;
+                        border-bottom-color: transparent !important;
+                    }
+
+                    &.active,
+                    &:active {
+                        background: transparent !important;
+                        color: var(--color-primary-strong, #1e6ad6) !important;
+                        border-bottom-color: var(--color-primary-strong, #1e6ad6) !important;
+                    }
+                }
+
+                // HumHub marks active with class on li, not the anchor
+                &.active > a,
+                &.active > .nav-link {
+                    background: transparent !important;
+                    color: var(--color-primary-strong, #1e6ad6) !important;
+                    border-bottom-color: var(--color-primary-strong, #1e6ad6) !important;
+                }
+
+                // Active indicator bar from desktop theme doesn't apply
+                &.active::before { display: none; }
+            }
+        }
+    }
+
+    // Tabs sit flush under the header card.
+    .space-layout-container > .row:first-child,
+    .profile-layout-container > .row:first-child {
+        margin-bottom: 0 !important;
+
+        .panel-profile {
+            margin-bottom: 0 !important;
+        }
+    }
+
+    // Hide the old JS-injected toggle — collapse is replaced by horizontal scroll
+    .mt2026-space-nav-toggle {
+        display: none !important;
+    }
+    
+    // Touch-optimized buttons
+    .btn {
+        min-height: 44px;
+        padding: space(3) space(4);
+    }
+    
+    // Better mobile cards
+    .panel,
+    .card {
+        border-radius: $border-radius-md;
+        margin-bottom: space(3);
+    }
+    
+    // Mobile stream improvements
+    .s-wall-entry {
+        padding: space(3);
+        margin-bottom: space(2);
+    }
+
+    // Stream entries on mobile: remove the outer .wall-entry box entirely, let the
+    // INNER .panel be the only visible card (so there's one card per post with a
+    // clear background/border for separation, and no double-box on mobile).
+    .s2_streamContent > .wall-entry,
+    .s2_streamContent > .stream-entry {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        margin-bottom: 12px !important;  // gap between posts
+    }
+
+    // The INNER panel IS the visible card on mobile — restore its card styling
+    .s2_streamContent > .wall-entry > .panel,
+    .s2_streamContent > .stream-entry > .panel {
+        background: var(--color-bg-primary) !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: var(--radius-lg) !important;
+        box-shadow: var(--shadow-sm) !important;
+        margin-bottom: 0 !important;
+    }
+
+    // Dark mode: use secondary bg so cards remain distinct from body
+    [data-bs-theme="dark"] .s2_streamContent > .wall-entry > .panel,
+    [data-bs-theme="dark"] .s2_streamContent > .stream-entry > .panel {
+        background: var(--color-bg-secondary) !important;
+    }
+    
+    // Mobile modal: use sheet-style bottom-anchored for small modals (#globalModal),
+    // full-screen for large ones. Keep horizontal centering.
+    .modal-dialog {
+        margin: 8px auto;         // keep horizontal centering
+        max-width: calc(100% - 16px);
+        width: 100%;
+
+        .modal-content {
+            border-radius: var(--radius-xl, 16px) var(--radius-xl, 16px) 0 0;
+            max-height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
+            overflow-y: auto;
+        }
+    }
+
+    // Full-screen for modals that need it (modal-lg, iframe modals)
+    .modal-dialog.modal-lg,
+    .modal-dialog.modal-xl,
+    .modal-dialog.modal-fullscreen {
+        margin: 0;
+        max-width: 100%;
+        height: 100dvh;
+
+        .modal-content {
+            min-height: 100dvh;
+            max-height: none;
+            border-radius: 0;
+            padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+        }
+    }
+    
+    // Mobile topbar
+    .navbar-header {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+}
+
+// ── Stream entry footer: always show addon buttons ──────────────────────
+// .stream-entry-addons is a full-width flex row containing:
+//   [comment link] [reaction trigger (likeLinkContainer)]  ··· auto ···  [summary counts]
+.stream-entry-addons {
+    width: 100%;
+    min-height: 36px;
+}
+
+@media (max-width: 991px) {
+    .stream-entry-addons {
+        padding: 8px 4px 4px !important;
+        border-top: 1px solid var(--color-border-light, #f3f4f6);
+        margin-top: 8px;
+    }
+
+    // Style comment/addon links as pill buttons
+    .stream-entry-addons {
+        a[data-action-click="comment.toggleComment"]:not(.d-none),
+        .comment-link,
+        .content-addon-link {
+            // Inline flex keeps the label and " (N)" on one line, so the pill
+            // can never break between the word and the count.
+            display: inline-flex !important;
+            align-items: center;
+            padding: 0 10px;
+            line-height: 1;
+            border-radius: 999px;
+            border: 1px solid var(--color-border, #e5e7eb);
+            color: var(--color-text-secondary, #4b5563) !important;
+            font-size: 12.5px !important;
+            font-weight: 500;
+            text-decoration: none;
+            background: transparent;
+            margin-right: 6px;
+            min-height: 32px;
+            vertical-align: middle;
+            white-space: nowrap;
+            flex: 0 0 auto;
+
+            &:hover,
+            &:active {
+                background: var(--color-bg-secondary, #f3f4f6);
+                color: var(--color-text-primary, #111827) !important;
+            }
+
+            .comment-count {
+                color: var(--color-primary, #1e6ad6);
+                font-size: 12px !important;
+            }
+        }
+
+        // Prepend comment icon via pseudo-element
+        a[data-action-click="comment.toggleComment"]::before {
+            content: '\f0e5';
+            display: inline-block;
+            font-family: FontAwesome;
+            margin-right: 4px;
+            font-size: 14px !important;
+            vertical-align: -2px;
+        }
+    }
+
+    // Reaction summary link on far right
+    .mt2026-summary-link {
+        margin-left: auto;
+        font-size: 14px;
+    }
+}
+
+// Extra small devices
+@media (max-width: 576px) {
+    // Reduce spacing on very small screens
+    .panel-body,
+    .card-body {
+        padding: space(3);
+    }
+    
+    // Base body text at 17px on phones for readability without iOS zoom.
+    body {
+        font-size: 17px;
+    }
+    
+    h1 { font-size: $font-size-2xl; }
+    h2 { font-size: $font-size-xl; }
+    h3 { font-size: $font-size-lg; }
+}
+
+// -----------------------------------------------------------------------
+// User profile: About section field labels
+// .field-title needs to read as a label/heading, not plain body text.
+// On desktop (md+) it sits in a left column; on mobile it stacks above
+// the value — both need font-weight to distinguish it from the value.
+// -----------------------------------------------------------------------
+.profile-item {
+    .field-title {
+        font-weight: $font-weight-semibold;
+        color: var(--color-text-primary);
+        margin-bottom: 2px;
+    }
+
+    .field-value {
+        color: var(--color-text-secondary);
+        word-break: break-word;
+    }
+
+    // On desktop the label column already has text-lg-end (right-aligned).
+    // Keep the font-weight on all breakpoints but lighten color slightly.
+    @media (min-width: 768px) {
+        .field-title {
+            color: var(--color-text-muted);
+            font-weight: $font-weight-medium;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .field-title {
+            float: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 4px;
+        }
+
+        .field-value {
+            float: none;
+            display: block;
+            width: 100%;
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .profile-item .field-title {
+        max-width: 150px;
+        word-break: break-word;
+    }
+}
+
+// Subtle divider between profile fields for readability
+#user-profile-about .profile-item + .profile-item {
+    border-top: 1px solid var(--color-border-light);
+    padding-top: 0.5rem;
+}
+
+// ── People directory cards ─────────────────────
+// Root-level card styles (all screen sizes).
+// Using mt2026-specific classes avoids interference from
+// heavily-overridden .card-panel / .card-body selectors.
+.mt2026-people-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px 12px;
+    border-radius: 12px;
+    background: var(--color-bg-primary, #fff);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    min-height: clamp(120px, 40vw, 160px);
+
+    .mt2026-pc-avatar {
+        margin-bottom: 10px;
+
+        .mt2026-pc-img-wrapper,
+        .mt2026-pc-img-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img {
+            width: 64px !important;
+            height: 64px !important;
+            border-radius: 50% !important;
+            border: 3px solid var(--color-primary, #1e6ad6);
+            object-fit: cover;
+            display: block;
+        }
+    }
+
+    .mt2026-pc-info {
+        text-align: center;
+        width: 100%;
+
+        .mt2026-pc-name {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-primary, #111827);
+            line-height: 1.3;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            a, a:visited {
+                color: var(--color-text-primary, #111827) !important;
+                text-decoration: none !important;
+                font-weight: 600 !important;
+            }
+
+            a:hover {
+                color: var(--color-primary, #1e6ad6) !important;
+            }
+        }
+
+        .mt2026-pc-title {
+            font-size: 12px;
+            color: var(--color-text-muted, #6b7280);
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &.mt2026-pc-title-empty {
+                visibility: hidden;
+                height: 1em;
+            }
+        }
+
+        .mt2026-pc-phone {
+            font-size: 12px;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            .mt2026-pc-phone-link {
+                color: var(--color-text-muted, #6b7280);
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+
+                i { font-size: 10px; }
+
+                &:hover {
+                    color: var(--color-primary, #1e6ad6);
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    .mt2026-pc-actions {
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+
+        .btn {
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+    }
+}
+
+// Neutralise .card-panel rules when our override is active
+.card-people .card-panel.mt2026-people-card {
+    background: var(--color-bg-primary, #fff) !important;
+    overflow: visible !important;
+
+    // Hide injected elements that would shift layout
+    .card-bg-image,
+    .card-header,
+    .card-body,
+    .card-footer {
+        display: none !important;
+    }
+}
+
+// Mobile layout: 2-column grid for people cards
+@media (max-width: 768px) {
+    .row.cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+    }
+
+    .card-people {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        margin-bottom: 16px;
+    }
+}
+
+
+// ─── People page: FAB search + mobile layout ─────────────────────────────────
+
+// Ensure FAB and overlay are invisible at all times on non-mobile
+// (they're injected by JS only on mobile, but z-index safety net)
+.mt2026-search-fab,
+.mt2026-search-overlay {
+  display: none !important;
+}
+
+@media (max-width: 991px) {
+  // Hide the entire people panel (heading + search body) — FAB replaces it
+  .mt2026-people-panel {
+    display: none !important;
+  }
+
+  // Hide invite button on mobile
+  .mt2026-people-invite-btn.mt2026-people-invite-hidden {
+    display: none !important;
+  }
+
+  // Floating search button (injected by peopleFocusGuard.js)
+  .mt2026-search-fab {
+    display: flex !important;
+    position: fixed;
+    bottom: calc(var(--mobile-nav-height, 56px) + var(--space-4) + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--color-primary-strong, #1e6ad6);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 1035; // above bottom nav (1030)
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:active {
+      transform: scale(0.93);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-bs-theme="dark"] & {
+      background: var(--color-accent, #5a8eeb);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  // Search overlay (injected by peopleFocusGuard.js, shown when FAB is tapped)
+  .mt2026-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-primary, #fff);
+    z-index: 1040;
+    padding: 10px 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    display: none !important;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+
+    &.open {
+      display: flex !important;
+    }
+
+    [data-bs-theme="dark"] & {
+      background: var(--color-bg-secondary, #1e293b);
+      border-bottom-color: var(--color-border, #334155);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .mt2026-search-overlay-back {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: transparent;
+      color: var(--color-text-primary, #111827);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+
+      &:active {
+        background: var(--color-bg-secondary, #f3f4f6);
+      }
+    }
+
+    input[type="text"],
+    input[type="search"] {
+      flex: 1;
+      height: 40px;
+      font-size: 16px; // prevents iOS zoom
+      border: 1px solid var(--color-border, #e5e7eb);
+      border-radius: 20px;
+      padding: 0 14px;
+      background: var(--color-bg-secondary, #f8fafc);
+      color: var(--color-text-primary, #111827);
+      min-width: 0;
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-primary, #1e6ad6);
+        box-shadow: 0 0 0 3px rgba(30, 106, 214, 0.15);
+      }
+
+      [data-bs-theme="dark"] & {
+        background: var(--color-bg-tertiary, #0f172a);
+        border-color: var(--color-border, #334155);
+        color: var(--color-text-primary, #f1f5f9);
+      }
+    }
+
+    button[type="submit"] {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-primary-strong, #1e6ad6);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+
+      &:active {
+        background: var(--color-primary-strong-hover, #1a5dbc);
+      }
+    }
+  }
+
+  // Invite button is hidden on mobile via JS (.mt2026-people-invite-hidden) —
+  // no need for partial text-hiding here.
+}
+
+// -----------------------------------------------------------------------
+// Notification overview – mobile "Mark All Seen" action bar
+// Injected by notifications.js; only visible on small screens.
+// -----------------------------------------------------------------------
+.mt2026-notification-mobile-bar {
+    display: none; // hidden on desktop; shown on mobile via the rule below
+    padding: space(2) space(3);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+
+    .mt2026-mark-all-seen-btn {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        width: 100%;
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 12.5px;
+        color: var(--color-text-secondary);
+        background: var(--color-bg-primary);
+        border: 1px solid var(--color-border);
+
+        i {
+            font-size: $font-size-base;
+            color: var(--color-success, #28a745);
+        }
+
+        &:hover,
+        &:focus {
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+            i { color: var(--color-primary); }
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    // Show the injected mobile action bar
+    .mt2026-notification-mobile-bar {
+        display: block;
+    }
+
+    // Make the desktop mark-seen button inside the panel-heading also
+    // touch-friendly when it IS visible on mobile
+    #notification_overview_markseen {
+        min-height: 40px;
+        min-width: 40px;
+    }
+}
+
+// ── Fix #4: ProseMirror editor toolbar overflow on mobile ────────────────────
+@media (max-width: 991px) {
+    .ProseMirror-menubar {
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-width: 100%;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    .ProseMirror-menuitem {
+        min-height: 44px;
+        display: flex !important;
+        align-items: center;
+    }
+}
+
+// ── Fix #5: Stream empty-state card full-width on mobile ─────────────────────
+@media (max-width: 991px) {
+    .stream-entry,
+    .content-topic-empty,
+    [class*="stream-entry"],
+    .empty-stream-placeholder {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+}
+
+// ── Fix #6: Dashboard card equal horizontal margins on mobile ─────────────────
+// Bootstrap col-* gutters can produce asymmetric spacing when the row has
+// a non-zero margin. Normalise padding so left and right are equal.
+@media (max-width: 991px) {
+    #dashboard .s2_streamContent,
+    #dashboard .stream-wrapper,
+    #dashboard > .container,
+    #dashboard > .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+// ── MOBILE DROPDOWN ADJUSTMENTS ───────────────────────────────────────────────
+// Ensure dropdowns don't clip or overflow incorrectly on mobile devices
+@media (max-width: 991px) {
+    // Dropdowns should position themselves relative to viewport or nearest overflow:visible ancestor
+    .dropdown-menu {
+        position: absolute !important;
+        max-width: calc(100vw - 16px) !important; // Account for device margins
+    }
+
+    // On very small screens (<380px), flip dropdown direction if it would go off-screen
+    @media (max-width: 380px) {
+        .dropdown-menu {
+            max-width: calc(100vw - 8px) !important;
+        }
+
+        // Check if dropdown needs to flip up
+        body .btn-group[role="group"] .dropdown-menu,
+        body .nav-item.dropdown .dropdown-menu {
+            // Default: dropdown below button
+            top: 100% !important;
+            bottom: auto !important;
+
+            // But allow it to flip if needed (JS or browser handling)
+            &[data-placement="top"] {
+                top: auto !important;
+                bottom: 100% !important;
+            }
+        }
+    }
+
+    // Mail composer attachment preview - ensure it doesn't clip
+    .mail-message-form .file-upload-preview,
+    .mail-message-form .humhub-ui-richtext-editor-insertFiles-preview {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    // Comment dropdown menus
+    .comment-controls .dropdown-menu {
+        max-width: calc(100vw - 16px) !important;
+    }
+
+    // Stream entry controls dropdown
+    .wall-entry-controls .dropdown-menu,
+    .stream-entry-controls .dropdown-menu {
+        max-width: calc(100vw - 16px) !important;
+    }
+
+    // Ensure form dropdowns (select, date pickers, etc.) don't overflow
+    .form-group .dropdown-menu,
+    .form-control ~ .dropdown-menu {
+        max-width: calc(100vw - 16px) !important;
+    }
+
+    // Keyboard handling: hide dropdowns when virtual keyboard is open
+    body.mt2026-keyboard-open .dropdown-menu {
+        display: none !important;
+    }
+
+    // On keyboard-open state, hide composer dropdown menus
+    body.mt2026-keyboard-open .mail-message-form .dropdown-menu {
+        display: none !important;
+    }
+}
+
+// ── Fix #7: opt-in clamp for genuinely long stream entries on mobile ─────────
+// mobileContentToggle.js adds .mt2026-clamped only when content exceeds 600px
+// and inserts the .mt2026-read-more button below it.
+@media (max-width: 991px) {
+    .wall-entry-content.content.mt2026-clamped {
+        max-height: 600px;
+        overflow: hidden;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, var(--color-bg-primary));
+            pointer-events: none;
+        }
+
+        &.mt2026-expanded {
+            max-height: none;
+            overflow: visible;
+
+            &::after {
+                display: none;
+            }
+        }
+    }
+
+    [data-bs-theme="dark"] .wall-entry-content.content.mt2026-clamped::after {
+        background: linear-gradient(to bottom, transparent, var(--color-bg-secondary));
+    }
+
+    .mt2026-read-more {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        min-height: 44px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-primary);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+    }
+}
+
+// ── Fix #8: Mobile touch targets for stream action links ─────────────────────
+@media (max-width: 991px) {
+    .wall-entry-links a,
+    .stream-entry-controls a,
+    .like.toggleLike,
+    .comment.toggleComment {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+// ── Fix #9: ProseMirror formatting toolbar on the mobile post form ───────────
+// The toolbar stays collapsed on phones and is revealed by a single
+// "Formatting" button in the composer footer. Desktop/tablet keep the full bar.
+@media (max-width: 767px) {
+    #contentFormBody .ProseMirror-menubar,
+    .content-form-body .ProseMirror-menubar {
+        display: none !important;
+    }
+
+    #contentFormBody.mt2026-formatting-open .ProseMirror-menubar,
+    .content-form-body.mt2026-formatting-open .ProseMirror-menubar {
+        display: flex !important;
+    }
+
+    .mt2026-formatting-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 14px;
+        border: 1px solid var(--color-border, #e5e7eb);
+        border-radius: var(--radius, 8px);
+        background: var(--color-bg-primary, #fff);
+        color: var(--color-text-secondary, #4b5563);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+
+        &[aria-expanded="true"] {
+            border-color: var(--color-primary-strong, #1e6ad6);
+            color: var(--color-primary-strong, #1e6ad6);
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .mt2026-formatting-toggle {
+        display: none !important;
+    }
+}
+
+// ── Mobile typography floor ──────────────────────────────────────────────────
+// Dates and post metadata were 12px on phones. Keep them at 14px minimum.
+@media (max-width: 991px) {
+    .wall-entry-header .timestamp,
+    .stream-entry-header .timestamp,
+    .comment .single-comment .comment-heading .timestamp {
+        font-size: 14px;
+    }
+}
+
+// Post body on phones. The root font size is 14px, so var(--font-size-base)
+// resolved to 14px here and the post text read thin at 390px. Sizes are px on
+// purpose: a rem value would inherit the same 14px root. The !important beats
+// .s2_streamContent > .wall-entry .wall-entry-body, which is more specific.
+// Core paints the body #555 (7.46:1); the primary token is 12.6:1 and reads
+// better at 16px on a phone. Metadata and action labels keep their colour.
+@media (max-width: 767px) {
+    .wall-entry .wall-entry-body,
+    .wall-entry .wall-entry-content,
+    .s-wall-entry .wall-entry-body,
+    .s-wall-entry .wall-entry-content,
+    .wall-entry .wall-entry-body p,
+    .wall-entry .wall-entry-body li,
+    .wall-entry .wall-entry-content p,
+    .wall-entry .wall-entry-content li,
+    .s-wall-entry .wall-entry-body p,
+    .s-wall-entry .wall-entry-body li,
+    .s-wall-entry .wall-entry-content p,
+    .s-wall-entry .wall-entry-content li {
+        font-size: 16px !important;
+        line-height: 1.55 !important;
+        color: var(--color-text-primary, #111827) !important;
+    }
+}
+
+// ── Page scrollbar on mobile/tablet ─────────────────────────────────────────
+// The 12px desktop scrollbar eats width on phones. Hide it below 992px while
+// leaving scrolling and keyboard focus untouched.
+@media (max-width: 991px) {
+    html,
+    body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+}
+
+// ── Mobile content inset (16px) ─────────────────────────────────────────────
+// One rule for the whole app: inside a card, content starts 16px from the
+// card edge on phones. The page gutter (12px) and the desktop insets (32px)
+// are not touched. Before this block the post card used 8px, which put body
+// text 8px from the edge and the action row another 4px further right.
+@media (max-width: 767px) {
+    // Post card: the inner panel is the visible card on mobile. Cover the
+    // extra-wrapper markup HumHub also emits, matching the 8px rule above.
+    .s2_streamContent .wall-entry > .panel,
+    .s2_streamContent .wall-entry > div > .panel,
+    .s2_streamContent .stream-entry > .panel,
+    .s2_streamContent .stream-entry > div > .panel {
+        padding-left: $content-inset-mobile !important;
+        padding-right: $content-inset-mobile !important;
+    }
+
+    // Action row: drop the extra 4px so it lines up with the body text.
+    .stream-entry-addons {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    // Comments: the panel already provides the 16px, so the container adds
+    // none. Replies indent one step per level, capped at two steps.
+    .s2_streamContent .wall-entry .comment-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .comment .nested-comments-root .single-comment {
+        margin-left: 8px;
+    }
+
+    .comment .nested-comments-root .nested-comments-root .single-comment {
+        margin-left: 8px;
+    }
+
+    .comment .nested-comments-root .nested-comments-root .nested-comments-root .single-comment {
+        margin-left: 0;
+    }
+
+    // Composer (dashboard card). Card padding moves into the trigger so the
+    // editor, avatar and Write button all share the same 16px edge.
+    .mt2026-dashboard-composer {
+        padding: 0;
+
+        &__trigger {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+
+        &__empty-link {
+            display: block;
+            padding: $content-inset-mobile;
+        }
+    }
+
+    // Post form editor and its action row.
+    .post-form,
+    .wall-entry-form {
+        .ProseMirror {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+
+        .contentForm_options,
+        .post-actions {
+            padding-left: $content-inset-mobile;
+            padding-right: $content-inset-mobile;
+        }
+    }
+
+    // Notification rows: 16px row inset, 12px between avatar and text.
+    .hh-list > a.d-flex {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+
+        .me-3 {
+            margin-right: 12px !important;
+        }
+    }
+
+    // Mail conversation rows.
+    .messagePreviewEntry {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+        column-gap: 12px;
+    }
+
+    // Admin list rows and table edge cells.
+    .mt2026-admin-content .list-group-item {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+
+        // Keep the 3px hover / 2px active text shift from _list-group.scss.
+        &:hover {
+            padding-left: calc(#{$content-inset-mobile} - 3px);
+        }
+
+        &:active {
+            padding-left: calc(#{$content-inset-mobile} - 2px);
+        }
+    }
+
+    .mt2026-admin-content .table {
+        > :not(caption) > * > *:first-child {
+            padding-left: $content-inset-mobile;
+        }
+
+        > :not(caption) > * > *:last-child {
+            padding-right: $content-inset-mobile;
+        }
+    }
+
+    // Calendar chips keep the cell padding, but the chip itself gets 8px.
+    .fc .fc-daygrid-event,
+    .fc .fc-timegrid-event {
+        padding: 8px !important;
+    }
+
+    // Profile list rows.
+    #user-profile-about .profile-item {
+        padding-left: $content-inset-mobile;
+        padding-right: $content-inset-mobile;
+    }
+}
+
+// ── Mail thread header: one line per field (<768px) ─────────────────────────
+// 1.19 renders the core header as `.float-end` (settings), h1 (subject) and
+// small (participants). Wrap puts participants on its own row; min-width:0
+// lets both rows ellipsis instead of growing the header.
+@media (max-width: 767.98px) {
+    #mail-conversation-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        row-gap: 2px;
+        margin: 0; // cancel the global .panel-heading negative inset
+        padding: 6px 8px;
+    }
+
+    #mail-conversation-header > h1 {
+        order: 1;
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #mail-conversation-header > small {
+        order: 3;
+        flex: 1 0 100%;
+        display: block;
+        margin: 0;
+        padding: 0 !important; // .py-2 uses !important
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #mail-conversation-header > .float-end {
+        order: 2;
+        margin-left: auto;
+    }
+}
+
+// ── Mail reply composer: compact editor and toolbar (<768px) ────────────────
+@media (max-width: 767.98px) {
+    .mail-message-form .richtext-create-input-group {
+        gap: 8px;
+    }
+
+    .mail-message-form .ProseMirror {
+        min-height: 64px !important; // beats _richtext.scss mobile 80px
+        max-height: 160px;
+        overflow-y: auto;
+    }
+
+    .mail-message-form .ProseMirror-menubar {
+        flex-wrap: nowrap;
+        gap: 2px;
+        padding: 4px 6px !important;
+        min-height: 0 !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .mail-message-form .ProseMirror-menubar .ProseMirror-menuitem {
+        flex: 0 0 auto;
+        min-height: 0 !important;
+        margin: 0;
+        padding: 4px 6px !important;
+    }
+
+    .mail-message-form .ProseMirror-menubar .ProseMirror-icon {
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        line-height: 1;
+    }
+}
+
+// ── Notification overview rows (<768px) ────────────────────────────────────
+@media (max-width: 767.98px) {
+    #notification_overview_list .hh-list > a.d-flex {
+        align-items: flex-start;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    // Let a short notification keep its natural width so the unread dot sits
+    // after the text; the auto right margin absorbs the rest of the row.
+    #notification_overview_list .hh-list > a.d-flex > .flex-grow-1 {
+        flex-grow: 0 !important; // .flex-grow-1 uses !important
+    }
+
+    #notification_overview_list .hh-list > a.d-flex > .order-last {
+        margin-left: 8px;
+        margin-right: auto;
+    }
+}
+
+// Pass 6 polish: keep the unread dot in a stable right-hand column instead of
+// letting it follow the text like punctuation, and fade the mail formatting
+// toolbar so the clipped last icon reads as scrollable.
+#layout-content .badge.badge-new,
+#layout-content .badge-new {
+  margin-left: auto;
+  margin-right: 0;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 767px) {
+  .ProseMirror-menubar {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  }
+}

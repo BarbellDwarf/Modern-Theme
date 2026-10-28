@@ -1,0 +1,7 @@
+.bash_history
+.local/
+.playwright-mcp/
+*.log
+*.zip
+*.tgz
+/certificates/

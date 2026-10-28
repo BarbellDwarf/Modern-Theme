@@ -1,0 +1,679 @@
+// Modern Theme - Activity Stream: Post cards, layout, header/body/footer
+// Extracted from _stream.scss
+
+// Chrome converts float:right on a flex item to flex:0 0 100%, so the empty
+// .stream-entry-loader placeholder div consumes the full container width and
+// pushes .wall-entry-header-image (avatar) off-screen. Fix universally.
+.stream-entry-header, .wall-entry-header {
+  .stream-entry-loader {
+    flex: 0 0 0px !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    float: none !important;
+  }
+}
+
+.stream-container, .wall-stream {
+  .stream-entry, .wall-entry {
+    @include card-hover;
+    margin-bottom: var(--space-4);
+    position: relative;
+
+    .stream-entry-content, .wall-entry-content {
+      padding: var(--space-4);
+    }
+
+    .stream-entry-header, .wall-entry-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+
+      .media-object {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        @include shadow('sm');
+      }
+
+      .media-heading {
+        font-weight: $font-weight-semibold;
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-1);
+      }
+
+      .timestamp {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+    }
+
+    .stream-entry-footer, .wall-entry-footer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      // Flush with the post body above; this selector outranks the base rule.
+      padding: var(--space-3) 0;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+
+      .like-link-container, .comment-link {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        @include transition(color, var(--transition-fast));
+
+        &:hover {
+          color: var(--color-primary);
+        }
+      }
+    }
+  }
+}
+
+// New post form
+.post-form, .wall-entry-form {
+  @include card;
+  margin-bottom: var(--space-4);
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+
+  // Desktop ProseMirror toolbar styling
+  .ProseMirror-menubar {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    gap: var(--space-1);
+  }
+
+  .ProseMirror-menuitem {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    &.active {
+      color: var(--color-primary);
+      background: var(--color-primary-lightest);
+    }
+  }
+}
+
+// ── Unconditional stream rules (not nested under .stream-container) ──────────
+// HumHub's real stream DOM is .s2_streamContent > .panel.wall_XXX (no
+// .stream-container or .wall-entry wrapper), so rules nested under those
+// ancestors never matched.  These global rules ensure styling applies.
+
+// Post card header — avatar + name row
+.stream-entry-header .media-object,
+.wall-entry-header .media-object {
+  // HumHub 1.19 headers use .stream-entry-header, which the older rule missed.
+  width: 40px;
+  height: 40px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex: 0 0 40px;
+}
+
+// Post media: core renders a bare <img> with no width/height, so the card
+// grew as each preview decoded (dashboard CLS 0.108). Reserve a 4:3 box.
+.post-files-images img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.wall-entry-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 !important;
+  margin-bottom: var(--space-3) !important;
+
+  .media-heading,
+  .wall-entry-header-info > h4 {
+    font-weight: $font-weight-semibold;
+    color: var(--color-text-primary);
+    font-size: 14.5px;
+    line-height: 1.3;
+    margin: 0 0 2px;
+  }
+
+  .timestamp {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+// Meta line inside the header: space · time · privacy icons, with the overflow
+// menu pinned right by core. It is secondary context, so it reads quiet and
+// small; the space name shrinks and ellipsizes instead of wrapping the row.
+// Core gives every link a 44px touch floor, which alone made this row 44 tall
+// and pushed the header to 78px. 24px keeps the WCAG 2.2 AA target size.
+.wall-entry-header-info {
+  min-width: 0 !important;
+
+  > h5 {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-width: 0;
+    margin: 2px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--color-text-muted);
+
+    > a {
+      min-width: 0;
+      min-height: 24px;
+      line-height: 24px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    // The space name yields first; the timestamp keeps its full width so a long
+    // name ellipsizes instead of pushing the icons out of the card.
+    > a:has(.time) {
+      flex: 0 0 auto;
+      min-height: 20px;
+      line-height: 20px;
+      padding: 6px 2px;
+      color: var(--color-text-muted);
+
+      &:hover {
+        color: var(--color-text-primary);
+      }
+
+      .time {
+        white-space: nowrap;
+      }
+    }
+
+    > .wall-entry-container-link {
+      flex: 0 1 auto;
+      min-width: 44px; // never collapse the name to an invisible link
+      max-width: 220px; // long space names ellipsize instead of eating the row
+      color: var(--color-text-muted) !important;
+
+      &:hover {
+        color: var(--color-text-primary) !important;
+      }
+    }
+
+    time.tt.timeago {
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    // At 320px the name plus a long timeago ("about an hour ago") exceed the
+    // row. Let the time ellipsize too rather than starve the name.
+    @media (max-width: 359px) {
+      gap: 4px;
+
+      > a:has(.time) {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+    }
+
+    .wall-entry-icons {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 5px;
+
+      i {
+        margin: 0;
+      }
+    }
+  }
+
+  // Below 768px every link is a 44x44 target, so the ⋯ control is 44 wide.
+  // Core reserves 30px for it; reserve the full control plus a gap.
+  @media (max-width: 767px) {
+    padding-right: 52px !important;
+
+    // The space name is already in the page header, or is the space tab the
+    // reader is on. At 390px it survived only as "Grace Ba…", and a truncated
+    // proper noun reads worse than none.
+    > h5 {
+      // Core puts bare `·` text nodes between the links. They become anonymous
+      // flex items, so zero their glyphs and let the margins below set spacing.
+      gap: 0;
+      font-size: 0;
+    }
+
+    > h5 > .wall-entry-container-link {
+      display: none !important;
+    }
+
+    > h5 .wall-entry-icons {
+      margin-left: 4px;
+      font-size: 12px;
+    }
+  }
+}
+
+// Post content body — text area
+.wall-entry .wall-entry-body,
+.wall-entry .wall-entry-content {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  color: var(--color-text-primary);
+}
+
+// Footer bar: clean separator, no tint. No horizontal padding, so the action
+// row lines up with the post body above it.
+.wall-entry-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+  background: transparent;
+
+  @media (max-width: 375px) {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+// Dates and timestamps read as one unit. "Jul 5, 2026" must not break at
+// a space inside the phrase.
+.wall-entry time,
+.wall-entry .timestamp,
+.stream-entry time,
+.stream-entry .timestamp {
+  white-space: nowrap;
+}
+
+// Embedded media (oEmbed): match the card radius and clip provider corners.
+// The provider iframe paints its own background, so the radius has to live on
+// the snippet wrapper as well as the frame.
+.richtext-oembed-container .oembed_snippet,
+.richtext-oembed-container .oembed_snippet iframe {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+// ── Single-box stream posts (all screen sizes) ───────────────────────────────
+// Real DOM: .layout-content-container > .dashboard-wall-stream > .s2_stream >
+//           .s2_streamContent > .wall-entry > .panel
+// .wall-entry and .panel both get card chrome from _cards.scss, so a post reads
+// as a card inside a card. Keep the inner .panel as the only box and flatten
+// every wrapper above it. :has() keeps widget-only columns (space/profile)
+// untouched, and is supported in all evergreen browsers (2023+).
+.layout-content-container:has(.wall-entry),
+.layout-content-container:has(.stream-entry),
+.dashboard-wall-stream,
+.s2_stream,
+.s2_streamContent {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.s2_streamContent > .wall-entry,
+.s2_streamContent > .stream-entry {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  margin-bottom: var(--space-4) !important;
+
+  // Accent line on the panel heading (top of the card)
+  > .panel > .panel-heading {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent, #5a8eeb));
+      opacity: 0.68;
+      z-index: 1;
+
+      @media (max-width: 991px) {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  // Clean footer — no tint
+  .wall-entry-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--color-border-light);
+    margin: 0;
+  }
+
+  // Improve readability for text content
+  .wall-entry-body,
+  .stream-entry-content,
+  .wall-entry-content {
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+  }
+
+  .wall-entry-body > p:first-child,
+  .stream-entry-content > p:first-child,
+  .wall-entry-content > p:first-child {
+    margin-top: 0;
+  }
+}
+
+// Interactive rows stay thumb-sized on phones; 11px links were untappable.
+.wall-entry-controls a:not(.mt2026-reaction-trigger),
+.wall-entry-footer a:not(.mt2026-reaction-trigger) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+// Make .wall-entry-controls links always visible with readable color.
+// Override margin-top:10px which breaks flex centering.
+.wall-entry-controls a {
+  margin-top: 0 !important;
+  color: var(--color-text-secondary, #4b5563) !important;
+  transition: color 0.2s;
+
+  &:hover, &:focus {
+    color: var(--color-primary, #1e6ad6) !important;
+  }
+
+  &::before {
+    color: inherit;
+  }
+}
+
+[data-bs-theme="dark"] .wall-entry-controls a {
+  color: var(--color-text-secondary, #9ca3af) !important;
+}
+
+[data-bs-theme="dark"] .wall-entry-footer {
+  border-top-color: var(--color-border) !important;
+}
+
+// Ensure the comment icon (::before pseudo-element) is visible.
+// Only apply display:inline-block when the link is NOT hidden by .d-none.
+.wall-entry-controls a[data-action-click="comment.toggleComment"]:not(.d-none) {
+  display: inline-flex !important;
+  align-items: center;
+  min-height: 36px;
+  min-width: 36px;
+  white-space: nowrap;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  &::before {
+    font-size: 18px !important;
+    color: var(--color-text-secondary, #4b5563) !important;
+  }
+
+  &:hover::before, &:focus::before {
+    color: var(--color-primary, #1e6ad6) !important;
+  }
+}
+
+// WallEntryLinks injects ' · ' text nodes between its child widgets.
+// Setting font-size:0 on the container hides those text nodes;
+// all child elements (links, .likeLinkContainer) already have explicit font-sizes.
+.stream-entry-addons .wall-entry-controls.wall-entry-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.stream-entry-addons .wall-entry-controls.wall-entry-links > * {
+  font-size: 12px;
+}
+
+// The like/unlike anchor links are REPLACED by our emoji trigger visually.
+// Before JS runs: show them via the FA icon (fallback).
+// After JS runs: [data-mt2026-reactions] is set, clip rule in _reactions.scss hides them.
+// DO NOT force display here — that would break .d-none toggling.
+.wall-entry-controls a[data-action-click="like.toggleLike"]:not(.d-none) {
+  display: inline-flex !important;
+  align-items: center;
+  min-height: 36px;
+  min-width: 36px;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  &::before {
+    font-size: 18px !important;
+    color: var(--color-text-secondary, #4b5563) !important;
+  }
+
+  &:hover::before, &:focus::before {
+    color: var(--color-primary, #1e6ad6) !important;
+  }
+}
+
+// Once picker is attached, hide native like/unlike links in both stream and comment addons.
+.wall-entry-controls .likeLinkContainer[data-mt2026-reactions] a.likeAnchor {
+  display: none !important;
+}
+
+.wall-entry-controls .likeCount {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+// Dashboard single-stream return control.
+.back_button_holder .btn {
+  min-height: 36px;
+  font-size: 12px;
+}
+
+// Space feed filter was a 70x19 target with a 10.5px label.
+.wall-stream-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .wallFilterPanel {
+    margin-bottom: 8px;
+  }
+}
+
+// ── Calendar event styling in stream ──────────────────────────────────────────
+.event.calendar-wall-entry {
+  .event-info-section {
+    padding: var(--space-2) 0;
+
+    &:first-child {
+      padding-top: 0;
+    }
+  }
+
+  .event-info-section-content {
+    h1 {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0 0 var(--space-1);
+    }
+
+    > div {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  .event-participation-buttons {
+    display: flex;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-3);
+  }
+}
+
+// Meta text is the smallest type on the card and measured 11px at 390px.
+// Core sets 11px via `.wall-entry .wall-entry-header h4 .time`, so the theme
+// has to match that depth to win.
+@media (max-width: 767px) {
+  .wall-entry .wall-entry-header h4 .time,
+  .wall-entry .wall-entry-header h4 .tt.time,
+  .wall-entry .wall-entry-header h5 .time,
+  .wall-entry .timestamp,
+  .wall-entry .time,
+  .wall-entry-meta,
+  .stream-entry .wall-entry-header h4 .time,
+  .stream-entry .wall-entry-header h4 .tt.time,
+  .stream-entry .timestamp,
+  .stream-entry .time,
+  .stream-entry-meta {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  // Icons in the same meta row stay at 12px so the row still fits one line.
+  .wall-entry .wall-entry-header h4 .time i,
+  .wall-entry .wall-entry-header h4 .time span {
+    font-size: 12px;
+  }
+}
+
+
+// Mobile post meta: core leaves bare  text nodes between the space link,
+// time and privacy icons. With the space link hidden they surface as orphan
+// dots. Zero the h5 text size (text nodes only) and restore it on real children.
+@media (max-width: 767px) {
+  .wall-entry-header-info h5 {
+    font-size: 0 !important;
+  }
+
+  .wall-entry-header-info h5 > a,
+  .wall-entry-header-info h5 time,
+  .wall-entry-header-info h5 .wall-entry-icons,
+  .wall-entry-header-info h5 .wall-entry-icons i {
+    font-size: 12px;
+  }
+}
+
+// The inline post-edit submit is core icon-only markup (fa-send, aria-label Save).
+// Give it a visible label so editors are not guessing which icon persists changes.
+.wall-entry [data-action-click="editSubmit"] {
+  width: auto !important;
+  min-width: 88px;
+  padding-left: 12px !important;
+  padding-right: 14px !important;
+
+  &::after {
+    content: "Save";
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+}
+
+// Post share control (work package 34 B3). Sized to the action row so the
+// footer stays one 32px line next to the Comment/React pills.
+.wall-entry-controls .mt2026-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #4b5563);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  flex: 0 0 auto;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary, #1e6ad6);
+  }
+
+  .fa {
+    font-size: 18px;
+  }
+}
+
+// streamPolish also appends a copy straight onto .wall-entry-footer, which puts
+// a second share icon at the left of the footer block. One control per row.
+.mt2026-share-btn:not(.wall-entry-controls .mt2026-share-btn) {
+  display: none !important;
+}
+
+.mt2026-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 100000;
+  background: var(--color-bg-primary, #ffffff);
+  color: var(--color-text-primary, #111827);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 14px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in-out;
+}
+.mt2026-toast.is-visible {
+  opacity: 1;
+}

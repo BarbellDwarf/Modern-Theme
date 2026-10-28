@@ -1,0 +1,823 @@
+// Modern Theme - Top Navigation Bar
+// Clean, modern top bar with proper styling
+
+// Mobile-only search trigger (opens the context switcher popover)
+#mt2026-mobile-search {
+    display: none;
+}
+
+// Mobile-only site-name fallback (shown when the logo markup is hidden on phones)
+.mt2026-mobile-brand {
+    display: none;
+}
+
+.navbar.topbar {
+    // Override HumHub core's .topbar { height: 50px } which clips content
+    height: auto !important;
+
+    // Better spacing and alignment
+    .container {
+        display: flex;
+        align-items: center;
+        min-height: 60px;
+        padding-left: 16px;
+        padding-right: 16px;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .topbar-brand {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        min-width: 48px;
+        max-width: clamp(120px, 20vw, 200px);
+        overflow: hidden;
+
+        img,
+        svg {
+            max-height: 48px;
+            width: auto;
+        }
+    }
+
+    #search-menu-nav {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        margin-left: auto;
+        gap: 10px;
+        height: 100%;
+    }
+
+    .notifications,
+    .topbar-actions {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        height: 100%;
+        margin-left: 14px;
+    }
+
+    // Space out notification bell and dark-mode toggle (both .btn-group children)
+    .notifications {
+        gap: 10px;
+    }
+
+    .topbar-actions {
+        margin-left: 10px;
+    }
+
+    // The notification bell and dark-mode toggle use plain <a> tags (not .dropdown-toggle).
+    // Target both .btn-group > a and .dropdown-toggle to cover all variants.
+    .notifications .btn-group > a,
+    .notifications .dropdown-toggle,
+    .topbar-actions .dropdown-toggle,
+    #search-menu-nav > li > a {
+        height: 46px;
+        min-height: 46px;
+        width: 46px;
+        min-width: 46px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 20px;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    #top-menu-nav > li,
+    #search-menu-nav > li {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #top-menu-nav > li > a {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+        min-height: 34px;
+        line-height: 1.05;
+        text-align: center;
+        padding: 4px 8px;
+    }
+
+    // Remove the <br> from the flex flow — line-height:0 has no effect on <br>.
+    // display:none is the only reliable way to collapse it.
+    #top-menu-nav > li > a br {
+        display: none;
+    }
+
+    .topbar-actions .dropdown.account .dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 12px;
+        min-height: 42px;
+        width: auto;
+        min-width: auto;
+        font-size: inherit;
+    }
+
+    .topbar-actions .dropdown.account .user-title {
+        margin-right: var(--space-1);
+        line-height: 1.05;
+    }
+
+    .topbar-actions .dropdown.account #user-account-image {
+        flex-shrink: 0;
+    }
+}
+
+#topbar {
+    // Solid background for better readability when scrolling
+    background-color: var(--color-bg-primary, #ffffff);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    // Fixed single-bar top nav; body offset is handled in _base.scss
+    position: fixed;
+    top: 0;
+    // Keep all topbar dropdowns above stream cards/panels on desktop+tablet.
+    z-index: 1030;
+    isolation: isolate;
+    overflow: visible;
+
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    
+    [data-bs-theme="dark"] & {
+        background-color: var(--color-bg-secondary, #f8fafc);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    // Optional: Add subtle backdrop blur on high-end devices only
+    @supports (backdrop-filter: blur(10px)) {
+        @media (min-width: 992px) {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            // Slightly transparent for glassmorphism effect
+            background-color: rgba(255, 255, 255, 0.98);
+            
+            [data-bs-theme="dark"] & {
+                background-color: color-mix(in srgb, var(--color-bg-secondary) 98%, transparent);
+            }
+        }
+    }
+
+    .navbar,
+    .container,
+    #top-menu-nav,
+    #top-menu-nav > li {
+        overflow: visible;
+    }
+    
+    // Navigation items
+    .nav-link {
+        padding: 6px 10px;
+        border-radius: $border-radius-md;
+        transition: all $transition-fast;
+        color: var(--color-text-primary, #111827);
+        
+        &:hover {
+            background-color: var(--color-bg-secondary, #f3f4f6);
+            color: var(--color-primary, #1e6ad6);
+        }
+        
+        &.active {
+            background-color: rgba(30, 106, 214, 0.1);
+            color: var(--color-primary, #1e6ad6);
+        }
+        
+        // Icon badges (notifications, etc)
+        .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            min-width: 20px;
+            min-height: 18px;
+            height: auto;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+            border-radius: 999px;
+            background-color: var(--color-danger, #ef4444);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+    }
+    
+    // Account/profile dropdown
+    .account-menu {
+        .dropdown-toggle {
+            padding: 8px;
+            border-radius: $border-radius-full;
+            transition: all $transition-fast;
+            
+            &:hover {
+                background-color: var(--color-bg-secondary, #f3f4f6);
+                @include shadow('sm');
+            }
+            
+            img {
+                border-radius: $border-radius-full;
+                border: 2px solid transparent;
+                transition: border-color $transition-fast;
+            }
+            
+            &:hover img {
+                border-color: var(--color-primary, #1e6ad6);
+            }
+        }
+    }
+    
+    // Search bar in topbar
+    .search-form {
+        flex: 1;
+        max-width: 400px;
+        margin: 0 16px;
+        
+        input {
+            width: 100%;
+            padding: 8px 16px;
+            border-radius: $border-radius-full;
+            border: 1px solid var(--color-border, #e5e7eb);
+            background-color: var(--color-bg-secondary, #f8fafc);
+            transition: all $transition-fast;
+            
+            &:focus {
+                border-color: var(--color-primary, #1e6ad6);
+                box-shadow: 0 0 0 3px rgba(30, 106, 214, 0.1);
+                outline: none;
+            }
+        }
+    }
+}
+
+#topbar .dropdown,
+#topbar .btn-group,
+#topbar .open,
+#topbar .nav > li {
+    position: relative;
+}
+
+// Notification badge: sibling of the bell <a>, not nested inside it.
+// Must be absolutely positioned over the icon, not inline beside it.
+#topbar .notifications .btn-group {
+    position: relative;
+
+    .badge-notifications {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 18px;
+        border-radius: 999px;
+        background-color: var(--color-danger, #ef4444);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 1;
+        box-sizing: border-box;
+    }
+}
+
+#topbar .dropdown-menu,
+#topbar .popover,
+#topbar .tooltip {
+    z-index: 1040 !important;
+}
+
+// ── Notification dropdown: proper width and alignment ────────────────────────
+// HumHub core targets #topbar-first (old theme), but this theme uses #topbar.
+// Without an explicit width, the panel collapses to the global min-width:200px.
+// Set it to 420px and right-align so it doesn't bleed off-screen.
+@media (min-width: 992px) {
+    #topbar .notifications .dropdown-menu,
+    #dropdown-notifications.dropdown-menu {
+        width: 420px !important;
+        min-width: 420px !important;
+        // Right-align: drop left from the bell, not right (bell is on right side of topbar)
+        right: 0 !important;
+        left: auto !important;
+        margin-left: 0 !important;
+    }
+
+    // Scrollable notification list (prevent overflow when many items)
+    #topbar .notifications .dropdown-menu .hh-list,
+    #dropdown-notifications .hh-list {
+        max-height: 420px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+// Small-desktop hardening: keep topbar compact between 992px and 1199px.
+@media (min-width: 992px) and (max-width: 1199px) {
+    #topbar {
+        .container {
+            gap: 8px;
+            min-width: 0;
+            min-height: 60px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .topbar-brand {
+            flex: 0 0 auto;
+            max-width: 30vw;
+            min-width: 0;
+        }
+
+        #top-menu-nav {
+            min-width: 0;
+            flex: 1 1 auto;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow: visible !important;
+            margin-right: 4px;
+            align-items: center;
+        }
+
+        #top-menu-nav > li {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            overflow: visible;
+        }
+
+        #top-menu-nav > li > a {
+            padding: 4px 6px;
+            white-space: nowrap;
+            font-size: 13px;
+            line-height: 1.05;
+        }
+
+        #search-menu-nav {
+            gap: 6px;
+        }
+
+        .notifications {
+            margin-left: 8px;
+            gap: 6px;
+        }
+
+        .topbar-actions {
+            margin-left: 6px;
+        }
+
+        .notifications .btn-group > a,
+        #search-menu-nav > li > a,
+        .notifications .dropdown-toggle,
+        .topbar-actions .dropdown-toggle {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
+            min-height: 46px;
+            padding: 0;
+            font-size: 20px;
+
+            &:focus-visible {
+                outline: 2px solid var(--color-primary);
+                outline-offset: 2px;
+            }
+        }
+
+        .topbar-actions .dropdown.account .dropdown-toggle {
+            width: auto;
+            min-width: auto;
+            padding: 3px 10px;
+            font-size: inherit;
+        }
+
+        .topbar-actions .dropdown.account .user-title {
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+        }
+    }
+}
+
+@media (min-width: 992px) {
+    #topbar {
+        .container {
+            gap: 10px;
+        }
+
+        #top-menu-nav {
+            flex: 1 1 auto;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow: visible !important;
+            margin-right: 8px;
+            min-width: 0;
+            align-items: center;
+        }
+
+        #top-menu-nav > li {
+            flex: 0 1 auto;
+            min-width: 0;
+            overflow: visible;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        // Keep nav-link padding consistent with base — don't override with 6px
+        #top-menu-nav > li > a {
+            white-space: nowrap;
+            padding: 4px 8px;
+            font-size: 13px;
+            line-height: 1.05;
+        }
+
+        #search-menu-nav {
+            gap: 10px;
+        }
+
+        .notifications {
+            margin-left: 14px;
+            gap: 10px;
+        }
+
+        .topbar-actions {
+            margin-left: 10px;
+        }
+
+        .notifications .btn-group > a,
+        #search-menu-nav > li > a,
+        .notifications .dropdown-toggle,
+        .topbar-actions .dropdown-toggle {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
+            min-height: 46px;
+            padding: 0;
+            font-size: 20px;
+
+            &:focus-visible {
+                outline: 2px solid var(--color-primary);
+                outline-offset: 2px;
+            }
+        }
+
+        .topbar-actions .dropdown.account .dropdown-toggle {
+            width: auto;
+            min-width: auto;
+            padding: 4px 12px;
+            font-size: inherit;
+        }
+    }
+}
+
+// Tighten top-menu nav spacing on very wide viewports so a long site title
+// does not push navigation items off-balance. (Work package 34 A)
+@media (min-width: 1280px) {
+    #topbar #top-menu-nav {
+        gap: 4px;
+    }
+}
+
+// Explicit light-mode topbar/nav contrast guard.
+[data-bs-theme="light"],
+html[data-bs-theme="light"],
+body[data-bs-theme="light"] {
+    #topbar,
+    #topbar .nav-link,
+    #topbar .navbar-nav .nav-link,
+    #topbar #top-menu-nav > li > a {
+        color: var(--color-text-primary, #111827) !important;
+    }
+
+    #topbar .nav-link i,
+    #topbar .navbar-nav .nav-link i,
+    #topbar #top-menu-nav > li > a i {
+        color: var(--color-text-primary, #111827) !important;
+    }
+}
+
+// Generic desktop nav parity: always follow active theme text tokens.
+@media (min-width: 992px) {
+    #topbar #top-menu-nav > li > a,
+    #topbar #top-menu-nav > li > a span,
+    #topbar #top-menu-nav > li > a i,
+    #topbar .context-switcher-button,
+    #topbar .context-switcher-button .context-label,
+    #topbar .context-switcher-button .dropdown-arrow,
+    #topbar .context-switcher-button .dropdown-arrow i {
+        color: var(--color-text-primary) !important;
+    }
+}
+
+// Mobile header: compact sticky bar (brand, search, notifications, mail, account)
+// Search reuses the context-switcher popover; bottom nav keeps page destinations.
+@media (max-width: 991px) {
+    :root {
+        --mt2026-topbar-height: 54px;
+    }
+
+    #topbar-first,
+    #topbar-second {
+        display: none !important;
+    }
+
+    #topbar.topbar {
+        display: block !important;
+        height: calc(54px + env(safe-area-inset-top, 0px)) !important;
+        padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    #topbar > .container {
+        height: 54px;
+        min-height: 54px;
+        padding-left: 12px;
+        padding-right: 6px;
+        gap: 4px;
+    }
+
+    body {
+        padding-top: calc(54px + env(safe-area-inset-top, 0px)) !important;
+    }
+
+    #topbar .topbar-brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
+
+        // Custom logo markup is hidden; show the site name as plain text.
+        > :not(.mt2026-mobile-brand) {
+            display: none !important;
+        }
+
+        .mt2026-mobile-brand {
+            display: block !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            text-decoration: none;
+        }
+    }
+
+    // Keep the context-switcher <li> as the fixed overlay host, but no button.
+    #top-menu-nav {
+        flex: 0 0 auto;
+        width: 0;
+        min-width: 0;
+        margin: 0;
+        overflow: visible;
+
+        > li {
+            display: none !important;
+        }
+
+        > li.context-switcher {
+            display: block !important;
+            width: 0;
+            height: 0;
+            overflow: visible;
+        }
+
+        .context-switcher-button {
+            display: none !important;
+        }
+    }
+
+    #mt2026-mobile-search {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        margin-left: auto;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--color-text-primary);
+        font-size: 20px;
+    }
+
+    #search-menu-nav {
+        display: none !important;
+    }
+
+    // Notifications, mail and appearance all have mobile destinations (bottom
+    // nav bell, More sheet, account dropdown). Keep the bar to brand + search +
+    // avatar and keep the core dropdown markup for desktop.
+    #topbar .notifications {
+        display: none !important;
+    }
+
+    #topbar .topbar-actions {
+        height: 100%;
+        margin-left: 2px;
+    }
+
+    #topbar .notifications .btn-group > a,
+    #topbar .notifications .dropdown-toggle,
+    #topbar .topbar-actions .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
+        font-size: 20px;
+    }
+
+    #topbar .badge-notifications,
+    #topbar #badge-messages {
+        min-width: 18px;
+        font-size: 11px !important;
+        line-height: 1.2;
+    }
+
+    #topbar .notifications .dropdown-menu {
+        right: 0 !important;
+        left: auto !important;
+        min-width: min(320px, calc(100vw - 24px)) !important;
+        max-width: calc(100vw - 12px) !important;
+    }
+
+    #topbar .topbar-actions .dropdown.account .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    #topbar .topbar-actions .dropdown.account .user-title {
+        display: none !important;
+    }
+
+    #topbar #user-account-image {
+        width: 30px;
+        height: 30px;
+    }
+
+    // Mail and appearance stay reachable from the avatar menu on phones.
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra {
+        display: block;
+    }
+
+    #topbar .dropdown.account .dropdown-menu .mt2026-account-extra .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+    }
+}
+
+// ── Narrow phones: declutter the top bar ────────────────────────────────────
+// Keep brand + search + avatar. The avatar loses its caret.
+.mt2026-account-extra {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    #topbar > .container {
+        padding-right: 12px;
+        gap: 8px;
+    }
+
+    #topbar .topbar-actions {
+        margin-left: 0;
+        gap: 8px;
+    }
+
+    #mt2026-mobile-search,
+    #topbar .topbar-actions .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
+    }
+
+    #topbar .topbar-actions .dropdown.account .dropdown-toggle {
+        width: 44px;
+        min-width: 44px;
+    }
+
+    #topbar #user-account-image {
+        width: 32px;
+        height: 32px;
+    }
+
+    #account-dropdown-link::after {
+        display: none !important;
+    }
+}
+
+// ============================================================
+// Reset legacy HumHub account dropdown styles
+//
+// HumHub core (_nav.scss) targets .account .dropdown-menu and
+// paints the entire dropdown in the primary brand colour, then
+// applies a square background-color !important to li:hover and
+// overrides .dropdown-item padding/colour via li a selectors.
+//
+// We need a higher-specificity selector (.dropdown.account vs
+// core's .account) plus our own !important where the core uses
+// it, so our modern rounded-item design shows through.
+// ============================================================
+.dropdown.account {
+    .dropdown-menu {
+        // Undo the primary-color background the core sets.
+        background: var(--color-bg-primary) !important;
+        border: 1px solid var(--color-border-light) !important;
+
+        // Remove the decorative left border on every li.
+        li {
+            border-left: none !important;
+
+            // Neutralise the square primary-colour block the core
+            // puts on li:hover so the rounded .dropdown-item hover
+            // (set in _dropdown.scss) is the only visible effect.
+            &:hover,
+            &.selected {
+                background-color: transparent !important;
+                border-left: none !important;
+                color: inherit !important;
+            }
+        }
+
+        // The core also targets "li a" with specificity 0,3,1,
+        // overriding our 0,2,0 .dropdown-item rules.  Match with
+        // .dropdown-item directly inside .dropdown.account so we
+        // restore the correct padding, colour and border-radius.
+        .dropdown-item {
+            color: var(--color-text-secondary) !important;
+            font-size: var(--font-size-base, 1rem) !important;
+            font-weight: 400 !important;
+            padding: var(--space-2) var(--space-3) !important;
+            border-radius: var(--radius) !important;
+
+            &:hover {
+                background: var(--color-bg-secondary) !important;
+                color: var(--color-text-primary) !important;
+            }
+
+            &:active {
+                background: var(--color-primary-lightest) !important;
+                color: var(--color-primary) !important;
+            }
+
+            &.active {
+                background: var(--color-primary-strong) !important;
+                color: #fff !important;
+            }
+
+            i {
+                width: 20px;
+                text-align: center;
+                margin-right: 0 !important;
+            }
+        }
+    }
+}
+
+// Dark-mode variant for the account dropdown.
+[data-bs-theme="dark"] .dropdown.account .dropdown-menu {
+    background: var(--color-bg-secondary) !important;
+    border-color: var(--color-border) !important;
+
+    .dropdown-item {
+        color: var(--color-text-primary) !important;
+
+        &:hover {
+            background: var(--color-bg-tertiary) !important;
+        }
+    }
+}
+
+// ── Top-nav keyboard focus ──────────────────────────────────────────────────
+// Directory and Usermap render as core .nav-link items and picked up HumHub's
+// own `:focus { outline: none }`, so the generic a:focus-visible ring lost on
+// specificity. An id-scoped rule outranks any core nav-link reset.
+#topbar #top-menu-nav > li > a:focus-visible,
+#topbar .navbar-nav .nav-link:focus-visible {
+    outline: 3px solid var(--color-primary, #1e6ad6);
+    outline-offset: 2px;
+    border-radius: $border-radius-sm;
+}

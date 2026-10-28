@@ -1,0 +1,391 @@
+<?php
+
+use yii\helpers\Url;
+use yii\helpers\Html;
+
+/**
+ * Mobile Bottom Navigation View
+ * 
+ * @var $spaces \humhub\modules\space\models\Space[]
+ * @var $user \humhub\modules\user\models\User
+ * @var $notificationCount int
+ * @var $activeItem string
+ * @var $peopleNavLabel string
+ * @var $mobileNavLabels array
+ * @var $dynamicMoreItems array
+ */
+
+// Register inline script to detect mobile and add CSS fallback class
+$this->registerJs("
+if (window.innerWidth < 992 || /Mobi|Android/i.test(navigator.userAgent)) {
+    document.body.classList.add('mobile');
+    document.body.setAttribute('data-mobile', 'true');
+}
+", \yii\web\View::POS_READY);
+?>
+
+<!-- Mobile Bottom Navigation -->
+<nav id="mt2026-mobile-nav" class="mobile-bottom-nav" role="navigation" aria-label="Mobile Navigation">
+    
+    <!-- Home/Dashboard -->
+    <a href="<?= Url::to(['/dashboard/dashboard']) ?>" 
+       class="nav-item<?= $activeItem === 'home' ? ' active' : '' ?>"
+       data-nav-key="home"
+       aria-label="Home"
+       aria-current="<?= $activeItem === 'home' ? 'page' : 'false' ?>">
+        <span class="nav-icon">
+            <i class="fa fa-home"></i>
+        </span>
+        <span class="nav-label"><?= Html::encode($mobileNavLabels['home'] ?? 'Home') ?></span>
+    </a>
+
+    <!-- Spaces - opens bottom sheet -->
+    <button type="button"
+            class="nav-item<?= $activeItem === 'spaces' ? ' active' : '' ?>"
+            data-nav-key="spaces"
+            id="mobile-spaces-btn"
+            aria-label="Spaces"
+            aria-haspopup="dialog">
+        <span class="nav-icon">
+            <i class="fa fa-th-large"></i>
+        </span>
+        <span class="nav-label"><?= Html::encode($mobileNavLabels['spaces'] ?? 'Spaces') ?></span>
+    </button>
+
+    <!-- People/Directory -->
+    <a href="<?= Url::to(['/user/people']) ?>" 
+       class="nav-item<?= $activeItem === 'people' ? ' active' : '' ?>"
+       data-nav-key="people"
+       aria-label="<?= Html::encode($peopleNavLabel) ?>"
+       aria-current="<?= $activeItem === 'people' ? 'page' : 'false' ?>">
+        <span class="nav-icon">
+            <i class="fa fa-users"></i>
+        </span>
+        <span class="nav-label"><?= Html::encode($mobileNavLabels['people'] ?? $peopleNavLabel) ?></span>
+    </a>
+
+    <!-- Notifications -->
+    <a href="<?= Url::to(['/notification/overview']) ?>" 
+       class="nav-item<?= $activeItem === 'notifications' ? ' active' : '' ?>"
+       data-nav-key="notifications"
+       aria-label="Notifications<?= $notificationCount > 0 ? " ($notificationCount unread)" : '' ?>"
+       aria-current="<?= $activeItem === 'notifications' ? 'page' : 'false' ?>">
+        <span class="nav-icon">
+            <i class="fa fa-bell"></i>
+            <?php if ($notificationCount > 0): ?>
+                <span class="nav-badge" aria-hidden="true">
+                    <?= $notificationCount > 99 ? '99+' : $notificationCount ?>
+                </span>
+            <?php endif; ?>
+        </span>
+        <span class="nav-label"><?= Html::encode($mobileNavLabels['notifications'] ?? 'Notifications') ?></span>
+    </a>
+
+    <!-- More Menu -->
+    <button type="button"
+            class="nav-item<?= $activeItem === 'more' ? ' active' : '' ?>"
+            data-nav-key="more"
+            id="mobile-more-btn"
+            aria-label="More"
+            aria-haspopup="dialog">
+        <span class="nav-icon">
+            <i class="fa fa-ellipsis-h"></i>
+        </span>
+        <span class="nav-label"><?= Html::encode($mobileNavLabels['more'] ?? 'More') ?></span>
+    </button>
+    
+</nav>
+
+<!-- Spaces Bottom Sheet -->
+<div id="mobile-spaces-sheet" class="mobile-sheet" role="dialog" aria-label="<?= Yii::t('ModernTheme.base', 'Your Spaces') ?>" aria-hidden="true">
+    <div class="mobile-sheet-backdrop"></div>
+    <div class="mobile-sheet-content">
+        <div class="mobile-sheet-handle"></div>
+        <div class="mobile-sheet-header">
+            <h3 class="mobile-sheet-title"><?= Yii::t('ModernTheme.base', 'Your Spaces') ?></h3>
+            <button type="button" class="mobile-sheet-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body">
+            <?php if (!empty($spaces)): ?>
+                <ul class="mobile-spaces-list">
+                    <?php foreach ($spaces as $space): ?>
+                    <li>
+                        <a href="<?= $space->getUrl() ?>" class="mobile-space-item">
+                            <span class="mobile-space-icon">
+                                <?php $pi = $space->getProfileImage(); /* HumHub 1.19 ProfileImage has no hasImage(); getUrl() falls back to the default asset. */ ?>
+                                <?php if (method_exists($pi, 'hasImage') ? $pi->hasImage() : true): ?>
+                                    <?= Html::img($pi->getUrl(), ['class' => 'mobile-space-img', 'alt' => Html::encode($space->name)]) ?>
+                                <?php else: ?>
+                                    <span class="mobile-space-initials"><?= Html::encode(mb_strtoupper(mb_substr($space->name, 0, 2))) ?></span>
+                                <?php endif; ?>
+                            </span>
+                            <span class="mobile-space-name"><?= Html::encode($space->name) ?></span>
+                        </a>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p class="mobile-spaces-empty"><?= Yii::t('ModernTheme.base', "You haven't joined any spaces yet.") ?></p>
+            <?php endif; ?>
+        </div>
+        <div class="mobile-sheet-footer">
+            <a href="<?= Url::to(['/space/spaces']) ?>" class="btn btn-primary btn-block">
+                <i class="fa fa-th-large"></i> <?= Yii::t('ModernTheme.base', 'View All Spaces') ?>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- More Menu Bottom Sheet -->
+<div id="mobile-more-sheet" class="mobile-sheet" role="dialog" aria-label="More options" aria-hidden="true">
+    <div class="mobile-sheet-backdrop"></div>
+    <div class="mobile-sheet-content">
+        <div class="mobile-sheet-handle"></div>
+        <div class="mobile-sheet-header">
+            <h3 class="mobile-sheet-title">More</h3>
+            <button type="button" class="mobile-sheet-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body">
+            <ul class="mobile-more-list">
+                <li>
+                    <a href="<?= Url::to(['/user/profile', 'uguid' => $user->guid]) ?>" class="mobile-more-item">
+                        <span class="mobile-more-icon">
+                            <?php if ($user->getProfileImage()): ?>
+                                <?= Html::img($user->getProfileImage()->getUrl(), [
+                                    'class' => 'nav-avatar',
+                                    'alt' => $user->displayName,
+                                    'width' => 24,
+                                    'height' => 24,
+                                ]) ?>
+                            <?php else: ?>
+                                <i class="fa fa-user"></i>
+                            <?php endif; ?>
+                        </span>
+                        <span class="mobile-more-label"><?= Yii::t('ModernTheme.base', 'Profile') ?></span>
+                        <i class="fa fa-chevron-right mobile-more-arrow"></i>
+                    </a>
+                </li>
+                <?php foreach ($dynamicMoreItems as $dynamicItem): ?>
+                <li>
+                    <a href="<?= Html::encode($dynamicItem['url']) ?>" class="mobile-more-item">
+                        <span class="mobile-more-icon"><i class="fa <?= Html::encode($dynamicItem['icon']) ?>"></i></span>
+                        <span class="mobile-more-label"><?= Html::encode($dynamicItem['label']) ?></span>
+                        <i class="fa fa-chevron-right mobile-more-arrow"></i>
+                    </a>
+                </li>
+                <?php endforeach; ?>
+                <?php if (!\Yii::$app->user->isGuest && \Yii::$app->user->identity->isSystemAdmin()): ?>
+                <li>
+                    <a href="<?= Url::to(['/admin/index']) ?>" class="mobile-more-item">
+                        <span class="mobile-more-icon"><i class="fa fa-cog"></i></span>
+                        <span class="mobile-more-label"><?= Yii::t('ModernTheme.base', 'Administration') ?></span>
+                        <i class="fa fa-chevron-right mobile-more-arrow"></i>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php if (\humhub\helpers\DeviceDetectorHelper::isAppRequest()): ?>
+                <li>
+                    <button type="button" class="mobile-more-item mobile-switch-network-btn">
+                        <span class="mobile-more-icon"><i class="fa fa-exchange"></i></span>
+                        <span class="mobile-more-label"><?= Yii::t('base', 'Switch Network') ?></span>
+                        <i class="fa fa-chevron-right mobile-more-arrow"></i>
+                    </button>
+                </li>
+                <?php endif; ?>
+                <?php if (\Yii::$app->moduleManager->hasModule('dark-mode')): ?>
+                <?php
+                    $darkModeSetting = new \humhub\modules\darkMode\models\UserSetting();
+                    $currentDarkMode = $darkModeSetting->darkMode;
+                ?>
+                <li class="mobile-more-item mobile-more-darkmode-row" style="cursor:default;">
+                    <span class="mobile-more-icon"><i class="fa fa-adjust"></i></span>
+                    <span class="mobile-more-label"><?= Yii::t('ModernTheme.base', 'Appearance') ?></span>
+                    <span class="mobile-darkmode-toggle" role="group" aria-label="Color scheme">
+                        <button type="button"
+                                class="mobile-darkmode-btn<?= $currentDarkMode === 'light' ? ' active' : '' ?>"
+                                data-dark-mode="light"
+                                title="<?= Yii::t('ModernTheme.base', 'Light') ?>"
+                                aria-pressed="<?= $currentDarkMode === 'light' ? 'true' : 'false' ?>">
+                            <i class="fa fa-sun-o"></i>
+                        </button>
+                        <button type="button"
+                                class="mobile-darkmode-btn<?= $currentDarkMode === 'default' ? ' active' : '' ?>"
+                                data-dark-mode="default"
+                                title="<?= Yii::t('ModernTheme.base', 'System') ?>"
+                                aria-pressed="<?= $currentDarkMode === 'default' ? 'true' : 'false' ?>">
+                            <i class="fa fa-adjust"></i>
+                        </button>
+                        <button type="button"
+                                class="mobile-darkmode-btn<?= $currentDarkMode === 'dark' ? ' active' : '' ?>"
+                                data-dark-mode="dark"
+                                title="<?= Yii::t('ModernTheme.base', 'Dark') ?>"
+                                aria-pressed="<?= $currentDarkMode === 'dark' ? 'true' : 'false' ?>">
+                            <i class="fa fa-moon-o"></i>
+                        </button>
+                    </span>
+                </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<?php
+$baseUrl = rtrim(Yii::$app->request->baseUrl, '/');
+$darkModeModalUrl = Url::to(['/dark-mode/user/modal']);
+$darkModeSettingsUrl = Url::to(['/dark-mode/user']);
+$this->registerJs("
+(function() {
+    function initSheet(btnId, sheetId, itemSelector) {
+        var btn = document.getElementById(btnId);
+        var sheet = document.getElementById(sheetId);
+        if (!btn || !sheet) return;
+
+        var backdrop = sheet.querySelector('.mobile-sheet-backdrop');
+        var closeBtn = sheet.querySelector('.mobile-sheet-close');
+
+        function openSheet() {
+            sheet.classList.add('open');
+            sheet.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSheet() {
+            sheet.classList.remove('open');
+            sheet.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            sheet.classList.contains('open') ? closeSheet() : openSheet();
+        });
+        if (backdrop) backdrop.addEventListener('click', closeSheet);
+        if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSheet();
+        });
+        if (itemSelector) {
+            sheet.querySelectorAll(itemSelector).forEach(function(link) {
+                link.addEventListener('click', closeSheet);
+            });
+        }
+        var footerLinks = sheet.querySelectorAll('.mobile-sheet-footer a');
+        footerLinks.forEach(function(link) {
+            link.addEventListener('click', closeSheet);
+        });
+    }
+
+    initSheet('mobile-spaces-btn', 'mobile-spaces-sheet', '.mobile-space-item');
+    initSheet('mobile-more-btn',   'mobile-more-sheet',   '.mobile-more-item');
+
+    // Switch Network button — sends Flutter showOpener message (mobile app only)
+    var switchNetworkBtn = document.querySelector('.mobile-switch-network-btn');
+    if (switchNetworkBtn) {
+        switchNetworkBtn.addEventListener('click', function() {
+            if (window.flutterChannel) {
+                window.flutterChannel.postMessage(JSON.stringify({ type: 'showOpener' }));
+            }
+        });
+    }
+
+    // Dark mode inline toggle in More sheet
+    document.querySelectorAll('.mobile-darkmode-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var mode = btn.getAttribute('data-dark-mode');
+            // Optimistically update UI
+            document.querySelectorAll('.mobile-darkmode-btn').forEach(function(b) {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+            // Apply theme immediately via data-bs-theme attribute
+            if (mode === 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else if (mode === 'light') {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-bs-theme');
+            }
+            // POST to save preference (async, fire-and-forget, no reload)
+            var csrfParam = document.querySelector('meta[name=\"csrf-param\"]');
+            var csrfToken = document.querySelector('meta[name=\"csrf-token\"]');
+            var formData = new FormData();
+            formData.append('UserSetting[darkMode]', mode);
+            if (csrfParam && csrfToken) {
+                formData.append(csrfParam.getAttribute('content'), csrfToken.getAttribute('content'));
+            }
+            fetch(" . json_encode($darkModeModalUrl) . ", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).catch(function() {
+                window.location.href = " . json_encode($darkModeSettingsUrl) . ";
+            });
+        });
+    });
+
+    // After pjax navigation to the spaces page, blur any auto-focused input to prevent keyboard pop-up
+    $(document).on('pjax:end', function() {
+        if (window.location.pathname.indexOf('space/spaces') !== -1) {
+            setTimeout(function() {
+                if (document.activeElement &&
+                    (document.activeElement.tagName === 'INPUT' ||
+                     document.activeElement.tagName === 'TEXTAREA')) {
+                    document.activeElement.blur();
+                }
+            }, 300);
+        }
+    });
+
+    // Update active nav item after AJAX/pjax navigation
+    function updateMobileNavActive() {
+        var path = window.location.pathname;
+        // Strip the application base URL so comparisons work in subdirectory installs.
+        var base = " . json_encode($baseUrl) . ";
+        if (base !== '' && base !== '/' && path.indexOf(base) === 0) {
+            path = path.slice(base.length) || '/';
+        }
+        var segments = path.split('/').filter(Boolean);
+        var first = segments[0] || '';
+        var second = segments[1] || '';
+        var activeKey = '';
+
+        if (path === '/' || path === '' || first === 'dashboard') {
+            activeKey = 'home';
+        } else if (first === 'people' || (first === 'user' && second === 'people')) {
+            activeKey = 'people';
+        } else if (first === 'notification') {
+            activeKey = 'notifications';
+        } else if (first === 'calendar') {
+            activeKey = 'more';
+        } else if (first === 's' || first === 'space') {
+            activeKey = 'spaces';
+        } else if (first === 'u' || (first === 'user' && (second === 'account' || second === 'profile')) || first === 'admin') {
+            activeKey = 'more';
+        }
+
+        var nav = document.getElementById('mt2026-mobile-nav');
+        if (!nav) return;
+        nav.querySelectorAll('.nav-item').forEach(function(item) {
+            item.classList.remove('active');
+            item.removeAttribute('aria-current');
+        });
+        if (activeKey) {
+            var target = nav.querySelector('.nav-item[data-nav-key=\'' + activeKey + '\']');
+            if (target) {
+                target.classList.add('active');
+                target.setAttribute('aria-current', 'page');
+            }
+        }
+    }
+
+    // Run on pjax navigation end
+    $(document).on('pjax:end', updateMobileNavActive);
+    // Also run on humhub client navigation
+    $(document).on('humhub:navigate', updateMobileNavActive);
+    // Run once on page load to ensure correct state
+    updateMobileNavActive();
+})();
+", \yii\web\View::POS_READY); ?>

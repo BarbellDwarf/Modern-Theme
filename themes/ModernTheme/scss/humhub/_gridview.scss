@@ -1,0 +1,245 @@
+// Modern Theme - GridView (Tables)
+// Enhanced table and grid view styling
+
+.grid-view,
+.gridview {
+    margin: space(4) 0;
+    
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: $border-radius-lg;
+        overflow: hidden;
+        @include shadow('sm');
+        background-color: var(--color-bg-secondary, #f8fafc);
+        
+        thead {
+            background-color: var(--color-bg-tertiary, #f1f5f9);
+            
+            th {
+                padding: space(3) space(4);
+                font-weight: 600;
+                font-size: $font-size-sm;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--color-text-secondary, #4b5563);
+                border-bottom: 2px solid var(--color-border, #e5e7eb);
+                text-align: left;
+                white-space: nowrap;
+                
+                // Sortable column
+                a {
+                    color: var(--color-text-secondary, #4b5563);
+                    text-decoration: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: space(1);
+                    transition: color $transition-fast;
+                    
+                    &:hover {
+                        color: var(--color-text-primary, #111827);
+                    }
+                    
+                    // Sort indicator
+                    &.asc::after,
+                    &.desc::after {
+                        content: '';
+                        width: 0;
+                        height: 0;
+                        border-left: 4px solid transparent;
+                        border-right: 4px solid transparent;
+                    }
+                    
+                    &.asc::after {
+                        border-bottom: 6px solid currentColor;
+                    }
+                    
+                    &.desc::after {
+                        border-top: 6px solid currentColor;
+                    }
+                }
+            }
+        }
+        
+        tbody {
+            tr {
+                transition: background-color $transition-fast;
+                border-bottom: 1px solid var(--color-border, #e5e7eb);
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+                
+                &:hover {
+                    background-color: var(--color-bg-secondary, #f3f4f6);
+                }
+                
+                &.selected {
+                    background-color: rgba(30, 106, 214, 0.08);
+                }
+                
+                td {
+                    padding: space(3) space(4);
+                    font-size: $font-size-base;
+                    color: var(--color-text-primary, #111827);
+                    vertical-align: middle;
+                    
+                    // Action buttons in cells
+                    .btn {
+                        padding: space(1) space(2);
+                        font-size: $font-size-xs;
+                    }
+                }
+            }
+        }
+        
+        tfoot {
+            background-color: var(--color-bg-tertiary, #f1f5f9);
+            border-top: 2px solid var(--color-border, #e5e7eb);
+            
+            td {
+                padding: space(3) space(4);
+                font-size: $font-size-sm;
+                color: var(--color-text-secondary, #4b5563);
+            }
+        }
+    }
+    
+    // Pagination
+    .pagination {
+        margin-top: space(4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: space(2);
+        
+        li {
+            list-style: none;
+            
+            a,
+            span {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 36px;
+                padding: 0 space(3);
+                border-radius: $border-radius-md;
+                font-size: $font-size-sm;
+                font-weight: 500;
+                color: var(--color-text-primary, #111827);
+                background-color: var(--color-bg-secondary, #f8fafc);
+                border: 1px solid var(--color-border, #e5e7eb);
+                text-decoration: none;
+                transition: all $transition-fast;
+                
+                &:hover {
+                    background-color: var(--color-bg-secondary, #f3f4f6);
+                    border-color: var(--color-primary, #1e6ad6);
+                    @include shadow('sm');
+                }
+            }
+            
+            &.active {
+                a,
+                span {
+                    background-color: var(--color-primary-strong, #1e6ad6);
+                    border-color: var(--color-primary-strong, #1e6ad6);
+                    color: #fff;
+                    @include shadow('md');
+                }
+            }
+            
+            &.disabled {
+                a,
+                span {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+    
+    // Summary text
+    .summary {
+        margin-top: space(2);
+        text-align: center;
+        font-size: $font-size-sm;
+        color: var(--color-text-secondary, #4b5563);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .grid-view,
+    .gridview {
+        overflow-x: auto;
+
+        table {
+            min-width: 680px;
+            white-space: nowrap;
+
+            thead th {
+                padding: space(2) space(3);
+                font-size: $font-size-xs;
+            }
+
+            tbody td {
+                padding: space(2) space(3);
+                font-size: $font-size-sm;
+            }
+        }
+    }
+}
+
+// Compact table variant
+.table-compact {
+    .grid-view,
+    .gridview {
+        table {
+            thead th {
+                padding: space(2) space(3);
+                font-size: $font-size-xs;
+            }
+            
+            tbody td {
+                padding: space(2) space(3);
+                font-size: $font-size-sm;
+            }
+        }
+    }
+}
+
+// Responsive tables - horizontal scroll on mobile
+@media (max-width: 767px) {
+    .grid-view,
+    .gridview {
+        overflow-x: auto;
+        
+        table {
+            min-width: 600px;
+            
+            thead th,
+            tbody td {
+                padding: space(2) space(3);
+                font-size: $font-size-sm;
+            }
+        }
+        
+        .pagination {
+            flex-wrap: wrap;
+            gap: space(1);
+            
+            li {
+                a,
+                span {
+                    min-width: 32px;
+                    height: 32px;
+                    padding: 0 space(2);
+                    font-size: $font-size-xs;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,269 @@
+<?php
+
+/**
+ * Modern Theme
+ */
+
+namespace humhub\modules\modernTheme\controllers;
+
+use humhub\modules\admin\components\Controller;
+use humhub\modules\modernTheme\Module;
+use humhub\modules\space\models\Space;
+use Yii;
+
+class ConfigController extends Controller
+{
+    private const DEFAULT_MOBILE_NAV_LABELS = [
+        'home' => 'Home',
+        'spaces' => 'Spaces',
+        'people' => 'People',
+        'notifications' => 'Notifications',
+        'more' => 'More',
+    ];
+
+    /**
+     * Returns the configured "People" nav label, falling back to "People".
+     */
+    public static function getPeopleNavLabel(): string
+    {
+        $label = Yii::$app->settings->get('peopleNavLabel');
+        return ($label !== null && trim($label) !== '') ? trim($label) : 'People';
+    }
+
+    public function actionIndex()
+    {
+        $settings = Yii::$app->settings;
+
+        if (Yii::$app->request->isPost) {
+            // ── Handler 1: Mobile Navigation Settings ─────────────────────
+            if (Yii::$app->request->post('mobileNavSettingsSubmit') !== null) {
+                $labels = self::DEFAULT_MOBILE_NAV_LABELS;
+                foreach (array_keys($labels) as $key) {
+                    $value = Yii::$app->request->post('mobileNavLabel_' . $key);
+                    if ($value !== null && trim($value) !== '') {
+                        $labels[$key] = trim($value);
+                    }
+                }
+
+                $settings->set('peopleNavLabel', $labels['people']);
+                $settings->set('mobileNavLabels', json_encode($labels));
+                $settings->set('mobileMoreAutoModules', Yii::$app->request->post('mobileMoreAutoModules') ? 1 : 0);
+                $settings->set('mobileMoreHiddenModuleIds', trim((string)Yii::$app->request->post('mobileMoreHiddenModuleIds', '')));
+                // Written to this module's own scope, read by getMobileHeaderTitle().
+                Yii::$app->getModule('modern-theme')->settings->set('mobileHeaderTitle', trim((string)Yii::$app->request->post('mobileHeaderTitle', '')));
+
+                // Flush entire cache — Yii2 Cache::delete() doesn't support wildcard patterns.
+                // Short TTLs (60s/300s) mean minimal impact on config-save (rare operation).
+                Yii::$app->cache->flush();
+                $this->view->saved();
+                return $this->redirect(['/modern-theme/config']);
+            }
+
+            // ── Handler 2: People Nav Label ───────────────────────────────
+            $peopleLabel = Yii::$app->request->post('peopleNavLabel');
+            if ($peopleLabel !== null) {
+                $settings->set('peopleNavLabel', trim($peopleLabel));
+                Yii::$app->cache->flush();
+                $this->view->saved();
+                return $this->redirect(['/modern-theme/config']);
+            }
+
+            // ── Handler 3: Mail Settings ──────────────────────────────────
+            if (Yii::$app->request->post('mailSettingsSubmit') !== null) {
+                $settings->set('mailEnterToSend', Yii::$app->request->post('mailEnterToSend') ? '1' : '0');
+                $fontScale = (int)Yii::$app->request->post('mailFontScale', 100);
+                $settings->set('mailFontScale', in_array($fontScale, [100, 115, 130, 150], true) ? $fontScale : 100);
+                $settings->set('mailFormattingBar', Yii::$app->request->post('mailFormattingBar') ? '1' : '0');
+                Yii::$app->cache->flush();
+                $this->view->saved();
+                return $this->redirect(['/modern-theme/config']);
+            }
+
+            // ── Handler 4: Dashboard Composer ─────────────────────────────
+            if (Yii::$app->request->post('dashboardComposerSubmit') !== null) {
+                $spaceId = (int)Yii::$app->request->post('dashboardComposerSpaceId', 0);
+                $settings->set('dashboardComposerSpaceId', max(0, $spaceId));
+                Yii::$app->cache->flush();
+                $this->view->saved();
+                return $this->redirect(['/modern-theme/config']);
+            }
+
+            // ── Handler 5: Palette Application ────────────────────────────
+            $palette = Yii::$app->request->post('palette');
+            $palettes = self::getPalettes();
+
+            if ($palette && isset($palettes[$palette])) {
+                $colors = $palettes[$palette]['colors'];
+
+                // Map color keys to their HumHub settings names
+                $colorKeys = [
+                    'primary'   => 'Primary',
+                    'accent'    => 'Accent',
+                    'secondary' => 'Secondary',
+                    'success'   => 'Success',
+                    'danger'    => 'Danger',
+                    'warning'   => 'Warning',
+                    'info'      => 'Info',
+                    'light'     => 'Light',
+                    'dark'      => 'Dark',
+                ];
+
+                foreach ($colorKeys as $lcKey => $titleKey) {
+                    if (isset($colors[$lcKey])) {
+                        $settings->set('theme' . $titleKey . 'Color', $colors[$lcKey]);
+                        $settings->set('useDefaultTheme' . $titleKey . 'Color', false);
+                    }
+                }
+
+                Module::rebuildThemeCss();
+
+                Yii::$app->cache->flush();
+
+                $this->view->saved();
+                return $this->redirect(['/modern-theme/config']);
+            }
+        }
+
+        return $this->render('index', [
+            'palettes'        => self::getPalettes(),
+            'currentColors'   => self::getCurrentColors(),
+            'peopleNavLabel'  => self::getPeopleNavLabel(),
+            'mobileNavLabels' => self::getMobileNavLabels(),
+            'mobileMoreAutoModules' => self::isMobileMoreAutoModulesEnabled(),
+            'mobileMoreHiddenModuleIds' => self::getMobileMoreHiddenModuleIdsRaw(),
+            'mobileHeaderTitle' => self::getMobileHeaderTitle(),
+            'dashboardComposerSpaceId' => self::getDashboardComposerSpaceId(),
+            'composerSpaces' => Space::find()
+                ->where(['status' => Space::STATUS_ENABLED])
+                ->orderBy(['name' => SORT_ASC])
+                ->all(),
+        ]);
+    }
+
+    public function actionRebuildCss()
+    {
+        $ok = Module::rebuildThemeCss();
+        Yii::$app->response->format = 'json';
+        return ['success' => $ok];
+    }
+
+    public static function getPalettes(): array
+    {
+        return [
+            'ocean-blue'    => ['label' => 'Ocean Blue',    'colors' => ['primary' => '#1e6ad6', 'accent' => '#5a8eeb', 'secondary' => '#7c3aed', 'success' => '#10b981', 'danger' => '#ef4444', 'warning' => '#f59e0b', 'info' => '#3b82f6', 'light' => '#f8fafc', 'dark' => '#1e293b']],
+            'royal-purple'  => ['label' => 'Royal Purple',  'colors' => ['primary' => '#7c3aed', 'accent' => '#a78bfa', 'secondary' => '#ec4899', 'success' => '#10b981', 'danger' => '#ef4444', 'warning' => '#f59e0b', 'info' => '#8b5cf6', 'light' => '#faf5ff', 'dark' => '#1e1b4b']],
+            'forest-green'  => ['label' => 'Forest Green',  'colors' => ['primary' => '#059669', 'accent' => '#34d399', 'secondary' => '#10b981', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#0891b2', 'light' => '#f0fdf4', 'dark' => '#14532d']],
+            'slate-gray'    => ['label' => 'Slate Gray',    'colors' => ['primary' => '#475569', 'accent' => '#94a3b8', 'secondary' => '#334155', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#0284c7', 'light' => '#f8fafc', 'dark' => '#0f172a']],
+            'sunset-orange' => ['label' => 'Sunset Orange', 'colors' => ['primary' => '#ea580c', 'accent' => '#fb923c', 'secondary' => '#dc2626', 'success' => '#16a34a', 'danger' => '#b91c1c', 'warning' => '#f59e0b', 'info' => '#0284c7', 'light' => '#fff7ed', 'dark' => '#431407']],
+            'rose-pink'     => ['label' => 'Rose Pink',     'colors' => ['primary' => '#db2777', 'accent' => '#f472b6', 'secondary' => '#ec4899', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#0284c7', 'light' => '#fdf2f8', 'dark' => '#500724']],
+            'teal-cyan'     => ['label' => 'Teal Cyan',     'colors' => ['primary' => '#0891b2', 'accent' => '#22d3ee', 'secondary' => '#0e7490', 'success' => '#059669', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#06b6d4', 'light' => '#ecfeff', 'dark' => '#164e63']],
+            'midnight-dark' => ['label' => 'Midnight Dark', 'colors' => ['primary' => '#6366f1', 'accent' => '#818cf8', 'secondary' => '#4f46e5', 'success' => '#10b981', 'danger' => '#f43f5e', 'warning' => '#fbbf24', 'info' => '#38bdf8', 'light' => '#1e1b4b', 'dark' => '#0f0a1e']],
+            'warm-amber'    => ['label' => 'Warm Amber',    'colors' => ['primary' => '#d97706', 'accent' => '#fbbf24', 'secondary' => '#b45309', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#ca8a04', 'info' => '#0284c7', 'light' => '#fffbeb', 'dark' => '#451a03']],
+            'cobalt-navy'   => ['label' => 'Cobalt Navy',   'colors' => ['primary' => '#1d4ed8', 'accent' => '#3b82f6', 'secondary' => '#1e40af', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#2563eb', 'light' => '#eff6ff', 'dark' => '#1e3a5f']],
+            'ruby-red'      => ['label' => 'Ruby Red',      'colors' => ['primary' => '#b91c1c', 'accent' => '#ef4444', 'secondary' => '#991b1b', 'success' => '#16a34a', 'danger' => '#7f1d1d', 'warning' => '#d97706', 'info' => '#0284c7', 'light' => '#fff5f5', 'dark' => '#450a0a']],
+            'lavender'      => ['label' => 'Soft Lavender', 'colors' => ['primary' => '#8b5cf6', 'accent' => '#c4b5fd', 'secondary' => '#a78bfa', 'success' => '#16a34a', 'danger' => '#dc2626', 'warning' => '#d97706', 'info' => '#6d28d9', 'light' => '#f5f3ff', 'dark' => '#2e1065']],
+        ];
+    }
+
+    private static function getCurrentColors(): array
+    {
+        $settings = Yii::$app->settings;
+        return [
+            'primary'   => $settings->get('themePrimaryColor') ?: '#1e6ad6',
+            'accent'    => $settings->get('themeAccentColor') ?: '#5a8eeb',
+            'secondary' => $settings->get('themeSecondaryColor') ?: '#7c3aed',
+            'success'   => $settings->get('themeSuccessColor') ?: '#10b981',
+            'danger'    => $settings->get('themeDangerColor') ?: '#ef4444',
+        ];
+    }
+
+    public static function getMobileNavLabels(): array
+    {
+        $raw = Yii::$app->settings->get('mobileNavLabels');
+        $decoded = is_string($raw) ? json_decode($raw, true) : null;
+        $labels = self::DEFAULT_MOBILE_NAV_LABELS;
+
+        if (is_array($decoded)) {
+            foreach (array_keys($labels) as $key) {
+                if (!empty($decoded[$key]) && is_string($decoded[$key])) {
+                    $labels[$key] = trim($decoded[$key]);
+                }
+            }
+        }
+
+        // Keep legacy single-setting compatibility for People/Directory.
+        $labels['people'] = self::getPeopleNavLabel();
+        return $labels;
+    }
+
+    public static function isMobileMoreAutoModulesEnabled(): bool
+    {
+        $value = Yii::$app->settings->get('mobileMoreAutoModules');
+        if ($value === null || $value === '') {
+            return true;
+        }
+        return (bool)$value;
+    }
+
+    public static function getMobileMoreHiddenModuleIdsRaw(): string
+    {
+        return (string)Yii::$app->settings->get('mobileMoreHiddenModuleIds', '');
+    }
+
+    /**
+     * Title shown in the mobile header. Empty means use the site name.
+     */
+    public static function getMobileHeaderTitle(): string
+    {
+        $module = Yii::$app->getModule('modern-theme');
+        $stored = $module ? $module->settings->get('mobileHeaderTitle') : null;
+
+        // Values saved before the scope fix live in HumHub's global "base" scope.
+        if ($stored === null || trim((string)$stored) === '') {
+            $stored = Yii::$app->settings->get('mobileHeaderTitle', '');
+        }
+
+        return trim((string)$stored);
+    }
+
+    public static function getMobileMoreHiddenModuleIds(): array
+    {
+        $raw = self::getMobileMoreHiddenModuleIdsRaw();
+        if ($raw === '') {
+            return [];
+        }
+
+        $parts = preg_split('/[\s,]+/', strtolower($raw), -1, PREG_SPLIT_NO_EMPTY);
+        return array_values(array_unique($parts ?: []));
+    }
+
+    // ── Dashboard Composer ──────────────────────────────────────────────────
+
+    /**
+     * Space that receives dashboard composer posts. 0 means automatic.
+     */
+    public static function getDashboardComposerSpaceId(): int
+    {
+        return max(0, (int)Yii::$app->settings->get('dashboardComposerSpaceId', 0));
+    }
+
+    // ── Mail Settings ───────────────────────────────────────────────────────
+
+    public static function isMailEnterToSendEnabled(): bool
+    {
+        $value = Yii::$app->settings->get('mailEnterToSend');
+        return $value !== '0' && $value !== false && $value !== null;
+    }
+
+    public static function getMailFontScale(): int
+    {
+        $value = Yii::$app->settings->get('mailFontScale');
+        $int = (int)$value;
+        return in_array($int, [100, 115, 130, 150], true) ? $int : 100;
+    }
+
+    public static function isMailFormattingBarEnabled(): bool
+    {
+        return (bool)Yii::$app->settings->get('mailFormattingBar', false);
+    }
+}

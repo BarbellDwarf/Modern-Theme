@@ -1,0 +1,458 @@
+humhub.module('modernTheme.reactionPicker', function(module, require, $) {
+
+    var REACTIONS = [
+        { type: 'like',    emoji: '👍', label: 'Like' },
+        { type: 'love',    emoji: '❤️', label: 'Love' },
+        { type: 'laugh',   emoji: '😂', label: 'Haha' },
+        { type: 'wow',     emoji: '😮', label: 'Wow'  },
+        { type: 'sad',     emoji: '😢', label: 'Sad'  },
+        { type: 'pray',    emoji: '🙏', label: 'Care' }
+    ];
+
+    var BASE_URL = '/modern-theme/reactions';
+    try {
+        var urlBuilder = humhub && humhub.config && humhub.config.get ? humhub.config.get('url') : null;
+        if (typeof urlBuilder === 'function') {
+            BASE_URL = urlBuilder('modern-theme/reactions');
+        }
+    } catch (e) {}
+    var CONTAINER_SELECTOR = '.likeLinkContainer';
+    var bootstrapped = false;
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    function getUrlParams($container) {
+        // On a content detail page the like anchor can be href="#" with no
+        // data-action-url (already-reacted state), so scan both anchors and fall
+        // back to the container id: likeLinkContainer_like_<recordId>.
+        var actionUrl = '';
+        $container.find('a.likeAnchor, a.unlikeAnchor').each(function () {
+            var $a = $(this);
+            var candidate = ($a.attr('data-action-url') || $a.data('action-url') || $a.attr('href') || '').toString();
+            if (candidate && candidate !== '#' && candidate.indexOf('recordId=') > -1) {
+                actionUrl = candidate;
+                return false;
+            }
+        });
+        var query = (actionUrl.split('?')[1] || '').replace(/&amp;/g, '&');
+        if (!query) {
+            var idMatch = String($container.attr('id') || '').match(/likeLinkContainer_like_(\d+)/);
+            if (idMatch) {
+                return { recordId: idMatch[1], contentModel: null, contentId: null };
+            }
+            return { recordId: null, contentModel: null, contentId: null };
+        }
+
+        if (typeof URLSearchParams !== 'undefined') {
+            var p = new URLSearchParams(query);
+            // 1.19 addresses likes by recordId, 1.18 by contentModel/contentId
+            return {
+                recordId: p.get('recordId'),
+                contentModel: p.get('contentModel'),
+                contentId: p.get('contentId')
+            };
+        }
+
+        var recordMatch = query.match(/(?:^|&)recordId=([^&]+)/);
+        var modelMatch = query.match(/(?:^|&)contentModel=([^&]+)/);
+        var idMatch = query.match(/(?:^|&)contentId=([^&]+)/);
+        return {
+            recordId: recordMatch ? decodeURIComponent(recordMatch[1]) : null,
+            contentModel: modelMatch ? decodeURIComponent(modelMatch[1]) : null,
+            contentId: idMatch ? decodeURIComponent(idMatch[1]) : null
+        };
+    }
+
+    function hasTarget(params) {
+        return !!(params && (params.recordId || (params.contentModel && params.contentId)));
+    }
+
+    function targetQuery(params) {
+        if (params.recordId) {
+            return 'recordId=' + encodeURIComponent(params.recordId);
+        }
+        return 'contentModel=' + encodeURIComponent(params.contentModel)
+            + '&contentId=' + encodeURIComponent(params.contentId);
+    }
+
+    function getReactionByType(type) {
+        return REACTIONS.find(function(r) { return r.type === type; }) || REACTIONS[0];
+    }
+
+    function getSummaryLink($container) {
+        var cid = $container.data('mt2026-cid');
+        var $controls = $container.closest('.wall-entry-controls');
+        return $controls.find('.mt2026-summary-link').filter(function() {
+            return String($(this).data('mt2026-cid')) === String(cid);
+        });
+    }
+
+    // Posts get the summary in their addons bar, comments only have the plain
+    // .wall-entry-controls row, so create the link there on first use.
+    function ensureSummaryLink($container) {
+        var $link = getSummaryLink($container);
+        if ($link.length) {
+            return $link;
+        }
+        var params = $container.data('mt2026-params');
+        var cid = $container.data('mt2026-cid');
+        var $controls = $container.closest('.wall-entry-controls');
+        if (!params || !cid || !hasTarget(params) || !$controls.length) {
+            return $();
+        }
+        return $('<a class="mt2026-summary-link" style="display:none" data-bs-target="#globalModal">')
+            .attr('href', BASE_URL + '/list?' + targetQuery(params))
+            .attr('data-mt2026-cid', cid)
+            .append('<span class="mt2026-summary-inner"></span>')
+            .appendTo($controls);
+    }
+
+    // Core joins the action links with " · " text nodes. Inside the flex row
+    // each text node becomes an anonymous item that still consumes a gap, which
+    // forces the pills onto a second line. Separators are decoration only.
+    function stripSeparators($container) {
+        var controls = $container.closest('.wall-entry-controls')[0];
+        if (!controls) {
+            return;
+        }
+        $(controls).contents().filter(function() {
+            return this.nodeType === 3 && /^[\s·|]*$/.test(this.nodeValue);
+        }).remove();
+    }
+
+    // ── Build picker HTML ─────────────────────────────────────────────────────
+
+    function buildPickerHtml() {
+        var html = '<div class="mt2026-reaction-picker" role="listbox" aria-label="Choose reaction">';
+        REACTIONS.forEach(function(r) {
+            html += '<button class="mt2026-reaction-btn" type="button" data-reaction="' + r.type + '" title="' + r.label + '" aria-pressed="false">'
+                + '<span class="mt2026-reaction-emoji">' + r.emoji + '</span>'
+                + '<span class="mt2026-reaction-label">' + r.label + '</span>'
+                + '</button>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    // ── Picker teleport: attach a single floating picker to <body> ───────────
+    //
+    // Positioning relative to an ancestor results in clipping when any ancestor
+    // has overflow:hidden (stream cards, comment containers, etc.).
+    // We maintain ONE shared picker appended to <body> and position it using
+    // getBoundingClientRect() so it's completely outside the stacking context.
+
+    var $bodyPicker = null;
+    var $activeTrigger = null;
+    var $activeContainer = null;
+    var repositionTimer;
+
+    function getOrCreateBodyPicker() {
+        if (!$bodyPicker || !$bodyPicker.length) {
+            $bodyPicker = $(buildPickerHtml()).css({
+                position: 'fixed',
+                display: 'none',
+                zIndex: 99999
+            }).removeClass('visible').appendTo('body');
+        }
+        return $bodyPicker;
+    }
+
+    function positionBodyPicker($trigger) {
+        var $picker = getOrCreateBodyPicker();
+        $picker.css('display', 'flex');
+        var trigRect  = $trigger[0].getBoundingClientRect();
+        var pickW     = $picker.outerWidth(true);
+        var pickH     = $picker.outerHeight(true);
+        var vpW       = window.innerWidth;
+        var vpH       = window.innerHeight;
+
+        // Prefer opening above the trigger; fall back to below if insufficient space.
+        var top = trigRect.top - pickH - 8;
+        if (top < 4) { top = trigRect.bottom + 8; }
+
+        // On mobile viewports center the picker horizontally so it is never
+        // clipped on either side, regardless of where the trigger sits.
+        var left;
+        if (vpW < 992 && pickW <= vpW - 16) {
+            left = Math.round((vpW - pickW) / 2);
+        } else {
+            // Desktop: align left edge with trigger, clamped inside viewport.
+            left = trigRect.left;
+            if (left + pickW > vpW - 8) { left = vpW - pickW - 8; }
+            if (left < 8) { left = 8; }
+        }
+
+        // Bottom guard
+        if (top + pickH > vpH - 8) { top = Math.max(4, trigRect.top - pickH - 8); }
+
+        // Explicitly clear bottom and right so that any residual CSS values
+        // (which cannot stretch a fixed-position element unexpectedly) are zeroed.
+        $picker.css({ top: top, left: left, bottom: 'auto', right: 'auto' });
+        return $picker;
+    }
+
+    // ── Per-container state ───────────────────────────────────────────────────
+
+    // The trigger pill shows the chosen emoji plus the word "Reacted" so the
+    // state reads at a glance; the summary chips still carry the counts.
+    function setTrigger($container, reactionType) {
+        var $btn = $container.find('.mt2026-reaction-trigger');
+        $btn.find('.mt2026-trigger-emoji').remove();
+        if (!reactionType) {
+            $btn.removeClass('reacted').removeAttr('data-active');
+            $btn.attr('aria-label', 'React');
+        } else {
+            var r = getReactionByType(reactionType) || {};
+            $btn.addClass('reacted').attr('data-active', reactionType);
+            $btn.attr('aria-label', 'Reacted with ' + r.label);
+            $btn.prepend('<span class="mt2026-trigger-emoji" aria-hidden="true">' + (r.emoji || '') + '</span>');
+        }
+    }
+
+    function setSummary($container, counts) {
+        var $link = ensureSummaryLink($container);
+        if (!$link.length) return;
+        var total = 0;
+        var html = '';
+        REACTIONS.forEach(function(r) {
+            var n = counts[r.type] || 0;
+            if (n > 0) {
+                total += n;
+                html += '<span class="mt2026-reaction-count">' + r.emoji + ' ' + n + '</span>';
+            }
+        });
+        if (total > 0) {
+            $link.find('.mt2026-summary-inner').html(html);
+            $link.css('display', 'inline-flex');
+        } else {
+            $link.css('display', 'none');
+        }
+    }
+
+    // ── Attach to each feed-entry .likeLinkContainer only ──
+
+    function attach() {
+        $(CONTAINER_SELECTOR)
+            .not('[data-mt2026-reactions]').each(function() {
+            var $c = $(this);
+            if (!$c.find('a.likeAnchor').length) {
+                return;
+            }
+
+            var params = getUrlParams($c);
+            $c.data('mt2026-params', params);
+
+            var cid = params.recordId || params.contentId || ('local-' + Math.random().toString(36).slice(2));
+            $c.data('mt2026-cid', cid);
+
+            // 1. Prepend trigger button
+            $c.prepend('<button type="button" class="mt2026-reaction-trigger" title="React" aria-label="React" aria-haspopup="true">'
+                + '<i class="fa fa-smile-o" aria-hidden="true"></i>'
+                + '</button>');
+
+            // Mark as initialized only after trigger injection succeeds, so
+            // native like links are not hidden by CSS if setup aborts early.
+            $c.attr('data-mt2026-reactions', '1');
+
+            // 2. No longer appending an inline picker — we use a single teleported body picker.
+            // (kept as comment for clarity)
+
+            // 3. Build the reaction summary link (posts: addons bar, comments:
+            // their own controls row) before any count fetch resolves.
+            ensureSummaryLink($c);
+            stripSeparators($c);
+
+            // 4. If user has already reacted (unlike link visible), fetch and restore state
+            if (!hasTarget(params)) {
+                return;
+            }
+
+            if ($c.find('a.unlike.likeAnchor').not('.d-none').length) {
+                $.get(BASE_URL + '/my-reaction', params, function(resp) {
+                    if (resp && resp.reactionType) setTrigger($c, resp.reactionType);
+                    if (resp && resp.reactionCounts) setSummary($c, resp.reactionCounts);
+                }).fail(function(jqXHR) {
+                    module.log.error('Failed to fetch reaction state', jqXHR.status);
+                });
+            } else {
+                // Still fetch summary counts even when user hasn't reacted
+                $.get(BASE_URL + '/my-reaction', params, function(resp) {
+                    if (resp && resp.reactionCounts) setSummary($c, resp.reactionCounts);
+                }).fail(function(jqXHR) {
+                    module.log.error('Failed to fetch reaction counts', jqXHR.status);
+                });
+            }
+        });
+    }
+
+    // ── Picker show/hide ──────────────────────────────────────────────────────
+
+    function showPicker($c) {
+        var $trigger = $c.find('.mt2026-reaction-trigger');
+        // Reuse the teleported body picker
+        var $picker = positionBodyPicker($trigger);
+        $activeContainer = $c;
+        $activeTrigger   = $trigger;
+        $trigger.addClass('active');
+        // Ensure reaction buttons reflect active state of THIS container
+        var currentReaction = $trigger.attr('data-active');
+        $picker.find('.mt2026-reaction-btn').removeClass('selected');
+        $picker.find('.mt2026-reaction-btn').attr('aria-pressed', 'false');
+        if (currentReaction) {
+            $picker.find('.mt2026-reaction-btn').filter(function() {
+                return $(this).data('reaction') === currentReaction;
+            }).addClass('selected').attr('aria-pressed', 'true');
+        }
+        $picker.addClass('visible').show();
+    }
+
+    function hidePicker() {
+        if ($bodyPicker) {
+            $bodyPicker.removeClass('visible').hide();
+        }
+        if ($activeTrigger) { $activeTrigger.removeClass('active'); }
+        $activeContainer = null;
+        $activeTrigger   = null;
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+
+    var init = function() {
+        attach();
+        if (!bootstrapped) {
+            bootstrapped = true;
+            $(document).on('humhub:ready.mt2026picker humhub:stream:afterAppend.mt2026picker humhub:content:afterMove.mt2026picker pjax:end.mt2026picker', function() {
+                setTimeout(attach, 200);
+            });
+
+            $(document).on('ajaxComplete.mt2026picker', function() {
+                setTimeout(attach, 100);
+            });
+        }
+
+        // Toggle picker on trigger click/tap
+        // NOTE: the picker is teleported to <body> so we check $bodyPicker directly,
+        // not $c.find(...), to detect whether it is currently open for this container.
+        $(document).on('click.mt2026picker', CONTAINER_SELECTOR + ' .mt2026-reaction-trigger', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $c = $(this).closest('.likeLinkContainer');
+            if ($activeContainer && $activeContainer[0] === $c[0] && $bodyPicker && $bodyPicker.hasClass('visible')) {
+                hidePicker();
+            } else {
+                showPicker($c);
+            }
+        });
+
+        // Desktop hover: open picker after delay
+        var hoverTimer;
+        $(document).on('mouseenter.mt2026picker', CONTAINER_SELECTOR, function() {
+            var $c = $(this);
+            hoverTimer = setTimeout(function() { showPicker($c); }, 400);
+        }).on('mouseleave.mt2026picker', CONTAINER_SELECTOR, function() {
+            clearTimeout(hoverTimer);
+            var $c = $(this);
+            setTimeout(function() {
+                // Only hide if mouse isn't over the body picker
+                if ($bodyPicker && $bodyPicker.is(':hover')) { return; }
+                if ($activeContainer && $activeContainer[0] === $c[0]) { hidePicker(); }
+            }, 300);
+        });
+        $(document).on('mouseleave.mt2026picker', '.mt2026-reaction-picker', function() {
+            if ($activeContainer) { hidePicker(); }
+        });
+
+        // Pick a reaction (from body-teleported picker)
+        $(document).on('click.mt2026picker', '.mt2026-reaction-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $btn = $(this);
+            var type = $btn.data('reaction');
+            var $c   = $activeContainer;
+            if (!$c || !$c.length) { return; }
+            hidePicker();
+
+            $btn.addClass('mt2026-pop');
+            setTimeout(function() { $btn.removeClass('mt2026-pop'); }, 300);
+
+            var params = $c.data('mt2026-params') || getUrlParams($c);
+            if (!hasTarget(params)) {
+                $c.find('a.like.likeAnchor:not(.d-none)').first().trigger('click');
+                return;
+            }
+
+            $.ajax({
+                url: BASE_URL + '/react',
+                method: 'POST',
+                data: {
+                    recordId: params.recordId,
+                    contentModel: params.contentModel,
+                    contentId: params.contentId,
+                    reaction_type: type,
+                    _csrf: $('meta[name=csrf-token]').attr('content') || humhub.config.get('humhub', 'csrf')
+                },
+                success: function(r) {
+                    var current = (r && r.currentUserReaction) || null;
+                    setTrigger($c, current);
+                    if (r && r.reactionCounts) setSummary($c, r.reactionCounts);
+
+                    // Keep the native like/unlike links in sync for HumHub compatibility
+                    if (current) {
+                        $c.find('a.like.likeAnchor').addClass('d-none');
+                        $c.find('a.unlike.likeAnchor').removeClass('d-none');
+                    } else {
+                        $c.find('a.like.likeAnchor').removeClass('d-none');
+                        $c.find('a.unlike.likeAnchor').addClass('d-none');
+                    }
+                },
+                error: function() {
+                    $c.find('a.like.likeAnchor:not(.d-none), a.unlike.likeAnchor:not(.d-none)').first().trigger('click');
+                }
+            });
+        });
+
+        // Close on outside click
+        $(document).on('click.mt2026picker', function(e) {
+            if (!$(e.target).closest('.likeLinkContainer').length
+                && !$(e.target).closest('.mt2026-reaction-picker').length) {
+                if ($activeContainer) hidePicker();
+            }
+        });
+
+        // Close on Escape
+        $(document).on('keydown.mt2026picker', function(e) {
+            if (e.key === 'Escape' && $activeContainer) {
+                hidePicker();
+            }
+        });
+
+        $(document).on('pjax:end.mt2026picker', function() { setTimeout(attach, 200); });
+
+        // Keep the floating picker aligned if the page scrolls or resizes.
+        // Debounced to avoid layout thrashing on rapid scroll events.
+        $(window).on('scroll.mt2026picker resize.mt2026picker', function() {
+            clearTimeout(repositionTimer);
+            repositionTimer = setTimeout(function() {
+                if ($activeContainer && $activeTrigger && $bodyPicker && $bodyPicker.is(':visible')) {
+                    positionBodyPicker($activeTrigger);
+                }
+            }, 100);
+        });
+    };
+
+    var unload = function() {
+        $(document).off('.mt2026picker');
+        $(window).off('.mt2026picker');
+        clearTimeout(repositionTimer);
+        if ($bodyPicker) {
+            $bodyPicker.remove();
+            $bodyPicker = null;
+        }
+        $activeContainer = null;
+        $activeTrigger = null;
+    };
+
+    module.initOnPjaxLoad = true;
+
+    module.export({ init: init, unload: unload });
+});

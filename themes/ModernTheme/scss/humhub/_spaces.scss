@@ -1,0 +1,515 @@
+// Modern Theme - Spaces
+// Styles for space pages: banner/header, sidebar, stream, and space-specific layouts.
+
+// ── Space / Profile banner ────────────────────────────────────────────────────
+// HumHub core sets width:100% max-height:192px but no object-fit, so the
+// banner stretches horizontally on large screens.
+//
+// IMPORTANT: Both the banner and the avatar/logo share .img-profile-header-background.
+// Scope ALL sizing rules to .profile-banner-image-container to avoid resizing the logo.
+//
+// Structure:
+//   .panel-profile-header
+//     .image-upload-container.profile-banner-image-container
+//       img.img-profile-header-background              ← BANNER
+//     .image-upload-container.profile-user-photo-container
+//       img.img-profile-header-background.profile-user-photo  ← AVATAR/LOGO
+
+.panel-profile-header {
+    overflow: visible; // avatar hangs below the banner — must not clip
+
+    .profile-banner-image-container {
+        position: relative;
+        overflow: hidden; // clip banner image only
+        // Solid backdrop for spaces with no cover image, so the white title
+        // overlay never lands on the page background.
+        min-height: 140px;
+        background-color: #334155;
+
+        .img-profile-header-background {
+            width: 100%;
+            height: 200px;
+            max-height: none !important;
+            min-height: 80px;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+            border-radius: 0;
+        }
+    }
+
+    // Avatar / space logo: fixed box so it cannot shift the header on load
+    .profile-user-photo-container .img-profile-header-background,
+    .profile-user-photo {
+        width: 140px;
+        height: 140px;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+        max-height: none;
+        object-fit: cover;
+        object-position: center center;
+    }
+}
+
+@media (min-width: 768px) {
+    .panel-profile-header .profile-banner-image-container .img-profile-header-background {
+        height: 180px;
+    }
+}
+
+@media (min-width: 992px) {
+    .panel-profile-header .profile-banner-image-container .img-profile-header-background {
+        height: 200px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .panel-profile-header .profile-banner-image-container .img-profile-header-background {
+        height: 220px;
+    }
+}
+
+// ── Space header meta (name, description, member count) ───────────────────────
+
+.panel-profile-header {
+    .profile-header-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .profile-header-tags {
+        font-size: 0.85rem;
+        color: var(--color-text-secondary, #6b7280);
+    }
+}
+
+// ── Space stream ──────────────────────────────────────────────────────────────
+
+.space-layout-container {
+    // Ensure stream content is never wider than needed
+    .layout-content-container {
+        max-width: 100%;
+    }
+}
+
+// ── Space chooser / switcher ───────────────────────────────────────────────────
+// (detailed chooser styles are in _space-chooser.scss; these are supplemental)
+
+.space-nav-menu {
+    .nav-item.dropdown .dropdown-menu {
+        z-index: 1055;
+    }
+}
+
+// ── Space & Profile page desktop layout ───────────────────────────────────────
+// Both templates use col-lg-2 (nav) + col-lg-10 (content) which creates a
+// cramped left nav and an overly wide content area on desktop.
+// Override column proportions for both containers.
+
+@media (min-width: 992px) {
+    .space-layout-container .space-content,
+    .profile-layout-container .profile-content {
+        .layout-nav-container {
+            flex: 0 0 240px;
+            max-width: 240px;
+            width: 240px;
+        }
+
+        .layout-sidebar-container {
+            flex: 0 0 280px;
+            max-width: 280px;
+            width: 280px;
+        }
+
+        .layout-content-container {
+            flex: 1 1 auto;
+            min-width: 0;
+            max-width: calc(100% - 240px);
+
+            // Keep inner stream/sidebar columns on one row.
+            // _base.scss sets a global fixed width on #layout-sidebar-right at
+            // very large breakpoints; inside space/profile content this can
+            // force the right column (Upcoming Events) to wrap below stream.
+            #layout-sidebar-right,
+            #layout-sidebar-left {
+                width: auto;
+                max-width: 100%;
+            }
+        }
+
+        &.has-sidebar,
+        &:has(.layout-sidebar-container) {
+            .layout-content-container {
+                max-width: calc(100% - 520px);
+            }
+        }
+    }
+}
+
+@media (min-width: 1200px) {
+    .space-layout-container .space-content,
+    .profile-layout-container .profile-content {
+        .layout-nav-container {
+            flex: 0 0 260px;
+            max-width: 260px;
+            width: 260px;
+        }
+
+        .layout-sidebar-container {
+            flex: 0 0 300px;
+            max-width: 300px;
+            width: 300px;
+        }
+
+        .layout-content-container {
+            max-width: calc(100% - 260px);
+        }
+
+        &.has-sidebar,
+        &:has(.layout-sidebar-container) {
+            .layout-content-container {
+                max-width: calc(100% - 560px);
+            }
+        }
+
+        .layout-content-container .panel,
+        .layout-content-container .card {
+            max-width: 860px;
+        }
+    }
+}
+
+@media (min-width: 1400px) {
+    .space-layout-container .space-content,
+    .profile-layout-container .profile-content {
+        .layout-nav-container {
+            flex: 0 0 280px;
+            max-width: 280px;
+            width: 280px;
+        }
+
+        .layout-sidebar-container {
+            flex: 0 0 320px;
+            max-width: 320px;
+            width: 320px;
+        }
+
+        .layout-content-container {
+            max-width: calc(100% - 280px);
+        }
+
+        &.has-sidebar,
+        &:has(.layout-sidebar-container) {
+            .layout-content-container {
+                max-width: calc(100% - 600px);
+            }
+        }
+    }
+}
+
+// ── Profile header title legibility ───────────────────────────────────────────
+// Core paints white title text straight onto the banner. With no cover image, or
+// a light one, that is white on white. Give the text area its own dark scrim and
+// keep the title white; the banner container above supplies a solid fallback.
+
+.panel-profile-header .img-profile-data {
+    z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0) 0%,
+        rgba(15, 23, 42, 0.66) 20%,
+        rgba(15, 23, 42, 0.86) 60%,
+        rgba(15, 23, 42, 0.92) 100%
+    );
+
+    h1,
+    h1 a,
+    h2,
+    .space,
+    .space .link {
+        color: var(--color-text-inverse, #fff);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+}
+
+// ── Profile header name/subtitle overlay on desktop ────────────────────────────
+// Core sets a 600px max-width and 30px font-size.  On modern wide screens give
+// names more room and tighten the gradient height so it doesn't cover too much
+// of the banner image.
+
+@media (min-width: 992px) {
+    .panel-profile .panel-profile-header .img-profile-data {
+        h1 a {
+            font-size: 26px;
+        }
+
+        h2 {
+            font-size: 14px;
+        }
+    }
+
+    // The profile controls bar (stats + follow/friend buttons) beneath the banner
+    .panel-profile-controls {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}
+
+// ── Mobile space/profile header: compact identity card (<768px) ─────────────
+// Desktop overlays the title on the cover image. On a phone the cover is gone
+// and the card itself becomes one grid:
+//
+//   [avatar 56]  title + subtitle           [join/follow + gear]
+//                stats
+//
+// display:contents removes the wrapper boxes (banner wrapper, panel body,
+// controls, bootstrap row) so their children place directly on this grid.
+// The card owns the padding, so nothing reserves space for the hidden banner.
+
+@media (max-width: 767px) {
+    .panel-profile {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr) auto;
+        column-gap: 12px;
+        row-gap: 4px;
+        align-items: center;
+        align-content: start;
+        padding: 12px !important;
+        overflow: visible;
+    }
+
+    .panel-profile .panel-profile-header,
+    .panel-profile > .panel-body,
+    .panel-profile .panel-profile-controls,
+    .panel-profile .panel-profile-controls .container,
+    .panel-profile .panel-profile-controls .row,
+    .panel-profile .panel-profile-controls .col-lg-12 {
+        display: contents !important;
+    }
+
+    // Bootstrap 3 clearfixes use ::before/::after { content:" "; display:table }.
+    // display:contents promotes those boxes to grid items, which land on their
+    // own implicit rows and spend ~40px of row gap plus line boxes. Killing the
+    // pseudos is what actually removes the dead space.
+    .panel-profile .panel-profile-header,
+    .panel-profile > .panel-body,
+    .panel-profile .panel-profile-controls,
+    .panel-profile .panel-profile-controls .container,
+    .panel-profile .panel-profile-controls .row,
+    .panel-profile .panel-profile-controls .col-lg-12 {
+        &::before,
+        &::after {
+            content: none !important;
+            display: none !important;
+        }
+    }
+
+    // The banner block is superseded on phones. Keep every box that used to
+    // reserve height for it at zero, so no core min-height can leak back in.
+    .panel-profile .panel-profile-header {
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+    }
+
+    // No cover image on phones. The wrapper becomes pure structure so its title
+    // joins the grid, and its own box is gone: no 140px min-height, no grey
+    // backdrop. Everything but the title is dropped (cover, upload overlay,
+    // loader, menu) in one rule so no future core child reintroduces a band.
+    .panel-profile .panel-profile-header .profile-banner-image-container {
+        display: contents !important;
+        min-height: 0 !important;
+        background: none !important;
+    }
+
+    .panel-profile .panel-profile-header .profile-banner-image-container > :not(.img-profile-data) {
+        display: none !important;
+    }
+
+    // Circular 56px avatar in the first row. Keeping it on row 1 (not spanning
+    // row 2) is what pins the header to ~104px: the avatar sets that row's
+    // height, and stats hang below it. Core writes width, height and radius
+    // inline, so each dimension needs !important. Never set display on the
+    // image itself: core hides the unused avatar layer with .d-none-space-image
+    // and a later display would resurrect the duplicate.
+    .panel-profile .panel-profile-header .profile-user-photo-container {
+        grid-column: 1;
+        grid-row: 1;
+        position: static !important;
+        bottom: auto !important;
+        left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        align-self: center;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        min-height: 56px !important;
+        max-width: 56px !important;
+        max-height: 56px !important;
+        margin: 0 !important;
+        overflow: hidden;
+        border: 0 !important;
+        border-radius: 50% !important;
+        background: var(--color-primary-strong, #1e6ad6);
+        box-shadow:
+            0 0 0 2px var(--color-bg-primary, #fff),
+            var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+    }
+
+    .panel-profile .panel-profile-header .profile-user-photo-container > a {
+        display: contents !important;
+    }
+
+    .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym,
+    .panel-profile .panel-profile-header .profile-user-photo-container .profile-user-photo {
+        flex: 0 0 56px !important;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        min-height: 56px !important;
+        max-width: 56px !important;
+        max-height: 56px !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        object-fit: cover;
+        overflow: hidden;
+        line-height: 1 !important;
+    }
+
+    .panel-profile .panel-profile-header .profile-user-photo-container .space-acronym span {
+        font-size: 18px !important;
+        line-height: 1 !important;
+    }
+
+    // Title + subtitle share the first row with the controls.
+    .panel-profile .panel-profile-header .img-profile-data {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        position: static !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        color: var(--color-text-primary, #111827);
+
+        h1 {
+            max-width: 100% !important;
+            margin: 0 0 2px !important;
+            font-size: 18px !important;
+            line-height: 1.3 !important;
+            white-space: normal !important;
+            overflow: hidden !important;
+            text-overflow: clip !important;
+        }
+
+        h1 a {
+            display: -webkit-box;
+            overflow: hidden;
+            color: var(--color-text-primary, #111827) !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            line-height: 1.3 !important;
+            text-shadow: none !important;
+            white-space: normal !important;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        h2,
+        h2.space {
+            display: -webkit-box;
+            max-width: 100% !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            color: var(--color-text-muted, #6b7280) !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 1.4 !important;
+            white-space: normal !important;
+            text-overflow: clip !important;
+            text-shadow: none !important;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+        }
+    }
+
+    // Join/follow and the gear sit on the title row, right-aligned.
+    .panel-profile .controls.controls-header {
+        grid-column: 3;
+        grid-row: 1;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        width: auto;
+        margin: 0 !important;
+        float: none !important;
+    }
+
+    .panel-profile .controls.controls-header .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 14px;
+    }
+
+    .panel-profile #space-header-controls-menu > a,
+    .panel-profile .controls.controls-header .dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0 8px;
+    }
+
+    // Stats sit directly under the title, one line, sharing the title's left
+    // edge (column 2). Row gap above them is 4px.
+    .panel-profile .statistics {
+        grid-column: 2 / span 2;
+        grid-row: 2;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 12px;
+        margin: 0 !important;
+        float: none !important;
+    }
+
+    .panel-profile .statistics .entry {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 4px;
+        min-height: 0;
+        margin: 0 !important;
+        float: none !important;
+        line-height: 1.2;
+
+        br {
+            display: none;
+        }
+    }
+
+    .panel-profile .statistics .entry .count {
+        color: var(--color-text-primary, #111827);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .panel-profile .statistics .entry .title {
+        color: var(--color-text-muted, #6b7280);
+        font-size: 13px;
+    }
+}

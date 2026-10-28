@@ -1,0 +1,391 @@
+// Modern Theme - Smart Context Switcher
+// Unified navigation dropdown — theme-aware for light and dark modes.
+
+.context-switcher {
+  --cs-bg: var(--color-bg-secondary, #f8fafc);
+  --cs-bg-item-hover: var(--color-bg-tertiary, #f1f5f9);
+  --cs-bg-item-active: color-mix(in srgb, var(--color-primary, #1e6ad6) 20%, transparent);
+  --cs-border: var(--color-border, #d1d5db);
+  --cs-text: var(--color-text-primary, #111827);
+  --cs-text-muted: var(--color-text-muted, #6b7280);
+  --cs-icon-bg: var(--color-bg-primary, #ffffff);
+  --cs-shadow: var(--shadow-lg);
+
+  [data-bs-theme="dark"] &,
+  html[data-bs-theme="dark"] &,
+  body[data-bs-theme="dark"] & {
+    --cs-bg: var(--color-bg-secondary);
+    --cs-bg-item-hover: var(--color-bg-tertiary);
+    --cs-bg-item-active: color-mix(in srgb, var(--color-primary) 25%, transparent);
+    --cs-border: var(--color-border);
+    --cs-text: var(--color-text-primary);
+    --cs-text-muted: var(--color-text-muted);
+    --cs-icon-bg: var(--color-bg-tertiary);
+    --cs-shadow: var(--shadow-xl);
+  }
+
+  position: relative;
+  margin-right: 8px;
+  list-style: none;
+
+  .context-switcher-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--cs-border);
+    background: var(--cs-bg-item-hover);
+    color: var(--cs-text);
+    font-weight: $font-weight-medium;
+    @include transition(all, var(--transition-fast));
+    cursor: pointer;
+
+    &:hover {
+      background: var(--cs-bg-item-hover);
+      border-color: var(--color-primary);
+    }
+
+    &.active {
+      border-color: var(--color-primary);
+      background: var(--cs-bg-item-active);
+    }
+
+      .context-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+
+      .context-initial {
+        width: 100%;
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        background: var(--cs-icon-bg);
+        color: var(--cs-text);
+        border-radius: 6px;
+      }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 6px;
+        }
+
+        .context-user-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 6px;
+          display: block;
+        }
+      }
+
+    .context-label {
+      max-width: min(180px, 20vw);
+      @include text-truncate;
+    }
+
+    .dropdown-arrow {
+      margin-left: auto;
+      @include transition(transform, var(--transition-fast));
+      opacity: 0.75;
+    }
+
+    &.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+  }
+
+  .context-switcher-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 280px;
+    max-height: 480px;
+    overflow-y: auto;
+    background: var(--cs-bg);
+    border: 1px solid var(--cs-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--cs-shadow);
+    z-index: $z-dropdown + 30;
+
+    // Search input
+    .context-search {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--cs-border);
+
+      input {
+        width: 100%;
+        padding: 7px 12px;
+        border: 1px solid var(--cs-border);
+        border-radius: var(--radius);
+        background: var(--cs-bg-item-hover);
+        color: var(--cs-text);
+        font-size: var(--font-size-sm);
+
+        &::placeholder {
+          color: var(--cs-text-muted);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: var(--color-primary);
+          background: var(--cs-bg);
+        }
+      }
+    }
+
+    // Menu sections
+    .context-section {
+      padding: 6px 6px 8px;
+
+      .section-header {
+        padding: 6px 10px 4px;
+        font-size: 11px;
+        font-weight: $font-weight-semibold;
+        color: var(--cs-text-muted);
+        text-transform: uppercase;
+        letter-spacing: $letter-spacing-wide;
+      }
+
+      .context-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--radius);
+        color: var(--cs-text);
+        text-decoration: none;
+        @include transition(background, var(--transition-fast));
+
+        &:hover {
+          background: var(--cs-bg-item-hover);
+          color: var(--cs-text);
+        }
+
+        &.active {
+          background: var(--cs-bg-item-active);
+          color: var(--cs-text);
+          font-weight: $font-weight-semibold;
+        }
+
+        .item-icon {
+          width: 30px;
+          height: 30px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--radius);
+          background: var(--cs-icon-bg);
+          color: var(--cs-text);
+          font-size: 13px;
+
+          .item-initial {
+            width: 100%;
+            height: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--cs-icon-bg);
+            color: var(--cs-text);
+            border-radius: var(--radius);
+          }
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+          }
+
+          .context-user-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+            display: block;
+          }
+        }
+
+        .item-label {
+          flex: 1;
+          min-width: 0;
+
+          .item-name {
+            @include text-truncate;
+            font-weight: $font-weight-medium;
+            font-size: 14px;
+          }
+
+          .item-meta {
+            display: block;
+            font-size: 11px;
+            color: var(--cs-text-muted);
+            @include text-truncate;
+            margin-top: 1px;
+          }
+        }
+      }
+
+      .context-no-spaces {
+        padding: 10px 12px;
+        font-size: var(--font-size-sm);
+        color: var(--cs-text-muted);
+        margin: 0;
+      }
+    }
+
+    // Keyboard shortcut hint
+    .keyboard-hint {
+      padding: 8px 12px;
+      border-top: 1px solid var(--cs-border);
+      font-size: 11px;
+      color: var(--cs-text-muted);
+      text-align: center;
+
+      kbd {
+        padding: 1px 5px;
+        background: var(--cs-bg-item-hover);
+        border: 1px solid var(--cs-border);
+        border-radius: 3px;
+        font-family: var(--font-family-monospace);
+        font-size: 10px;
+        color: var(--cs-text);
+      }
+    }
+  }
+}
+
+// Tablet / small-desktop: prevent switcher trigger/menu from breaking layout.
+@media (min-width: 768px) and (max-width: 1199px) {
+  .context-switcher {
+    margin-right: 4px;
+
+    .context-switcher-button {
+      padding: var(--space-2) var(--space-3);
+
+      .context-label {
+        max-width: 110px;
+      }
+    }
+
+    .context-switcher-menu {
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(320px, calc(100vw - 24px));
+      max-width: calc(100vw - 24px);
+      max-height: min(70vh, 520px);
+    }
+  }
+}
+
+// Explicit light-mode override to prevent inherited white text from topbar/nav rules.
+[data-bs-theme="light"] .context-switcher,
+html[data-bs-theme="light"] .context-switcher,
+body[data-bs-theme="light"] .context-switcher {
+  .context-switcher-button,
+  .context-switcher-button .context-label,
+  .context-switcher-button .dropdown-arrow,
+  .context-switcher-button .dropdown-arrow i {
+    color: var(--color-text-primary, #111827) !important;
+  }
+
+  .context-switcher-menu,
+  .context-switcher-menu .context-item,
+  .context-switcher-menu .item-name {
+    color: var(--color-text-primary, #111827);
+  }
+
+  .context-switcher-menu .item-meta,
+  .context-switcher-menu .section-header,
+  .context-switcher-menu .keyboard-hint {
+    color: var(--color-text-muted, #6b7280);
+  }
+}
+
+// Desktop cleanup:
+// keep topbar nav compact and avoid duplicated "Spaces" label when using context switcher.
+@media (min-width: 992px) {
+  body.modern-theme #top-menu-nav > li:not(.context-switcher):nth-child(n+2) {
+    margin-left: 2px;
+  }
+
+  body.modern-theme #top-menu-nav > li > a[href*="/space/spaces"] {
+    display: none !important;
+  }
+}
+
+// Mobile: full-screen overlay
+@media (max-width: 991px) {
+  .context-switcher-menu {
+    z-index: $z-mt2026-modal;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+
+// ── FILTERS TOGGLE BUTTON (JS-injected) ──────────────────────────────────────
+// Injected by contextSwitcher.js on the Spaces/People filter row on mobile.
+.mt2026-more-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  line-height: 1.5;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-full, 9999px);
+  background-color: var(--color-bg-primary, #ffffff);
+  color: var(--color-text-secondary, #4b5563);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-bg-secondary, #f3f4f6);
+    border-color: var(--color-primary, #1e6ad6);
+    color: var(--color-text-primary, #111827);
+    outline: none;
+  }
+
+  &.active {
+    background-color: var(--color-primary-strong, #1e6ad6);
+    border-color: var(--color-primary-strong, #1e6ad6);
+    color: #ffffff;
+  }
+
+  [data-bs-theme="dark"] & {
+    background-color: var(--color-bg-tertiary, #334155);
+    border-color: var(--color-border, #334155);
+    color: var(--color-text-secondary, #cbd5e1);
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-bg-secondary, #1e293b);
+      border-color: var(--color-primary, #5a8eeb);
+      color: var(--color-text-primary, #f1f5f9);
+    }
+  }
+}

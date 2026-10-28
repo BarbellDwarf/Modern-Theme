@@ -1,0 +1,275 @@
+// Modern Theme - Theme Styles
+// Main theme customizations
+
+// ============================================
+// GLOBAL STYLES
+// ============================================
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  line-height: $line-height-normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // clip, not hidden: hidden makes body a scroll container, which stops
+  // position: sticky descendants (mobile comment composer) from sticking.
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
+// ============================================
+// HEADINGS
+// ============================================
+
+h1, .h1 {
+  @include heading('h1');
+  margin-bottom: var(--space-6);
+}
+
+h2, .h2 {
+  @include heading('h2');
+  margin-bottom: var(--space-5);
+}
+
+h3, .h3 {
+  @include heading('h3');
+  margin-bottom: var(--space-4);
+}
+
+h4, .h4 {
+  @include heading('h4');
+  margin-bottom: var(--space-4);
+}
+
+h5, .h5 {
+  @include heading('h5');
+  margin-bottom: var(--space-3);
+}
+
+h6, .h6 {
+  @include heading('h6');
+  margin-bottom: var(--space-3);
+}
+
+// ============================================
+// LINKS
+// ============================================
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  @include transition(color, var(--transition-fast));
+  
+  &:hover {
+    color: var(--color-link-hover);
+    text-decoration: none;
+  }
+  
+  // :focus-visible, not :focus — a mouse click focuses the link and used to
+  // paint a ring on the row you just selected (reads as a second selection).
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+// ============================================
+// LAYOUT IMPROVEMENTS
+// ============================================
+
+.container, .container-fluid {
+  @include responsive('lg') {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}
+
+// Main content area
+#main-content {
+  min-height: calc(100vh - 120px);
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Shadows
+.shadow-xs { @include shadow('xs'); }
+.shadow-sm { @include shadow('sm'); }
+.shadow-md { @include shadow('md'); }
+.shadow-lg { @include shadow('lg'); }
+.shadow-xl { @include shadow('xl'); }
+.shadow-2xl { @include shadow('2xl'); }
+.shadow-inner { @include shadow('inner'); }
+.shadow-none { box-shadow: none !important; }
+
+// Glassmorphism
+.glass {
+  @include glass-effect();
+}
+
+.glass-dark {
+  @include glass-effect-dark();
+}
+
+// Text utilities
+.text-truncate {
+  @include text-truncate;
+}
+
+// Transitions
+.transition-fast {
+  @include transition(all, var(--transition-fast));
+}
+
+.transition-base {
+  @include transition(all, var(--transition-base));
+}
+
+.transition-slow {
+  @include transition(all, var(--transition-slow));
+}
+
+// ============================================
+// LOADING STATES
+// ============================================
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 25%,
+    var(--color-bg-tertiary) 50%,
+    var(--color-bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.loading-spinner {
+  @include center-flex;
+  
+  &::after {
+    content: "";
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spinner 0.8s linear infinite;
+  }
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================
+// SMOOTH SCROLLING
+// ============================================
+
+html {
+  scroll-behavior: smooth;
+  // Prevent the page viewport from scrolling horizontally (overflow causes
+  // white space to appear on right when user swipes past scroll-end on mobile).
+  // clip keeps the root a scroll container so sticky children still work.
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
+// Custom scrollbar (webkit browsers)
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-bg-secondary);
+  
+  &:hover {
+    background: var(--color-gray-500);
+  }
+}
+
+// Print styles are in _accessibility.scss (imported after this file).
+
+// ============================================
+// PROFILE FIELD LINKS (phone/email)
+// ============================================
+.mt2026-tel-link {
+  color: var(--color-link);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--color-link-hover, var(--color-primary));
+  }
+
+  &::before {
+    content: '\f095';  // fa-phone
+    font-family: 'FontAwesome';
+    margin-right: 4px;
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+}
+
+// ============================================
+// PROFILE ABOUT — Tab Button Styling
+// ============================================
+#user-profile-about {
+  .nav-tabs {
+    border-bottom: 2px solid var(--color-border);
+    gap: 8px;
+    padding-bottom: 0;
+
+    .nav-item {
+      margin-bottom: -2px;
+    }
+
+    .nav-link {
+      display: inline-block;
+      padding: 8px clamp(12px, 3vw, 20px);
+      border-radius: 6px 6px 0 0;
+      border: 1px solid var(--color-border);
+      border-bottom: none;
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+
+      &:hover {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+      }
+
+      &.active {
+        background: var(--color-primary-strong);
+        color: #fff;
+        border-color: var(--color-primary-strong);
+        font-weight: 600;
+      }
+    }
+  }
+}

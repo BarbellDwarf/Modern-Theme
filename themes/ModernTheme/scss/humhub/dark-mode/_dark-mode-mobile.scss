@@ -1,0 +1,45 @@
+// Modern Theme - Dark Mode: Mobile navigation & mobile-specific overrides
+// Extracted from _dark-mode.scss
+
+[data-bs-theme="dark"] {
+
+    // --- Mobile bottom navigation ---------------------------------------
+
+    .mobile-bottom-nav {
+        // Opaque so scrolled content cannot show through the bar.
+        background: var(--color-bg-secondary);
+        border-top-color: var(--color-border);
+
+        .nav-item,
+        .mobile-nav-item {
+            color: var(--color-text-muted, #6b7280) !important;
+
+            .nav-icon,
+            .nav-label {
+                color: inherit !important;
+            }
+
+            &.active,
+            &:active {
+                color: var(--color-primary-light, #5a8eeb) !important;
+
+                .nav-icon,
+                .nav-label {
+                    color: var(--color-primary-light, #5a8eeb) !important;
+                }
+            }
+
+            &:hover {
+                color: var(--color-text-primary, #f3f4f6) !important;
+            }
+        }
+
+        .nav-link {
+            color: var(--color-text-muted);
+
+            &.active {
+                color: var(--color-primary);
+            }
+        }
+    }
+}

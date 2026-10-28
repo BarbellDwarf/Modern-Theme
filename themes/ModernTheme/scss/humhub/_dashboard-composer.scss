@@ -1,0 +1,144 @@
+// ── Dashboard composer ─────────────────────────────────────────────────────
+// Card pinned above the dashboard stream. It links to the space stream, where
+// HumHub's own post form lives, instead of embedding a second copy of the form.
+
+.mt2026-dashboard-composer {
+  margin-bottom: var(--space-4);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: var(--space-2);
+  align-items: center;
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: 48px;
+    padding: var(--space-2) var(--space-3);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &:hover,
+    &:focus {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  // Field-like shell so the card reads as an input, not a label.
+  &__field {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-primary);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  &__trigger:hover &__field,
+  &__trigger:focus-visible &__field {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex: 0 0 40px;
+  }
+
+  &__placeholder {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // The full prompt clips at 390px; the short one fits. Both halves are pinned
+  // on mobile as well as desktop so the choice cannot be lost to source order.
+  &__placeholder-full {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    &__placeholder {
+      // 15px keeps the prompt legible without forcing the ellipsis on 320px.
+      font-size: 15px;
+    }
+
+    &__placeholder-short {
+      display: inline !important;
+    }
+
+    &__placeholder-full {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    &__placeholder-short {
+      display: none !important;
+    }
+
+    &__placeholder-full {
+      display: inline !important;
+    }
+  }
+
+  &__action {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-primary-strong, #1e6ad6);
+    color: #fff;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__trigger:hover &__action,
+  &__trigger:focus-visible &__action {
+    background: var(--color-primary-strong-hover, #1e40af);
+  }
+
+  &--empty {
+    padding: var(--space-3);
+  }
+
+  &__empty-link {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: var(--color-primary);
+    }
+  }
+}

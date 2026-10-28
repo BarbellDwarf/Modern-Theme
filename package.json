@@ -1,0 +1,29 @@
+{
+  "name": "modern-theme",
+  "version": "1.1.1",
+  "description": "Contemporary HumHub theme with glassmorphism, subtle depth, smooth animations, and 2026 design trends. Features adaptive color palettes, enhanced mobile experience, and improved accessibility.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:ui": "node tests/playwright/test_ui_components.js",
+    "test:screenshots": "node tests/playwright/view_ui_mcp.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BarbellDwarf/Modern-Theme-2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/BarbellDwarf/Modern-Theme-2026/issues"
+  },
+  "homepage": "https://github.com/BarbellDwarf/Modern-Theme-2026#readme",
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  }
+}
