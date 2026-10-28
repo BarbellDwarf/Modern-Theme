@@ -595,18 +595,20 @@ a.mt2026-thread-open .mt2026-thread-chevron {
   display: none !important;
 }
 
-// ── Sticky reply composer on phones ─────────────────────────────────────────
-// With a thread open, the reply box rides above the mobile nav bar instead of
-// being hidden behind it (X / Instagram pattern). Only the expanded thread's
-// composer moves; the post-level box stays in flow so two bars never stack.
+// ── Sticky comment composer on phones ───────────────────────────────────────
+// The active composer rides above the mobile nav bar instead of scrolling away
+// (X / Instagram pattern): the open thread's reply box, or the post-level box
+// when no thread is open. Two bars at one offset would overlap, so the
+// post-level box yields while a thread is open.
 // shortcut: sticky cannot lift an element past its own container, so the bar
-// floats up only while the thread end is near the fold; upgrade to a fixed
+// floats up only while the container end is near the fold; upgrade to a fixed
 // overlay (with the stacking contexts solved) if it must pin everywhere.
 @media (max-width: 767.98px) {
   #layout-content {
     scroll-padding-bottom: 140px;
   }
 
+  .comment-container > .comment_create.show-on-mobile,
   .nested-comments-root .comment_create.show-on-mobile {
     position: sticky;
     bottom: calc(var(--mobile-nav-height, 56px) + 8px + env(safe-area-inset-bottom, 0px));
@@ -626,5 +628,20 @@ a.mt2026-thread-open .mt2026-thread-chevron {
     .ProsemirrorEditor.focusMenu .ProseMirror:focus {
       border-radius: 12px !important;
     }
+
+    .richtext-create-buttons .btn-comment-submit {
+      min-height: 32px !important;
+      padding: var(--space-1) var(--space-3) !important;
+    }
+  }
+
+  // A thread is open: its composer owns the bar. Core only adds .d-none to the
+  // thread's container, leaving .show-on-mobile on the hidden composer, so the
+  // visible-container check is what tells the two states apart.
+  .comment-container:has(
+      .nested-comments-root .comment-container:not(.d-none) > .comment_create.show-on-mobile
+    )
+    > .comment_create.show-on-mobile {
+    position: static;
   }
 }
