@@ -1245,3 +1245,20 @@ body.mt2026-keyboard-open {
         margin-right: auto;
     }
 }
+
+// Pass 6 polish: keep the unread dot in a stable right-hand column instead of
+// letting it follow the text like punctuation, and fade the mail formatting
+// toolbar so the clipped last icon reads as scrollable.
+#layout-content .badge.badge-new,
+#layout-content .badge-new {
+  margin-left: auto;
+  margin-right: 0;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 767px) {
+  .ProseMirror-menubar {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  }
+}
