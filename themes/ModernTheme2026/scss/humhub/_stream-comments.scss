@@ -142,14 +142,37 @@
   }
 }
 
-// ── Hide reply buttons under each comment ────────────────────────────────────
-// Reply functionality is removed to keep UI clean. All comments are top-level.
-// Use maximum specificity to override any theme CSS
-html body .single-comment .wall-entry-controls a[data-action-click="comment.toggleComment"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+// ── Reply / thread toggle ───────────────────────────────────────────────────
+// One control per comment, labelled by commentThreads.js: "Reply" opens the
+// composer, "View N replies" expands the thread. HumHub ships the anchor
+// hidden, so this rule is what makes the control visible at all.
+html body .comment .single-comment .wall-entry-controls a[data-action-click="comment.toggleComment"] {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  min-height: 32px;
+  padding: 0 var(--space-1);
+  font-size: 12.5px !important;
+  line-height: 1;
+  color: var(--color-primary) !important;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mt2026-thread-chevron {
+  display: inline-block;
+  font-size: 10px;
+  transition: transform var(--transition-fast);
+}
+
+a.mt2026-thread-open .mt2026-thread-chevron {
+  transform: rotate(180deg);
 }
 
 // The ' · ' text node separator inside comment-level controls
@@ -515,32 +538,82 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
     margin-right: 0 !important;
   }
 
-  // Pull replies back under the parent's avatar column: the nested root sits
-  // in the text column, which starts 48px right of the comment edge.
-  .comment .nested-comments-root {
-    margin-left: -48px;
+}
+
+// ── Reply threads ───────────────────────────────────────────────────────────
+// A reply is a nested Comments widget rendered inside the parent's text
+// column, so a card inside a card ate about a third of the width at 390px.
+// Pull the nested root back to the comment edge and render replies as flat
+// indented rows hanging off a thread line: one visual level of nesting.
+.comment > .flex-grow-1 > .nested-comments-root,
+.comment .nested-comments-root {
+  margin-left: -48px;
+}
+
+.nested-comments-root .comment-container,
+.nested-comments-root .comment-container.bg-light {
+  margin: 6px 0 6px 16px !important;
+  padding: 0 0 0 12px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-left: 2px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.nested-comments-root .single-comment,
+.nested-comments-root .single-comment.p-2 {
+  gap: 8px;
+  margin: 0 !important;
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: transparent !important;
+  }
+}
+
+.nested-comments-root .comment-header-image {
+  width: 24px !important;
+  flex: 0 0 24px !important;
+}
+
+.nested-comments-root .comment-header-image img {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.nested-comments-root .comment-heading {
+  font-size: 12.5px !important;
+}
+
+.nested-comments-root .content {
+  font-size: 13px !important;
+}
+
+// Reply composer: same shape as the main one, sized for the thread column.
+.nested-comments-root .comment_create {
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+
+  > hr {
+    display: none;
   }
 
-  .comment .nested-comments-root .comment-container,
-  .comment .nested-comments-root .comment-container.bg-light {
-    background: transparent !important;
-    border: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  // HumHub zeroes the top corners of a focused ProseMirror (.ProsemirrorEditor.focusMenu
+  // .form-control:focus, 0,3,1); match it with higher specificity.
+  .ProseMirror,
+  .ProsemirrorEditor.focusMenu .ProseMirror:focus {
+    border-radius: 10px !important;
   }
 
-  .comment .nested-comments-root .single-comment {
-    background: transparent !important;
-    border: 0 !important;
-    border-left: 2px solid var(--color-border) !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    padding: 0 0 var(--space-2) 6px !important;
-
-    &:hover {
-      background: transparent !important;
-    }
+  .richtext-create-buttons .btn-comment-submit {
+    min-height: 32px !important;
+    min-width: 32px;
+    padding: var(--space-1) var(--space-3) !important;
   }
 }
 

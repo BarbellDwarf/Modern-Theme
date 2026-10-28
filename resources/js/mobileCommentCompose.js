@@ -67,6 +67,7 @@ humhub.module('modernTheme.mobileCommentCompose', function(module, require, $) {
         }
         form.classList.remove('d-none');
         form.classList.add('show-on-mobile');
+        form.style.display = '';
         form.style.opacity = '0';
         form.style.maxHeight = '0';
         form.style.overflow = 'hidden';
@@ -108,14 +109,7 @@ humhub.module('modernTheme.mobileCommentCompose', function(module, require, $) {
     var _mqHandler;
     var _initialized = false;
 
-    var hideReplyButtons = function() {
-        document.querySelectorAll('.single-comment a[data-action-click="comment.toggleComment"]').forEach(function(btn) {
-            btn.classList.add('d-none');
-        });
-    };
-
     var syncContainers = function() {
-        hideReplyButtons();
         document.querySelectorAll('.comment-container').forEach(function(container) {
             var form = getComposeForm(container);
             if (!form) return;
@@ -132,6 +126,19 @@ humhub.module('modernTheme.mobileCommentCompose', function(module, require, $) {
         var actionClick = triggerEl && triggerEl.getAttribute && triggerEl.getAttribute('data-action-click');
         if (actionClick && actionClick.indexOf('comment.reply') !== -1) return;
         if (triggerEl && (triggerEl.classList.contains('comment-reply-link') || triggerEl.classList.contains('reply-comment-link'))) return;
+        // "View N replies" opens a nested thread: reveal that thread's own
+        // composer instead of the post's.
+        var clickTarget = triggerEl && triggerEl.getAttribute && triggerEl.getAttribute('data-action-click-target');
+        var expanded = clickTarget && document.querySelector(clickTarget);
+        if (expanded && expanded.closest('.nested-comments-root')) {
+            var threadForm = getComposeForm(expanded);
+            if (threadForm) {
+                recentlyShownForms.add(threadForm);
+                setTimeout(function() { recentlyShownForms.delete(threadForm); }, 2000);
+                showCompose(threadForm);
+            }
+            return;
+        }
         var container = getEntryContainer(triggerEl);
         if (!container) return;
         var form = getComposeForm(container);
@@ -172,7 +179,6 @@ humhub.module('modernTheme.mobileCommentCompose', function(module, require, $) {
     };
 
     var init = function() {
-        hideReplyButtons();
         if (window.innerWidth >= 992) { return; }
         if (_initialized) { return; }
         _initialized = true;
