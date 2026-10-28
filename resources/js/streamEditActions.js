@@ -1,4 +1,5 @@
-humhub.module('modernTheme.streamEditActions', function(module, require, $) {
+(function ($) {
+    'use strict';
 
     var observer = null;
     var timer = null;
@@ -73,6 +74,14 @@ humhub.module('modernTheme.streamEditActions', function(module, require, $) {
         window.clearTimeout(timer);
     };
 
-    module.initOnPjaxLoad = true;
-    module.export({ init: init, unload: unload });
-});
+    $(init);
+    $(document).on('humhub:ready humhub:content:afterRender', init);
+
+    var lastUrl = location.href;
+    window.setInterval(function () {
+        if (location.href !== lastUrl) {
+            lastUrl = location.href;
+            schedule();
+        }
+    }, 400);
+})(window.jQuery);
