@@ -123,6 +123,29 @@ class MobileBottomNav extends Widget
     }
 
     /**
+     * Reduce a top-menu URL to the route it points at, so `/usermap/map` and
+     * `/usermap/map/index` count as the same destination.
+     */
+    private static function canonicalMoreUrl(string $url): string
+    {
+        $parts = parse_url($url) ?: [];
+        $route = $parts['query'] ?? '';
+
+        if (preg_match('/(?:^|&)r=([^&]+)/', $route, $matches)) {
+            $route = rawurldecode($matches[1]);
+        } else {
+            $route = $parts['path'] ?? $url;
+        }
+
+        $route = strtolower(trim($route, '/'));
+        if (str_ends_with($route, '/index')) {
+            $route = substr($route, 0, -6);
+        }
+
+        return $route;
+    }
+
+    /**
      * Build dynamic More menu items from enabled top menu entries.
      */
     private function getDynamicMoreItems(): array
@@ -166,7 +189,8 @@ class MobileBottomNav extends Widget
                 'url' => $calendarUrl,
                 'icon' => 'fa-calendar',
             ];
-            $seen[$calendarUrl] = true;
+            $seen['url:' . self::canonicalMoreUrl($calendarUrl)] = true;
+            $seen['id:calendar'] = true;
             $seen['module:calendar'] = true;
         }
 
@@ -189,10 +213,12 @@ class MobileBottomNav extends Widget
                 }
             }
 
-            if (isset($seen[$url])) {
+            $canonicalUrl = self::canonicalMoreUrl($url);
+            if (isset($seen['url:' . $canonicalUrl]) || isset($seen['id:' . $id])) {
                 continue;
             }
-            $seen[$url] = true;
+            $seen['url:' . $canonicalUrl] = true;
+            $seen['id:' . $id] = true;
 
             $icon = $entry['icon'] ?? 'fa-link';
             foreach ($iconMap as $needle => $mappedIcon) {
@@ -233,7 +259,8 @@ class MobileBottomNav extends Widget
             }
 
             $url = Url::to($routeMap[$id]);
-            if (isset($seen[$url])) {
+            $canonicalUrl = self::canonicalMoreUrl($url);
+            if (isset($seen['url:' . $canonicalUrl]) || isset($seen['id:' . $id])) {
                 continue;
             }
 
@@ -249,7 +276,8 @@ class MobileBottomNav extends Widget
                 'url' => $url,
                 'icon' => $icon,
             ];
-            $seen[$url] = true;
+            $seen['url:' . $canonicalUrl] = true;
+            $seen['id:' . $id] = true;
             $seen['module:' . $id] = true;
         }
 

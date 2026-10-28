@@ -29,6 +29,7 @@ class ModernThemeAsset extends AssetBundle
         'js/dropdownManager.js',
         'js/composerFocus.js',
         'js/commentSubmit.js',
+        'js/streamEditActions.js',
         'js/spacePolish.js',
         'js/copyPolish.js',
         'js/unsavedGuard.js',
