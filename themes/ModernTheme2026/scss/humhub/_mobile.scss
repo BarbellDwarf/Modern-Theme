@@ -708,13 +708,17 @@ body.mt2026-keyboard-open {
     background: var(--color-bg-secondary);
 
     .mt2026-mark-all-seen-btn {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: space(2);
-        min-height: 40px;
-        font-size: $font-size-sm;
+        justify-content: flex-start;
+        gap: 8px;
+        width: 100%;
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 12.5px;
         color: var(--color-text-secondary);
-        border-color: var(--color-border);
+        background: var(--color-bg-primary);
+        border: 1px solid var(--color-border);
 
         i {
             font-size: $font-size-base;
@@ -1134,5 +1138,110 @@ body.mt2026-keyboard-open {
     #user-profile-about .profile-item {
         padding-left: $content-inset-mobile;
         padding-right: $content-inset-mobile;
+    }
+}
+
+// ── Mail thread header: one line per field (<768px) ─────────────────────────
+// 1.19 renders the core header as `.float-end` (settings), h1 (subject) and
+// small (participants). Wrap puts participants on its own row; min-width:0
+// lets both rows ellipsis instead of growing the header.
+@media (max-width: 767.98px) {
+    #mail-conversation-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        row-gap: 2px;
+        margin: 0; // cancel the global .panel-heading negative inset
+        padding: 6px 8px;
+    }
+
+    #mail-conversation-header > h1 {
+        order: 1;
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #mail-conversation-header > small {
+        order: 3;
+        flex: 1 0 100%;
+        display: block;
+        margin: 0;
+        padding: 0 !important; // .py-2 uses !important
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #mail-conversation-header > .float-end {
+        order: 2;
+        margin-left: auto;
+    }
+}
+
+// ── Mail reply composer: compact editor and toolbar (<768px) ────────────────
+@media (max-width: 767.98px) {
+    .mail-message-form .richtext-create-input-group {
+        gap: 8px;
+    }
+
+    .mail-message-form .ProseMirror {
+        min-height: 64px !important; // beats _richtext.scss mobile 80px
+        max-height: 160px;
+        overflow-y: auto;
+    }
+
+    .mail-message-form .ProseMirror-menubar {
+        flex-wrap: nowrap;
+        gap: 2px;
+        padding: 4px 6px !important;
+        min-height: 0 !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .mail-message-form .ProseMirror-menubar .ProseMirror-menuitem {
+        flex: 0 0 auto;
+        min-height: 0 !important;
+        margin: 0;
+        padding: 4px 6px !important;
+    }
+
+    .mail-message-form .ProseMirror-menubar .ProseMirror-icon {
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        line-height: 1;
+    }
+}
+
+// ── Notification overview rows (<768px) ────────────────────────────────────
+@media (max-width: 767.98px) {
+    #notification_overview_list .hh-list > a.d-flex {
+        align-items: flex-start;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    // Let a short notification keep its natural width so the unread dot sits
+    // after the text; the auto right margin absorbs the rest of the row.
+    #notification_overview_list .hh-list > a.d-flex > .flex-grow-1 {
+        flex-grow: 0 !important; // .flex-grow-1 uses !important
+    }
+
+    #notification_overview_list .hh-list > a.d-flex > .order-last {
+        margin-left: 8px;
+        margin-right: auto;
     }
 }
