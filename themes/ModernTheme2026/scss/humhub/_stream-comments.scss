@@ -137,7 +137,7 @@
 
       .mt2026-reaction-trigger {
         font-size: 0;
-        margin-left: -14px;
+        margin-left: 0;
       }
     }
   }
@@ -171,7 +171,7 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   .mt2026-reaction-trigger {
     font-size: 0;
     line-height: 1;
-    margin-left: -14px;
+    margin-left: 0;
   }
 }
 
@@ -423,4 +423,14 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
     padding: var(--space-2);
     gap: var(--space-2);
   }
+}
+
+
+// Comment avatars render at 25px inside a 44px tap target, so core's
+// -3px/bottom-right online dot lands beside the image instead of on it.
+// Presence is noise in a compact comment list; hide it here only.
+.comment .user-online-status,
+.comment-container .user-online-status,
+.single-comment .user-online-status {
+  display: none !important;
 }
