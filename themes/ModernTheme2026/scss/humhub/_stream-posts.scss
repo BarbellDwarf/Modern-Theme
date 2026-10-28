@@ -621,15 +621,16 @@
   }
 }
 
-// Post share control (work package 34 B3).
+// Post share control (work package 34 B3). Sized to the action row so the
+// footer stays one 32px line next to the Comment/React pills.
 .wall-entry-controls .mt2026-share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 40px;
-  min-width: 44px;
-  min-height: 40px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   margin-left: auto;
   padding: 0;
   border: none;

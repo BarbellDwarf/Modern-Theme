@@ -144,6 +144,12 @@
       .mt2026-reaction-trigger {
         margin-left: 0;
       }
+
+      // Comments keep Reply · React · chips. The post share control would push
+      // the row onto a second line at 320-390px.
+      .mt2026-share-btn {
+        display: none !important;
+      }
     }
   }
 }
@@ -161,6 +167,9 @@ html body .comment .single-comment .wall-entry-controls a[data-action-click="com
   pointer-events: auto !important;
   min-height: 32px;
   padding: 0 4px;
+  margin-right: 0;
+  border: 0;
+  background: transparent;
   font-size: 12.5px !important;
   line-height: 1;
   color: var(--color-text-muted) !important;
