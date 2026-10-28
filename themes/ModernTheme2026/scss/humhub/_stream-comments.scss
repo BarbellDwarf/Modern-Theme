@@ -136,7 +136,6 @@
       }
 
       .mt2026-reaction-trigger {
-        font-size: 0;
         margin-left: 0;
       }
     }
@@ -169,9 +168,66 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   }
 
   .mt2026-reaction-trigger {
-    font-size: 0;
-    line-height: 1;
     margin-left: 0;
+  }
+}
+
+// ── Comment reaction trigger and summary ────────────────────────────────────
+// The trigger is an icon button, not a text link: give it a real box and size
+// the icon explicitly (the old font-size: 0 left it with no glyph).
+// Once reacted, the chosen emoji replaces the smiley so the state is visible
+// without opening the picker.
+.comment-container .mt2026-reaction-trigger,
+.single-comment .mt2026-reaction-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 14px;
+  line-height: 1;
+  margin-left: 0;
+
+  &::before {
+    font-size: 14px;
+  }
+
+  &.reacted {
+    color: var(--color-primary);
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.mt2026-trigger-emoji {
+  display: none;
+}
+
+.comment-container .mt2026-trigger-emoji,
+.single-comment .mt2026-trigger-emoji {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+}
+
+// Summary link sits after the trigger, same size as the other comment links.
+.comment-container .wall-entry-controls .mt2026-summary-link,
+.single-comment .wall-entry-controls .mt2026-summary-link {
+  margin-left: 8px !important;
+  padding: 0;
+  border-radius: 0;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+
+  .mt2026-summary-inner,
+  .mt2026-reaction-count {
+    gap: 4px;
+    font-size: 12px;
   }
 }
 
@@ -425,6 +481,68 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   }
 }
 
+
+// ── Reply layout on phones ──────────────────────────────────────────────────
+// A reply is a nested Comments widget rendered inside the parent's text
+// column, so a card inside a card ate about a third of the width at 390px.
+// Pull the nested root back to the comment edge and render replies as flat,
+// indented rows with a thread line: one visual level of nesting.
+@media (max-width: 991px) {
+  // Post card: one inset instead of panel + panel-body + container stacking.
+  .wall-entry > .panel,
+  .stream-entry > .panel {
+    padding-left: var(--space-2) !important;
+    padding-right: var(--space-2) !important;
+
+    > .panel-body {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  .comment-container,
+  .comment-container.bg-light {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  // Core offsets every comment by -0.5rem; it costs width and steals the
+  // container's gutter.
+  .single-comment {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  // Pull replies back under the parent's avatar column: the nested root sits
+  // in the text column, which starts 48px right of the comment edge.
+  .comment .nested-comments-root {
+    margin-left: -48px;
+  }
+
+  .comment .nested-comments-root .comment-container,
+  .comment .nested-comments-root .comment-container.bg-light {
+    background: transparent !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .comment .nested-comments-root .single-comment {
+    background: transparent !important;
+    border: 0 !important;
+    border-left: 2px solid var(--color-border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 0 var(--space-2) 6px !important;
+
+    &:hover {
+      background: transparent !important;
+    }
+  }
+}
 
 // Comment avatars render at 25px inside a 44px tap target, so core's
 // -3px/bottom-right online dot lands beside the image instead of on it.

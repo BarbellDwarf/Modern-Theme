@@ -87,6 +87,26 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
         });
     }
 
+    // Posts get the summary in their addons bar, comments only have the plain
+    // .wall-entry-controls row, so create the link there on first use.
+    function ensureSummaryLink($container) {
+        var $link = getSummaryLink($container);
+        if ($link.length) {
+            return $link;
+        }
+        var params = $container.data('mt2026-params');
+        var cid = $container.data('mt2026-cid');
+        var $controls = $container.closest('.wall-entry-controls');
+        if (!params || !cid || !hasTarget(params) || !$controls.length) {
+            return $();
+        }
+        return $('<a class="mt2026-summary-link" style="display:none" data-bs-target="#globalModal">')
+            .attr('href', BASE_URL + '/list?' + targetQuery(params))
+            .attr('data-mt2026-cid', cid)
+            .append('<span class="mt2026-summary-inner"></span>')
+            .appendTo($controls);
+    }
+
     // ── Build picker HTML ─────────────────────────────────────────────────────
 
     function buildPickerHtml() {
@@ -165,15 +185,23 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
         if (!reactionType) {
             $btn.removeClass('reacted').removeAttr('data-active');
             $btn.attr('aria-label', 'React');
+            $btn.find('.mt2026-trigger-emoji').remove();
         } else {
             var r = getReactionByType(reactionType);
             $btn.addClass('reacted').attr('data-active', reactionType);
             $btn.attr('aria-label', 'Reacted with ' + r.label);
+            // Comments show the chosen emoji in place of the smiley (CSS scopes
+            // the span to comments; post triggers keep their icon).
+            var $emoji = $btn.find('.mt2026-trigger-emoji');
+            if (!$emoji.length) {
+                $emoji = $('<span class="mt2026-trigger-emoji" aria-hidden="true"></span>').appendTo($btn);
+            }
+            $emoji.text(r.emoji);
         }
     }
 
     function setSummary($container, counts) {
-        var $link = getSummaryLink($container);
+        var $link = ensureSummaryLink($container);
         if (!$link.length) return;
         var total = 0;
         var html = '';
@@ -220,15 +248,9 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             // 2. No longer appending an inline picker — we use a single teleported body picker.
             // (kept as comment for clarity)
 
-            // 3. Build reaction summary link and place it in wall-entry-links (right-aligned)
-            var $controls = $c.closest('.wall-entry-controls.wall-entry-links');
-            if ($controls.length && hasTarget(params) && !$controls.find('.mt2026-summary-link').filter(function() { return String($(this).data('mt2026-cid')) === String(cid); }).length) {
-                var listUrl = BASE_URL + '/list?' + targetQuery(params);
-                $controls.append('<a class="mt2026-summary-link" href="' + listUrl
-                    + '" data-bs-target="#globalModal" data-mt2026-cid="' + cid + '" style="display:none">'
-                    + '<span class="mt2026-summary-inner"></span>'
-                    + '</a>');
-            }
+            // 3. Build the reaction summary link (posts: addons bar, comments:
+            // their own controls row) before any count fetch resolves.
+            ensureSummaryLink($c);
 
             // 4. If user has already reacted (unlike link visible), fetch and restore state
             if (!hasTarget(params)) {
