@@ -207,7 +207,8 @@ class ReactionsController extends Controller
         $schema = Like::getDb()->getTableSchema(Like::tableName());
         $this->recordMapMode = $schema !== null && $schema->getColumn('content_addon_record_id') !== null;
 
-        $recordId = (int)Yii::$app->request->get('recordId');
+        // 1.19 JS posts recordId in the body; GET is used by the state endpoints.
+        $recordId = (int)(Yii::$app->request->get('recordId') ?: Yii::$app->request->post('recordId'));
         $target = null;
 
         if ($recordId > 0 && $this->recordMapMode) {
