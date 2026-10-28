@@ -111,16 +111,21 @@
       margin: var(--space-2) 0;
     }
 
+    // One flex row under every comment: Reply · React · reaction chips.
+    // font-size: 0 kills the ' · ' text nodes WallEntryLinks injects between them.
     .wall-entry-controls {
-      display: block;
-      text-align: left;
-      gap: var(--space-3);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
       margin-top: var(--space-2);
       font-size: 0;
+      line-height: 1;
       color: var(--color-text-muted);
 
       > * {
-        font-size: var(--font-size-xs);
+        font-size: 12.5px;
+        line-height: 1;
       }
 
       a {
@@ -128,6 +133,7 @@
         align-items: center;
         gap: var(--space-1);
         color: var(--color-text-muted);
+        text-decoration: none;
 
         &:hover {
           color: var(--color-primary);
@@ -154,14 +160,22 @@ html body .comment .single-comment .wall-entry-controls a[data-action-click="com
   opacity: 1 !important;
   pointer-events: auto !important;
   min-height: 32px;
-  padding: 0 var(--space-1);
+  padding: 0 4px;
   font-size: 12.5px !important;
   line-height: 1;
-  color: var(--color-primary) !important;
+  color: var(--color-text-muted) !important;
   text-decoration: none;
 
-  &:hover {
-    text-decoration: underline;
+  // Core draws a speech-bubble icon on the post-level comment pill; in a
+  // comment row the toggle is a plain text pill.
+  &::before {
+    content: none !important;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary) !important;
+    text-decoration: none;
   }
 }
 
@@ -175,82 +189,26 @@ a.mt2026-thread-open .mt2026-thread-chevron {
   transform: rotate(180deg);
 }
 
-// The ' · ' text node separator inside comment-level controls
-// (between Reply and the emoji button). Apply font-size:0 trick.
+// Controls that sit directly under the post-level comment container keep the
+// same single flex row as comment-level controls.
 .comment-container .wall-entry-controls {
-  display: block;
-  text-align: left;
-  font-size: 0;
-  line-height: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 0;
   padding: 0;
+  font-size: 0;
+  line-height: 1;
+  text-align: left;
 
   > * {
-    font-size: 14px;
-    line-height: normal;
+    font-size: 12.5px;
+    line-height: 1;
   }
 
   .mt2026-reaction-trigger {
     margin-left: 0;
-  }
-}
-
-// ── Comment reaction trigger and summary ────────────────────────────────────
-// The trigger is an icon button, not a text link: give it a real box and size
-// the icon explicitly (the old font-size: 0 left it with no glyph).
-// Once reacted, the chosen emoji replaces the smiley so the state is visible
-// without opening the picker.
-.comment-container .mt2026-reaction-trigger,
-.single-comment .mt2026-reaction-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  font-size: 14px;
-  line-height: 1;
-  margin-left: 0;
-
-  &::before {
-    font-size: 14px;
-  }
-
-  &.reacted {
-    color: var(--color-primary);
-
-    &::before {
-      display: none;
-    }
-  }
-}
-
-.mt2026-trigger-emoji {
-  display: none;
-}
-
-.comment-container .mt2026-trigger-emoji,
-.single-comment .mt2026-trigger-emoji {
-  display: inline-block;
-  font-size: 14px;
-  line-height: 1;
-}
-
-// Summary link sits after the trigger, same size as the other comment links.
-.comment-container .wall-entry-controls .mt2026-summary-link,
-.single-comment .wall-entry-controls .mt2026-summary-link {
-  margin-left: 8px !important;
-  padding: 0;
-  border-radius: 0;
-  gap: 4px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-
-  .mt2026-summary-inner,
-  .mt2026-reaction-count {
-    gap: 4px;
-    font-size: 12px;
   }
 }
 
@@ -459,10 +417,12 @@ a.mt2026-thread-open .mt2026-thread-chevron {
   // ── Wall entry controls spacing ────────────────────────────────────────────
   .comment-container .wall-entry-controls,
   .single-comment .wall-entry-controls {
-    display: block !important;
+    display: flex !important;
+    align-items: center;
+    flex-wrap: wrap;
     text-align: left;
-    gap: var(--space-2);
-    padding: var(--space-2) 0;
+    gap: 8px;
+    padding: 0;
     margin-top: var(--space-2);
     clear: both;
   }
@@ -624,4 +584,38 @@ a.mt2026-thread-open .mt2026-thread-chevron {
 .comment-container .user-online-status,
 .single-comment .user-online-status {
   display: none !important;
+}
+
+// ── Sticky reply composer on phones ─────────────────────────────────────────
+// With a thread open, the reply box rides above the mobile nav bar instead of
+// being hidden behind it (X / Instagram pattern). Only the expanded thread's
+// composer moves; the post-level box stays in flow so two bars never stack.
+// shortcut: sticky cannot lift an element past its own container, so the bar
+// floats up only while the thread end is near the fold; upgrade to a fixed
+// overlay (with the stacking contexts solved) if it must pin everywhere.
+@media (max-width: 767.98px) {
+  #layout-content {
+    scroll-padding-bottom: 140px;
+  }
+
+  .nested-comments-root .comment_create.show-on-mobile {
+    position: sticky;
+    bottom: calc(var(--mobile-nav-height, 56px) + 8px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+    margin-top: var(--space-2) !important;
+    padding: 8px 12px !important;
+    background: var(--color-bg-primary) !important;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+
+    > hr {
+      display: none;
+    }
+
+    .ProseMirror,
+    .ProsemirrorEditor.focusMenu .ProseMirror:focus {
+      border-radius: 12px !important;
+    }
+  }
 }

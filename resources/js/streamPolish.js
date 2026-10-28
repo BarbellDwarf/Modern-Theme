@@ -43,8 +43,11 @@ humhub.module('modernTheme.streamPolish', function(module, require, $) {
     }
 
     function injectShare() {
-        $('.stream-entry-addons .wall-entry-controls.wall-entry-links').each(function() {
+        $('.wall-entry-controls, .wall-entry-footer').each(function() {
             var $row = $(this);
+            if (!$row.parent().closest('.wall-entry, .post-view').length) {
+                return;
+            }
             if ($row.find('.mt2026-share-btn').length) {
                 return;
             }
@@ -90,6 +93,9 @@ humhub.module('modernTheme.streamPolish', function(module, require, $) {
                 }
             });
         }
+
+        $('#mail-conversation-create-button').attr('aria-label', 'New message').attr('title', 'New message');
+        $('[data-action-click="editSubmit"]').attr('aria-label', 'Save').attr('title', 'Save');
 
         $(document).on('humhub:stream:afterAppend.mt2026share pjax:end.mt2026share', function() {
             schedule();

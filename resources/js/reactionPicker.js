@@ -107,6 +107,19 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             .appendTo($controls);
     }
 
+    // Core joins the action links with " · " text nodes. Inside the flex row
+    // each text node becomes an anonymous item that still consumes a gap, which
+    // forces the pills onto a second line. Separators are decoration only.
+    function stripSeparators($container) {
+        var controls = $container.closest('.wall-entry-controls')[0];
+        if (!controls) {
+            return;
+        }
+        $(controls).contents().filter(function() {
+            return this.nodeType === 3 && /^[\s·|]*$/.test(this.nodeValue);
+        }).remove();
+    }
+
     // ── Build picker HTML ─────────────────────────────────────────────────────
 
     function buildPickerHtml() {
@@ -180,21 +193,19 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
 
     // ── Per-container state ───────────────────────────────────────────────────
 
-    // The reaction summary (emoji + count) is the single place the chosen
-    // reaction is shown. Keeping the same emoji on the trigger as well made the
-    // selected reaction appear twice on the same card, so the trigger stays the
-    // neutral picker afforded by its color state only.
+    // The trigger pill shows the chosen emoji plus the word "Reacted" so the
+    // state reads at a glance; the summary chips still carry the counts.
     function setTrigger($container, reactionType) {
         var $btn = $container.find('.mt2026-reaction-trigger');
+        $btn.find('.mt2026-trigger-emoji').remove();
         if (!reactionType) {
             $btn.removeClass('reacted').removeAttr('data-active');
             $btn.attr('aria-label', 'React');
-            $btn.find('.mt2026-trigger-emoji').remove();
         } else {
-            var r = getReactionByType(reactionType);
+            var r = getReactionByType(reactionType) || {};
             $btn.addClass('reacted').attr('data-active', reactionType);
             $btn.attr('aria-label', 'Reacted with ' + r.label);
-            $btn.find('.mt2026-trigger-emoji').remove();
+            $btn.prepend('<span class="mt2026-trigger-emoji" aria-hidden="true">' + (r.emoji || '') + '</span>');
         }
     }
 
@@ -249,6 +260,7 @@ humhub.module('modernTheme.reactionPicker', function(module, require, $) {
             // 3. Build the reaction summary link (posts: addons bar, comments:
             // their own controls row) before any count fetch resolves.
             ensureSummaryLink($c);
+            stripSeparators($c);
 
             // 4. If user has already reacted (unlike link visible), fetch and restore state
             if (!hasTarget(params)) {

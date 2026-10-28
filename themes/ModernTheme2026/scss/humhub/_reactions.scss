@@ -1,39 +1,39 @@
 // Modern Theme 2026 - Emoji Reaction Picker
 
-// Trigger button (smiley face shown next to Like link)
-// Use CSS-generated icon so it renders even before FA fully loads.
+// Trigger button: text pill reading "[smiley] React", or "[emoji] Reacted" once
+// the user has reacted. Icon and label are CSS-generated so they render before
+// FontAwesome finishes loading.
 .mt2026-reaction-trigger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-
-  // Mobile: bump to minimum touch target
-  @media (max-width: 991px) {
-    width: 44px;
-    height: 44px;
-  }
-  padding: 0;
-  margin-left: 4px;
-  border: none;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  margin-left: 0;
+  border: 1px solid var(--color-border-light, #e5e7eb);
   background: transparent;
-  border-radius: 50%;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 0; // hide any text/fallback content
+  font-size: 0; // hide the <i> fallback; visible text comes from ::before/::after
   line-height: 1;
   vertical-align: middle;
-  opacity: 0.7;
-  transition: opacity 0.15s, transform 0.15s, background 0.15s;
   color: var(--color-text-secondary, #6b7280);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 
   // Always-visible icon via ::before so it doesn't rely on FA load order
   &::before {
     font-family: FontAwesome, sans-serif;
-    font-size: 18px;
+    font-size: 14px;
     content: '\f118'; // fa-smile-o default (fallback for older browsers)
     content: attr(data-icon, '\f118'); // override with dynamic icon
     display: block;
+    line-height: 1;
+  }
+
+  &::after {
+    content: 'React';
+    font-size: 12.5px;
+    font-weight: 500;
     line-height: 1;
   }
 
@@ -44,11 +44,33 @@
 
   &:hover,
   &.active {
-    opacity: 1;
-    transform: scale(1.15);
     background: var(--color-bg-secondary, #f3f4f6);
+    border-color: var(--color-border, #d1d5db);
     color: var(--color-primary, #1e6ad6);
   }
+}
+
+// The reaction emoji injected by reactionPicker.js when the user has reacted.
+.mt2026-trigger-emoji {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+}
+
+// Action-row pills are compact by design: they sit in a row with 8px gaps, so
+// they opt out of the global 44px mobile touch target. !important because the
+// humhub base CSS sets min-height/padding on `.wall-entry-controls a` with
+// higher specificity.
+.wall-entry-controls .mt2026-reaction-trigger {
+  min-height: 32px !important;
+  min-width: auto !important;
+  padding: 0 10px !important;
+}
+
+.wall-entry-controls .mt2026-summary-link {
+  min-height: 32px !important;
+  min-width: auto !important;
+  padding: 0 !important;
 }
 
 // Floating picker popup
@@ -240,11 +262,18 @@
   background: var(--color-bg-tertiary);
 }
 
+// One chip per reaction type: emoji + count in a rounded pill.
 .mt2026-reaction-count {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.8125rem;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--color-bg-secondary, #f3f4f6);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
   color: var(--color-text-secondary, #6b7280);
   cursor: default;
 
@@ -254,19 +283,18 @@
   }
 }
 
-// When the user has reacted, indicate it on the trigger button by coloring the
-// smiley and adding a subtle background ring — but keep the ::before icon visible.
-// The summary bar in the post footer shows the actual reaction emoji counts;
-// the trigger stays as the action button to open the picker.
+// Reacted state: the chosen emoji replaces the smiley and the label flips.
 .mt2026-reaction-trigger.reacted {
-  opacity: 1;
+  border-color: var(--color-primary-light, #a9c7ee);
   color: var(--color-primary, #1e6ad6);
   background: var(--color-primary-lightest, #e3eef9);
 
-  // Keep the smiley ::before visible — we no longer replace it with the reaction emoji
-  // because the summary link handles the reaction display.
   &::before {
-    display: block;
+    display: none;
+  }
+
+  &::after {
+    content: 'Reacted';
   }
 }
 
@@ -274,24 +302,22 @@
   background: rgba(var(--color-primary-rgb, 30, 106, 214), 0.2);
 }
 
-// Reaction summary link — right-aligned in the addons bar.
+// Reaction summary link — a run of chips after the trigger.
 // Uses !important to beat the base theme's old compiled CSS that also has !important.
 // JS visibility is controlled via [style*="display: none"] selector below, which
 // matches jQuery .hide() and wins over the default rule via specificity.
 .wall-entry-controls .mt2026-summary-link {
-  margin-left: auto !important;
+  margin-left: 0 !important;
   display: inline-flex !important;
   align-items: center;
   gap: 4px;
   flex: 0 0 auto;
   text-decoration: none;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 13px;
+  padding: 0;
+  font-size: 11.5px;
   line-height: 1;
   white-space: nowrap;
   color: var(--color-text-secondary, #6b7280);
-  transition: background 0.15s;
 
   // When JS hides via .hide() → inline style="display: none", this attribute
   // selector beats the default !important rule above (higher specificity).
@@ -300,24 +326,15 @@
     display: none !important;
   }
 
-  &:hover {
-    background: var(--color-bg-secondary, #f3f4f6);
-    color: var(--color-text-primary, #111827);
-  }
-
   .mt2026-summary-inner {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    flex-wrap: nowrap;
+    gap: 4px;
+    font-size: 11.5px;
+    flex-wrap: wrap;
   }
 
   .mt2026-reaction-count {
-    font-size: 13px;
-    // Emoji within these counts must stay small
-    span, .emoji {
-      font-size: 13px;
-    }
+    font-size: 11.5px;
   }
 }
