@@ -1,17 +1,15 @@
-document.addEventListener('DOMContentLoaded', function () {
+/* Inline post editor: visible Save label + Cancel button.
+ * Self-starting: HumHub may inject theme JS after DOMContentLoaded and before
+ * jQuery is ready, so poll briefly for both instead of relying on the module
+ * registry or a ready event.
+ */
+(function () {
     'use strict';
-    var $ = window.jQuery;
-
-    if (!$) {
-        return;
-    }
 
     var observer = null;
     var timer = null;
 
-    // HumHub renders "Cancel Edit" as a hidden dropdown item outside the edit
-    // form, so the form itself has no way to back out.
-    var enhance = function(button) {
+    function enhance(button, $) {
         var $button = $(button);
         var form = $button.closest('form')[0];
 
@@ -19,8 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // A visible label is all that's missing; the square class fights it.
-        // The label itself comes from CSS (::after) on editSubmit.
         $button.removeClass('btn-icon-only');
         $button.attr('aria-label', 'Save');
 
@@ -31,35 +27,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         $('<button type="button" class="btn btn-light mt2026-edit-cancel">Cancel</button>')
-            .on('click', function() {
-                // Resolve the link at click time: HumHub may paint the entry
-                // dropdown after the edit form, so it can be missing when the
-                // button is created.
+            .on('click', function () {
                 var $cancelLink = $(this)
                     .closest('.wall-entry, .stream-entry')
                     .find('a.stream-entry-cancel-edit-link[data-action-click="cancelEdit"]')
                     .first();
 
                 if ($cancelLink.length) {
-                    // Let HumHub's handler reload the entry; do not touch the form.
                     $cancelLink[0].click();
                 }
             })
             .insertBefore($button);
-    };
+    }
 
-    var run = function() {
-        $('form[id^="post-edit-form"] [data-action-click="editSubmit"]').each(function() {
-            enhance(this);
-        });
-    };
+    function boot() {
+        var $ = window.jQuery;
 
-    var schedule = function() {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(run, 120);
-    };
+        if (!$) {
+            window.setTimeout(boot, 100);
+            return;
+        }
 
-    var init = function() {
+        var run = function () {
+            $('form[id^="post-edit-form"] [data-action-click="editSubmit"]').each(function () {
+                enhance(this, $);
+            });
+        };
+
+        var schedule = function () {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(run, 120);
+        };
+
         run();
 
         if (window.MutationObserver) {
@@ -69,24 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 subtree: true
             });
         }
-    };
 
-    var unload = function() {
-        if (observer) {
-            observer.disconnect();
-            observer = null;
-        }
-        window.clearTimeout(timer);
-    };
+        $(document).on('humhub:content:afterRender humhub:ready', schedule);
+    }
 
-    $(init);
-    $(document).on('humhub:ready humhub:content:afterRender', init);
-
-    var lastUrl = location.href;
-    window.setInterval(function () {
-        if (location.href !== lastUrl) {
-            lastUrl = location.href;
-            schedule();
-        }
-    }, 400);
-});
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();
