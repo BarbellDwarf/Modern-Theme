@@ -18,6 +18,13 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
         updateToggleAria(false);
     }
 
+    function labelComposeButton() {
+        var btn = document.querySelector('#mail-conversation-create-button');
+        if (btn && btn.getAttribute('aria-label') !== 'New message') {
+            btn.setAttribute('aria-label', 'New message');
+        }
+    }
+
     function openMailList() {
         document.body.classList.add('mail-list-open');
         updateToggleAria(true);
@@ -564,6 +571,7 @@ humhub.module('modernTheme.mailLayout', function(module, require, $) {
             return;
         }
         setFullscreenMode(true);
+        labelComposeButton();
 
         if (hasActiveConversation()) {
             setConversationActive(true);

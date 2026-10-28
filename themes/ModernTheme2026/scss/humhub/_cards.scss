@@ -19,6 +19,8 @@
   p, li, .media-body {
     hyphens: none;
     -webkit-hyphens: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   // Hover effect for interactive cards

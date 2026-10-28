@@ -29,7 +29,7 @@ use humhub\helpers\Html;
         <span class="mt2026-dashboard-composer__action" aria-hidden="true">
             <i class="fa fa-pencil"></i>
             <span class="mt2026-dashboard-composer__action-label">
-                <?= Yii::t('ModernTheme2026.base', 'Write') ?>
+                <?= Yii::t('ModernTheme2026.base', 'Post') ?>
             </span>
         </span>
     </a>

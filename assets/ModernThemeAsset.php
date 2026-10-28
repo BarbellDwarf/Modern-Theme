@@ -33,6 +33,7 @@ class ModernThemeAsset extends AssetBundle
         'js/streamEditActions.js',
         'js/spacePolish.js',
         'js/copyPolish.js',
+        'js/streamPolish.js',
         'js/unsavedGuard.js',
         'js/profileInitials.js',
         'js/calendarPolish.js',

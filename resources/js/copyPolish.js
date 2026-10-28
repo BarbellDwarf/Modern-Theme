@@ -107,12 +107,20 @@ humhub.module('modernTheme.copyPolish', function(module, require, $) {
         });
     };
 
+    // Guide/checklist entries render a completed-looking check-circle that
+    // reads as status rather than a link. Swap for a chevron so they read as
+    // navigable items. (Work package 34 C2)
+    var normaliseGuideIcons = function() {
+        $('.list-group .fa-check-circle, .panel .list-group .fa-check-circle').removeClass('fa-check-circle').addClass('fa-chevron-right');
+    };
+
     var run = function() {
         normaliseComments();
         normaliseCounters();
         normaliseIdentity();
         normaliseBylines();
         normaliseTimes();
+        normaliseGuideIcons();
     };
 
     var schedule = function() {

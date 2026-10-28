@@ -620,3 +620,53 @@
     margin-left: 6px;
   }
 }
+
+// Post share control (work package 34 B3).
+.wall-entry-controls .mt2026-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 40px;
+  min-width: 44px;
+  min-height: 40px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #4b5563);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  flex: 0 0 auto;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary, #1e6ad6);
+  }
+
+  .fa {
+    font-size: 18px;
+  }
+}
+
+.mt2026-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 100000;
+  background: var(--color-bg-primary, #ffffff);
+  color: var(--color-text-primary, #111827);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 14px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in-out;
+}
+.mt2026-toast.is-visible {
+  opacity: 1;
+}

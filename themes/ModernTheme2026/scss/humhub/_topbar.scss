@@ -489,6 +489,14 @@
     }
 }
 
+// Tighten top-menu nav spacing on very wide viewports so a long site title
+// does not push navigation items off-balance. (Work package 34 A)
+@media (min-width: 1280px) {
+    #topbar #top-menu-nav {
+        gap: 4px;
+    }
+}
+
 // Explicit light-mode topbar/nav contrast guard.
 [data-bs-theme="light"],
 html[data-bs-theme="light"],
