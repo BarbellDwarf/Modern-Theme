@@ -9,45 +9,41 @@ humhub.module('modernTheme.streamEditActions', function(module, require, $) {
         var $button = $(button);
         var form = $button.closest('form')[0];
 
-        if (!form || form.id.indexOf('post-edit-form_') !== 0) {
+        if (!form || form.id.indexOf('post-edit-form') !== 0) {
             return;
         }
 
         // A visible label is all that's missing; the square class fights it.
+        // The label itself comes from CSS (::after) on editSubmit.
         $button.removeClass('btn-icon-only');
-
-        if (!$button.find('.mt2026-comment-submit-label').length) {
-            $button.append($('<span>').addClass('mt2026-comment-submit-label').text('Save'));
-        }
         $button.attr('aria-label', 'Save');
 
-        if ($button.prev('.mt2026-edit-cancel').length) {
+        var row = $button.parent()[0];
+
+        if (!row || row.querySelector('.mt2026-edit-cancel')) {
             return;
         }
 
-        var $cancelLink = $button
-            .closest('.wall-entry, .stream-entry')
-            .find('.stream-entry-cancel-edit-link')
-            .first();
-
-        if (!$cancelLink.length) {
-            return;
-        }
-
-        $('<button type="button" class="btn btn-default mt2026-edit-cancel">Cancel</button>')
+        $('<button type="button" class="btn btn-light mt2026-edit-cancel">Cancel</button>')
             .on('click', function() {
-                // Dispatch (not .click()) skips the link's href="#" jump while
-                // still reaching HumHub's delegated action handler.
-                $cancelLink[0].dispatchEvent(new MouseEvent('click', {
-                    bubbles: true,
-                    cancelable: true
-                }));
+                // Resolve the link at click time: HumHub may paint the entry
+                // dropdown after the edit form, so it can be missing when the
+                // button is created.
+                var $cancelLink = $(this)
+                    .closest('.wall-entry, .stream-entry')
+                    .find('a.stream-entry-cancel-edit-link[data-action-click="cancelEdit"]')
+                    .first();
+
+                if ($cancelLink.length) {
+                    // Let HumHub's handler reload the entry; do not touch the form.
+                    $cancelLink[0].click();
+                }
             })
             .insertBefore($button);
     };
 
     var run = function() {
-        $('form[id^="post-edit-form_"] [data-action-click="editSubmit"]').each(function() {
+        $('form[id^="post-edit-form"] [data-action-click="editSubmit"]').each(function() {
             enhance(this);
         });
     };
@@ -62,7 +58,10 @@ humhub.module('modernTheme.streamEditActions', function(module, require, $) {
 
         if (window.MutationObserver) {
             observer = new MutationObserver(schedule);
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.getElementById('layout-content') || document.body, {
+                childList: true,
+                subtree: true
+            });
         }
     };
 

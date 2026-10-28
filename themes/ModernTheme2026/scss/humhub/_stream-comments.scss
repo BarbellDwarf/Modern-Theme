@@ -257,9 +257,9 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   }
 }
 
-// Inline post edit: visible Save + Cancel row. Save's label is injected by
-// commentSubmit (or by streamEditActions when core drops the submit class),
-// Cancel stands in for the hidden dropdown item.
+// Inline post edit: visible Save + Cancel row. Save's label comes from the
+// editSubmit ::after rule in _stream-posts.scss, Cancel stands in for the
+// hidden dropdown item.
 .content_edit .richtext-create-buttons [data-action-click="editSubmit"] {
   display: inline-flex;
   align-items: center;
@@ -284,7 +284,8 @@ html body .single-comment .wall-entry-controls a[data-action-click="comment.togg
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  min-height: 40px;
+  min-height: 44px;
+  margin-right: 8px;
   padding: var(--space-1) var(--space-3);
   font-size: 12.5px;
   font-weight: 600;
