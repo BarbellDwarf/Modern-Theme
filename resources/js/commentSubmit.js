@@ -9,6 +9,22 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
         return $form.length ? $form : $element.closest('.comment_create, .comment-form, .comment-container, .content_edit');
     };
 
+    // ProseMirror's placeholder is a widget node containing the hint text
+    // ("Write a new comment..."). It must never count as content nor reach the
+    // hidden field, otherwise an empty submit stores the editor's own markup.
+    var stripWidgetsFromHtml = function(html) {
+        return String(html || '')
+            .replace(/<div[^>]*ProseMirror-widget[^>]*>[\s\S]*?<\/div>/gi, '')
+            .replace(/<img[^>]*ProseMirror-separator[^>]*>/gi, '')
+            .replace(/<br[^>]*ProseMirror-trailingBreak[^>]*>/gi, '');
+    };
+
+    var cleanText = function($editor) {
+        var $clone = $editor.clone();
+        $clone.find('.ProseMirror-widget, .atwho-placeholder, img.ProseMirror-separator, br.ProseMirror-trailingBreak').remove();
+        return $.trim($clone.text());
+    };
+
     var hasContent = function($button) {
         var $scope = getScope($button);
         var $editor = $scope.find('.ProseMirror').first();
@@ -18,7 +34,7 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
             return $textarea.length > 0 && $.trim($textarea.val()) !== '';
         }
 
-        if ($.trim($editor.text()) !== '') {
+        if (cleanText($editor) !== '') {
             return true;
         }
 
@@ -106,13 +122,21 @@ humhub.module('modernTheme.commentSubmit', function(module, require, $) {
             value = $input.val();
 
             // short-cut: markdown is lost if the widget API is gone, the server has the final say
-            if (!value && $.trim($editor.text()) !== '') {
+            if (!value && cleanText($editor) !== '') {
                 value = $editor[0].innerHTML;
             }
         }
 
         if (value == null) {
             return;
+        }
+
+        value = stripWidgetsFromHtml(value);
+
+        // Empty editor (placeholder only): clear the field and let the disabled
+        // button block submission.
+        if (cleanText($editor) === '' && $scope.find('.file-preview img').length === 0) {
+            value = '';
         }
 
         if ($input.val() !== value) {
