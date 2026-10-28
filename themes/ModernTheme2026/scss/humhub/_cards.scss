@@ -13,6 +13,13 @@
 .panel, .card {
   @include card;
   margin-bottom: var(--space-6);
+
+  // Narrow sidebar cards split "important" into "impor-tant". Body copy should
+  // never hyphenate; long URLs still wrap inside the box.
+  p, li, .media-body {
+    hyphens: none;
+    -webkit-hyphens: none;
+  }
   
   // Hover effect for interactive cards
   &.card-hover, &.panel-hover {
